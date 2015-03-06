@@ -1,0 +1,8 @@
+module.exports = {
+  <% actions.forEach(function(action, i) { %>
+  '<%= action.name %>': {
+      blockType:'<%= action.name %>',
+      block: require('./<%= action.name %>.js')
+   }<% if (i < actions.length - 1) { %>,<% } %>
+  <% }); %>
+}
