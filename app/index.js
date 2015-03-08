@@ -49,7 +49,10 @@ module.exports = yeoman.generators.Base.extend({
       type: 'input',
       name: 'name',
       message: 'Name your extension:',
-      default: this._package.name || this.appname
+      default: this._package.name || this.appname,
+      validate: function(name) {
+        return !!name.match(/^[A-Za-z0-9\-_\.]+$/) || "That may not be a legal npm package name.";
+      }
     }, {
       type: 'input',
       name: 'description',
@@ -63,18 +66,21 @@ module.exports = yeoman.generators.Base.extend({
       validate: function(ver) {
         return !!semver.valid(ver) || "Please supply a valid semantic version of the form <major>.<minor>.<patch>[-annotation]. Examples: 0.1.0, 3.21.103, 3.9.22-alt";
       }
-    }, {
-      type: 'input',
-      name: 'repositoryUrl',
-      message: 'Repository URL:',
-      default: this._detectedRepositoryUrl
-    }, {
+    }, {      
       type: 'confirm',
       name: 'createGit',
       message: 'Create Git repository?',
       when: (function() {
         return this._gitInstalled && !this._inGitRepo;
       }.bind(this))
+    }, {
+      type: 'input',
+      name: 'repositoryUrl',
+      message: 'Repository URL:',
+      default: this._detectedRepositoryUrl,
+      when: function(props) {
+        return props.createGit;
+      }
     }, {
       type: 'checkbox',
       name: 'domains',
