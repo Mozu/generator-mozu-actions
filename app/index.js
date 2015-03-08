@@ -274,7 +274,6 @@ module.exports = yeoman.generators.Base.extend({
         'grunt-browserify',
         'grunt-contrib-jshint',
         'load-grunt-tasks',
-        'mozuxd-simulator',
         'time-grunt'
       ], {
         saveDev: true
