@@ -1,8 +1,7 @@
 {
   "name": "<%= name %>",
   "version": "<%= version %>",
+  "description": "<%= description %>",
   "dependencies": {},
-  "devDependencies": {
-    "mozuxd-simulator": "*"
-  }
+  "devDependencies": {}
 }

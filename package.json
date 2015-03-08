@@ -23,10 +23,11 @@
     "yeoman-generator"
   ],
   "dependencies": {
+    "buffered-spawn": "^1.0.1",
     "chalk": "^1.0.0",
     "inquirer": "^0.8.0",
     "mosay": "^1.1.0",
-    "mozuxd-metadata": "^0.1.0",
+    "mozuxd-metadata": "git+http://tfs.corp.volusion.com:8080/tfs/VNext/Prototype/_git/mozuxd-metadata",
     "semver": "^4.3.1",
     "yeoman-generator": "^0.18.9"
   },

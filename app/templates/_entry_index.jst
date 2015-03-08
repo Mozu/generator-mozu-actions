@@ -1,8 +1,8 @@
 module.exports = {
   <% actions.forEach(function(action, i) { %>
   '<%= action.name %>': {
-      blockType:'<%= action.name %>',
-      block: require('./<%= action.name %>.js')
+      actionName:'<%= action.name %>',
+      customFunction: require('./domains/<%= action.domain %>/<%= action.name %>')
    }<% if (i < actions.length - 1) { %>,<% } %>
   <% }); %>
-}
+};

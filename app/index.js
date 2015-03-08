@@ -5,153 +5,306 @@ var mosay = require('mosay');
 var inquirer = require('inquirer');
 var semver = require('semver');
 var XDMetadata = require('mozuxd-metadata');
+var buffspawn = require('buffered-spawn');
 
 module.exports = yeoman.generators.Base.extend({
 
-  prompting: function () {
+    initializing: function() {
+      var done = this.async();
+      this.config.save();
+      this._package = this.fs.readJSON('./package.json', {});
+      buffspawn('git', ['rev-parse', '--is-inside-work-tree'], function(err, stdout, stderr) {
+        if (!err) {
+          this._gitInstalled = this._inGitRepo = true;
+        } else if (err.status === -128 || stderr.indexOf('Not a git repository') !== -1) {
+          this._gitInstalled = true;
+          this._inGitRepo = false;
+        } else {
+          this._gitInstalled = this._inGitRepo = false;
+        }
+
+
+        if (this._inGitRepo) {
+          buffspawn('git', ['ls-remote', '--get-url'], function(err, stdout, stderr) {
+            if (!err && stdout) {
+              this._detectedRepositoryUrl = stdout;
+            }
+            done();
+          });
+        } else {
+          done();
+        }
+
+      }.bind(this));
+  },
+
+  prompting: function() {
     var done = this.async();
 
-    // Have Yeoman greet the user.
     this.log(mosay(
       'Follow the prompts to scaffold a Mozu Extension package. You\'ll get a directory structure, action file skeletons, and a test framework!'
     ));
 
-    var prompts = [
-      {
-        type: 'input',
-        name: 'name',
-        message: 'Name your extension:',
-        default: this.appname,
-        store: true
-      },
-      {
-        type: 'input',
-        name: 'version',
-        message: 'Initial version:',
-        default: '0.1.0',
-        validate: function(ver) {
-          return semver.valid(ver) || "Please supply a valid semantic version of the form <major>.<minor>.<patch>[-annotation]. Examples: '0.1.0', '3.21.103', '3.9.22-alt'";
-        },
-        store: true
+    var prompts = [{
+      type: 'input',
+      name: 'name',
+      message: 'Name your extension:',
+      default: this._package.name || this.appname
+    }, {
+      type: 'input',
+      name: 'description',
+      message: 'Short description:',
+      default: this._package.description || "A Mozu Extension."
+    }, {
+      type: 'input',
+      name: 'version',
+      message: 'Initial version:',
+      default: this._package.version || "0.1.0",
+      validate: function(ver) {
+        return !!semver.valid(ver) || "Please supply a valid semantic version of the form <major>.<minor>.<patch>[-annotation]. Examples: 0.1.0, 3.21.103, 3.9.22-alt";
       }
-      {
-        type: 'checkbox',
-        name: 'domains',
-        message: 'Choose domains:',
-        choices: Object.keys(XDMetadata.domains),
-        validate: function(chosen) {
-          return chosen.length > 0 || "Please choose at least one domain to scaffold."
-        }
-      }, {
-        type: 'checkbox',
-        name: 'actions',
-        message: "Choose one or more actions to scaffold.",
-        choices: function(props) {
-          return props.domains.reduce(function(choices, domain, index) {
-            return choices.concat([new inquirer.Separator('- Domain ' + chalk.bold(domain))].concat(Object.keys(XDMetadata.domains[domain].actions).map(function(actionName) {
-                return {
-                  name: actionName,
-                  value: {
-                    domain: domain,
-                    name: domain + "." + actionName
-                  }
-                };
-            })));
-          }, []);
-        }
+    }, {
+      type: 'input',
+      name: 'repositoryUrl',
+      message: 'Repository URL:',
+      default: this._detectedRepositoryUrl
+    }, {
+      type: 'confirm',
+      name: 'createGit',
+      message: 'Create Git repository?',
+      when: (function() {
+        return this._gitInstalled && !this._inGitRepo;
+      }.bind(this))
+    }, {
+      type: 'checkbox',
+      name: 'domains',
+      message: 'Choose domains:',
+      choices: Object.keys(XDMetadata.domains),
+      validate: function(chosen) {
+        return chosen.length > 0 || "Please choose at least one domain to scaffold."
+      }
+    }, {
+      type: 'checkbox',
+      name: 'actions',
+      message: "Choose one or more actions to scaffold.",
+      choices: function(props) {
+        return props.domains.reduce(function(choices, domain, index) {
+          return choices.concat([new inquirer.Separator('- Domain ' + chalk.bold(domain))].concat(Object.keys(XDMetadata.domains[domain].actions).map(function(actionName) {
+            return {
+              name: actionName,
+              value: {
+                domain: domain,
+                name: domain + "." + actionName
+              }
+            };
+          })));
+        }, []);
+      }
 
-      }, {
-        type: 'list',
-        name: 'testFramework',
-        message: 'Choose test framework',
-        choices: [
-          {
-            name: 'Nodeunit',
-            value: 'nodeunit'
-          },
-          {
-            name: 'Mocha',
-            value: 'mocha'
-          },
-          {
-            name: 'tape',
-            value: 'tape'
-          },
-          {
-            name: 'None/Manual',
-            value: false
-          }
-        ],
-        store: true
-      }
+    }
+    // , 
+    // {
+    //   type: 'list',
+    //   name: 'testFramework',
+    //   message: 'Choose test framework',
+    //   choices: [{
+    //     name: 'Nodeunit',
+    //     value: 'nodeunit'
+    //   }, {
+    //     name: 'Mocha',
+    //     value: 'mocha'
+    //   }, {
+    //     name: 'None/Manual',
+    //     value: false
+    //   }]
+    // }
     ];
 
-    this.prompt(prompts, function (props) {
-      this._name = props.name;
-      this._version = props.version;
-      this._domains = props.domains;
-      this._actions = props.actions;
-      this.testFramework = props.testFramework;
+    this.prompt(prompts, function(props) {
 
-      if (!this.testFramework) {
-        this.log(chalk.bold.red('Unit tests are strongly recommended.') + ' If you prefer a framework this generator does not support, or framework-free tests, you can still use the ' + chalk.bold('mozuxd-simulator') + ' module to simulate a server-side environment for your action implementations.');
-      }
+      Object.keys(props).forEach(function(key) {
+        this['_' + key] = props[key];
+      }, this);
+
+      // if (!this._testFramework || !this._testFramework.value) {
+      //   this.log("\n" + chalk.bold.red('Unit tests are strongly recommended.') + ' If you prefer a framework this generator does not support, or framework-free tests, you can still use the ' + chalk.bold('mozuxd-simulator') + ' module to simulate a server-side environment for your action implementations.\n');
+      // }
 
       done();
+
     }.bind(this));
   },
 
   writing: {
-    app: function () {
+    app: function() {
       this.fs.copyTpl(
         this.templatePath('_package.json'),
-        this.destinationPath('package.json'),
-        {
+        this.destinationPath('package.json'), {
           name: this._name,
-          version: this_version
+          version: this._version,
+          description: this._description
         }
       );
+      this.fs.copyTpl(
+        this.templatePath('_README.md.tpt'),
+        this.destinationPath('README.md'), {
+          name: this._name,
+          version: this._version,
+          description: this._description,
+          actions: this._actions
+        }
+      )
     },
 
-    tests: function () {
-      if (this.testFramework) {
-        this.log('Installing ' + this.testFramework.name);
-        this._actions.forEach(function(action) {
-            this.fs.copyTpl(
-            this.templatePath('tests/' + this.testFramework.value + '.jst'),
-            this.destinationPath('test/' + action.name + '.t.js'),
-            XDMetadata.domains[action.domain].actions[action.name]
-          );
+    dotfiles: function() {
+      ['editorconfig', 'jshintrc', 'gitignore'].forEach(function(filename) {
+        this.fs.copy(
+          this.templatePath(filename),
+          this.destinationPath('.' + filename)
+        );
+      }, this);
+    },
+
+    files: function() {
+
+      var self = this;
+      this.fs.copyTpl(
+        this.templatePath('_entry_index.jst'),
+        this.destinationPath('src/index.js'),
+        {
+          actions: this._actions
+        }
+      );
+
+      this.fs.copy(
+        this.templatePath('Gruntfile.js'),
+        this.destinationPath('Gruntfile.js')
+      );
+
+      this.fs.writeJSON('./src/functions.json', this._actions.reduce(function(memo, action){
+        memo.exports.push({
+          id: action.name,
+          virtualPath: './dist/app.js' ,
+          actionId: action.name
         });
-        this.npmInstall([this.testFramework.value], { saveDev: true });
+        return memo;
+      }, {exports: []}));
+
+      this._domains.forEach(function(domain) {
+        var thisDomainsActions = self._actions.filter(function(action) {
+          return action.domain === domain;
+        });
+        thisDomainsActions.forEach(function(action) {
+          self.fs.copyTpl(
+            self.templatePath('_action_implementation.jst'),
+            self.destinationPath('src/domains/' + domain + '/' + action.name + '.js'), {
+              action: action,
+              context: JSON.stringify(XDMetadata.domains[action.domain].actions[action.name.replace(RegExp('^' + action.domain + '\.'), '')].context, null, 2)
+            }
+          )
+        });
+      });
+    },
+
+    gruntfile: function() {
+      if (!this.config.get('gruntfileCreated')) {
+
+        this.gruntfile.insertConfig('pkg', 'require("./package.json")');
+
+        this.gruntfile.insertConfig('jshint', JSON.stringify({
+          all: [
+            'src/**/*.js'
+          ]
+        }));
+
+        var browserifyTaskConfig = {
+          files: {
+            './dist/app.js': ['./src/index.js']
+          },
+          options: {
+            browserifyOptions: {
+              standalone: 'index',
+              commondir: false,
+              builtins: ['stream', 'util', 'path', 'url', 'string_decoder', 'events', 'net', 'punycode', 'querystring', 'dgram', 'dns', 'assert', 'tls'],
+              insertGlobals: false,
+              detectGlobals: false
+            }
+          }
+        };
+
+        var watchifyTaskConfig = JSON.parse(JSON.stringify(browserifyTaskConfig));
+        watchifyTaskConfig.options.watch = true;
+        watchifyTaskConfig.options.keepAlive = true;
+
+        this.gruntfile.insertConfig('browserify', JSON.stringify({
+          all: browserifyTaskConfig,
+          watch: watchifyTaskConfig
+        }));
+
+        this.gruntfile.registerTask('default', ['jshint','browserify:all']);
+        this.gruntfile.registerTask('continuous', ['browserify:watch']);
+        this.gruntfile.registerTask('cont', ['continuous']);
+        this.gruntfile.registerTask('c', ['continuous']);
+        this.gruntfile.registerTask('w', ['continuous']);
+
+        this.config.set('gruntfileCreated', true);
       }
     },
 
-    projectfiles: function () {
-      this.fs.copy(
-        this.templatePath('editorconfig'),
-        this.destinationPath('.editorconfig')
-      );
-      this.fs.copy(
-        this.templatePath('jshintrc'),
-        this.destinationPath('.jshintrc')
-      );
+    tests: function() {
+      // if (this._testFramework) {
+      //   this.log('Installing ' + this._testFramework.name);
+      //   this._actions.forEach(function(action) {
+      //       this.fs.copyTpl(
+      //       this.templatePath('tests/' + this._testFramework.value + '.jst'),
+      //       this.destinationPath('test/' + action.name + '.t.js'),
+      //       XDMetadata.domains[action.domain].actions[action.name]
+      //     );
+      //   });
+      //   this.npmInstall([this._testFramework.value], { saveDev: true });
+      // }
+    }
 
-      var self = this;
-      this._domains.forEach(function(domain) {
-        self.fs.copyTpl(
-          self.templatePath('_domain_index.jst'),
-          self.destinationPath('domains/' + domain + '/index.js'),
-          { actions: self._actions.filter(function(action) {
-            return action.domain === domain;
-            })
-          }        
-        );
-      })
-    },
   },
 
-  install: function () {
-    if (!this.options['skip-install']) this.npmInstall();
+  install: {
+
+    deps: function() {
+      if (!this.options['skip-install']) this.npmInstall([
+        'grunt-browserify',
+        'grunt-contrib-jshint',
+        'load-grunt-tasks',
+        'mozuxd-simulator',
+        'time-grunt'
+      ], {
+        saveDev: true
+      });
+    },
+
+    repo: function() {
+      var done = this.async();
+
+      if (this._createGit) {
+        buffspawn('git', ['init'], function(err) {
+          if (err) {
+            throw err;
+          }
+          this.log('Created git repository');
+          if (this._repositoryUrl) {
+            buffspawn('git', ['remote', 'add', 'origin', this._repositoryUrl], function(err) {
+              if (err) {
+                throw err;
+              }
+              this.log('Added remote ' + this._repositoryUrl + ' to git repository');
+              done();
+            }.bind(this));
+          } else {
+            done();
+          }
+        }.bind(this));
+      } else {
+        done();
+      }
+    }
   }
 });
