@@ -4,7 +4,7 @@
   "description": "Yeoman generator",
   "license": "MIT",
   "main": "app/index.js",
-  "repository": "zetlen/generator-mozu-extension",
+  "repository": "git+http://tfs.corp.volusion.com:8080/tfs/VNext/Prototype/_git/generator-mozu-extension",
   "author": {
     "name": "James Zetlen",
     "email": "zetlen@gmail.com",
@@ -26,7 +26,7 @@
     "buffered-spawn": "^1.0.1",
     "chalk": "^1.0.0",
     "inquirer": "^0.8.0",
-    "mosay": "^1.1.0",
+    "mosay": "git+http://tfs.corp.volusion.com:8080/tfs/VNext/Prototype/_git/mosay",
     "mozuxd-metadata": "git+http://tfs.corp.volusion.com:8080/tfs/VNext/Prototype/_git/mozuxd-metadata",
     "semver": "^4.3.1",
     "yeoman-generator": "^0.18.9"

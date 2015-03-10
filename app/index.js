@@ -66,6 +66,17 @@ module.exports = yeoman.generators.Base.extend({
       validate: function(ver) {
         return !!semver.valid(ver) || "Please supply a valid semantic version of the form <major>.<minor>.<patch>[-annotation]. Examples: 0.1.0, 3.21.103, 3.9.22-alt";
       }
+    }, {
+      type: 'confirm',
+      name: 'existsInAppDev',
+      message: 'Does this extension already exist in Developer Center?'
+    }, {
+      type: 'input',
+      name: 'mozuAppKey',
+      message: 'Developer Center Application Key:',
+      when: function(props) {
+        return props.existsInAppDev;
+      }
     }, {      
       type: 'confirm',
       name: 'createGit',
