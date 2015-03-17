@@ -64,7 +64,7 @@ module.exports = yeoman.generators.Base.extend({
       message: 'Initial version:',
       default: this._package.version || "0.1.0",
       validate: function(ver) {
-        return !!semver.valid(ver) || "Please supply a valid semantic version of the form <major>.<minor>.<patch>[-annotation]. Examples: 0.1.0, 3.21.103, 3.9.22-alt";
+        return !!semver.valid(ver) || "Please supply a valid semantic version of the form major.minor.patch-annotation.\n\nExamples: 0.1.0, 3.21.103, 3.9.22-alt";
       }
     }, {
       type: 'confirm',
