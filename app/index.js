@@ -345,6 +345,7 @@ module.exports = yeoman.generators.Base.extend({
           'grunt-browserify',
           'grunt-contrib-jshint',
           'grunt-contrib-watch',
+          'grunt-debug-task',
           //'grunt-mozu-appdev-sync',
           'load-grunt-tasks',
           'time-grunt'
