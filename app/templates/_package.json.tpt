@@ -6,5 +6,7 @@
   "repository": "<%= repository %>",
   <% } %>
   "dependencies": {},
-  "devDependencies": {}
+  "devDependencies": {
+  	"grunt-mozu-appdev-sync": "git+http://tfs.corp.volusion.com:8080/tfs/VNext/Prototype/_git/grunt-mozu-appdev-sync"
+  }
 }

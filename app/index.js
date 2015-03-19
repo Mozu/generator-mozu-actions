@@ -23,7 +23,7 @@ module.exports = yeoman.generators.Base.extend({
           this._gitInstalled = this._inGitRepo = false;
         }
 
-
+        
         if (this._inGitRepo) {
           buffspawn('git', ['ls-remote', '--get-url'], function(err, stdout, stderr) {
             if (!err && stdout) {
@@ -67,17 +67,50 @@ module.exports = yeoman.generators.Base.extend({
         return !!semver.valid(ver) || "Please supply a valid semantic version of the form major.minor.patch-annotation.\n\nExamples: 0.1.0, 3.21.103, 3.9.22-alt";
       }
     }, {
-      type: 'confirm',
-      name: 'existsInAppDev',
-      message: 'Does this extension already exist in Developer Center?'
+      type: 'list',
+      name: 'homePod',
+      message: 'Select Mozu environment:',
+      default: this.config.get('homePod') || 'home.mozu.com',
+      choices: Object.keys(XDMetadata.environments).map(function(envName) {
+        return {
+          name: envName,
+          value: XDMetadata.environments[envName].homeDomain
+        };
+      }),
+      when: function() {
+        return !!process.env.MOZUENV_INTERNAL;
+      }
     }, {
       type: 'input',
-      name: 'mozuAppKey',
-      message: 'Developer Center Application Key:',
-      when: function(props) {
-        return props.existsInAppDev;
-      }
-    }, {      
+      name: 'applicationKey',
+      message: 'Developer Center Application Key for this extension:',
+      default: this.config.get('applicationKey')
+    }, {
+      type: 'input',
+      name: 'developerAccountId',
+      message: 'Developer Account ID:',
+      store: true
+    }, {
+      type: 'input',
+      name: 'developerAccountLogin',
+      message: 'Developer Account login email:',
+      store: true
+    }, {
+      type: 'password',
+      name: 'developerAccountPassword',
+      message: 'Developer Account login password:',
+      store: true
+    }, { 
+      type: 'input',
+      name: 'developerAppKey',
+      message: 'Application Key for your sync app:',
+      store: true
+    }, { 
+      type: 'password',
+      name: 'developerSharedSecret',
+      message: 'Shared Secret for your sync app:',
+      store: true
+    }, {
       type: 'confirm',
       name: 'createGit',
       message: 'Create Git repository?',
@@ -152,7 +185,15 @@ module.exports = yeoman.generators.Base.extend({
     }.bind(this));
   },
 
-  writing: {
+  configuring: {
+    dotfiles: function() {
+      ['editorconfig', 'jshintrc', 'gitignore'].forEach(function(filename) {
+        this.fs.copy(
+          this.templatePath(filename),
+          this.destinationPath('.' + filename)
+        );
+      }, this);
+    },
     app: function() {
       this.fs.copyTpl(
         this.templatePath('_package.json.tpt'),
@@ -173,15 +214,28 @@ module.exports = yeoman.generators.Base.extend({
         }
       )
     },
+    mozuconfig: function() {
 
-    dotfiles: function() {
-      ['editorconfig', 'jshintrc', 'gitignore'].forEach(function(filename) {
-        this.fs.copy(
-          this.templatePath(filename),
-          this.destinationPath('.' + filename)
-        );
-      }, this);
-    },
+      this.fs.writeJSON(
+        this.destinationPath('mozu.config.json'),
+        {
+          appKey: this._developerAppKey,
+          sharedSecret: this._developerSharedSecret,
+          baseUrl: 'https://' + (this._homePod || 'home.mozu.com'),
+          developerAccountId: this._developerAccountId,
+          developerAccount: {
+            emailAddress: this._developerAccountLogin,
+            password: this._developerAccountPassword
+          },
+          workingApplicationKey: this._applicationKey
+        }
+      );
+      this.config.set('homePod', this._homePod || 'home.mozu.com');
+      this.config.set('applicationKey', this._applicationKey);
+    }
+  },
+
+  writing: {
 
     files: function() {
 
@@ -199,14 +253,16 @@ module.exports = yeoman.generators.Base.extend({
         this.destinationPath('Gruntfile.js')
       );
 
-      this.fs.writeJSON('./src/functions.json', this._actions.reduce(function(memo, action){
-        memo.exports.push({
-          id: action.name,
-          virtualPath: './dist/app.js' ,
-          actionId: action.name
-        });
-        return memo;
-      }, {exports: []}));
+      this.fs.writeJSON(
+        this.destinationPath('src/functions.json'), 
+        this._actions.reduce(function(memo, action){
+          memo.exports.push({
+            id: action.name,
+            virtualPath: './dist/app.js' ,
+            actionId: action.name
+          });
+          return memo;
+        }, {exports: []}));
 
       this._domains.forEach(function(domain) {
         var thisDomainsActions = self._actions.filter(function(action) {
@@ -224,50 +280,46 @@ module.exports = yeoman.generators.Base.extend({
       });
     },
 
-    gruntfile: function() {
-      if (!this.config.get('gruntfileCreated')) {
+    // gruntfile: function() {
 
-        this.gruntfile.insertConfig('pkg', 'require("./package.json")');
+    //   this.gruntfile.insertConfig('pkg', 'require("./package.json")');
 
-        this.gruntfile.insertConfig('jshint', JSON.stringify({
-          all: [
-            'src/**/*.js'
-          ]
-        }));
+    //   this.gruntfile.insertConfig('jshint', JSON.stringify({
+    //     all: [
+    //       'src/**/*.js'
+    //     ]
+    //   }));
 
-        var browserifyTaskConfig = {
-          files: {
-            './dist/app.js': ['./src/index.js']
-          },
-          options: {
-            browserifyOptions: {
-              standalone: 'index',
-              commondir: false,
-              builtins: ['stream', 'util', 'path', 'url', 'string_decoder', 'events', 'net', 'punycode', 'querystring', 'dgram', 'dns', 'assert', 'tls'],
-              insertGlobals: false,
-              detectGlobals: false
-            }
-          }
-        };
+    //   var browserifyTaskConfig = {
+    //     files: {
+    //       './assets/dist/app.js': ['./src/index.js']
+    //     },
+    //     options: {
+    //       browserifyOptions: {
+    //         standalone: 'index',
+    //         commondir: false,
+    //         builtins: ['stream', 'util', 'path', 'url', 'string_decoder', 'events', 'net', 'punycode', 'querystring', 'dgram', 'dns', 'assert', 'tls'],
+    //         insertGlobals: false,
+    //         detectGlobals: false
+    //       }
+    //     }
+    //   };
 
-        var watchifyTaskConfig = JSON.parse(JSON.stringify(browserifyTaskConfig));
-        watchifyTaskConfig.options.watch = true;
-        watchifyTaskConfig.options.keepAlive = true;
+    //   var watchifyTaskConfig = JSON.parse(JSON.stringify(browserifyTaskConfig));
+    //   watchifyTaskConfig.options.watch = true;
+    //   watchifyTaskConfig.options.keepAlive = true;
 
-        this.gruntfile.insertConfig('browserify', JSON.stringify({
-          all: browserifyTaskConfig,
-          watch: watchifyTaskConfig
-        }));
+    //   this.gruntfile.insertConfig('browserify', JSON.stringify({
+    //     all: browserifyTaskConfig,
+    //     watch: watchifyTaskConfig
+    //   }));
 
-        this.gruntfile.registerTask('default', ['jshint','browserify:all']);
-        this.gruntfile.registerTask('continuous', ['browserify:watch']);
-        this.gruntfile.registerTask('cont', ['continuous']);
-        this.gruntfile.registerTask('c', ['continuous']);
-        this.gruntfile.registerTask('w', ['continuous']);
-
-        this.config.set('gruntfileCreated', true);
-      }
-    },
+    //   this.gruntfile.registerTask('default', ['jshint','browserify:all']);
+    //   this.gruntfile.registerTask('continuous', ['browserify:watch']);
+    //   this.gruntfile.registerTask('cont', ['continuous']);
+    //   this.gruntfile.registerTask('c', ['continuous']);
+    //   this.gruntfile.registerTask('w', ['continuous']);
+    // },
 
     tests: function() {
       // if (this._testFramework) {
@@ -288,14 +340,19 @@ module.exports = yeoman.generators.Base.extend({
   install: {
 
     deps: function() {
-      if (!this.options['skip-install']) this.npmInstall([
-        'grunt-browserify',
-        'grunt-contrib-jshint',
-        'load-grunt-tasks',
-        'time-grunt'
-      ], {
-        saveDev: true
-      });
+      if (!this.options['skip-install']) {
+        this.npmInstall([
+          'grunt-browserify',
+          'grunt-contrib-jshint',
+          'grunt-contrib-watch',
+          //'grunt-mozu-appdev-sync',
+          'load-grunt-tasks',
+          'time-grunt'
+        ], {
+          saveDev: true
+        });
+        this.npmInstall();
+      }
     },
 
     repo: function() {
