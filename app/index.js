@@ -6,35 +6,34 @@ var inquirer = require('inquirer');
 var semver = require('semver');
 var XDMetadata = require('mozuxd-metadata');
 var buffspawn = require('buffered-spawn');
+var quickGitHits = require('quick-git-hits');
+
+var helpers = require('../utils/helpers');
+
 
 module.exports = yeoman.generators.Base.extend({
+
+
+   // note: arguments and options should be defined in the constructor.
+  constructor: function () {
+    yeoman.generators.Base.apply(this, arguments);
+
+    // This option adds support for non-production environments
+    this.option('internal', {
+      type: 'Boolean',
+      defaults: false,
+      hide: true
+    });
+  },
 
     initializing: function() {
       var done = this.async();
       this.config.save();
       this._package = this.fs.readJSON('./package.json', {});
-      buffspawn('git', ['rev-parse', '--is-inside-work-tree'], function(err, stdout, stderr) {
-        if (!err) {
-          this._gitInstalled = this._inGitRepo = true;
-        } else if (err.status === -128 || stderr.indexOf('Not a git repository') !== -1) {
-          this._gitInstalled = true;
-          this._inGitRepo = false;
-        } else {
-          this._gitInstalled = this._inGitRepo = false;
-        }
-
-        
-        if (this._inGitRepo) {
-          buffspawn('git', ['ls-remote', '--get-url'], function(err, stdout, stderr) {
-            if (!err && stdout) {
-              this._detectedRepositoryUrl = stdout;
-            }
-            done();
-          });
-        } else {
-          done();
-        }
-
+      quickGitHits.detectDirectory(this.destinationPath(), function(err, result) {
+        if (err) throw err;
+        helpers.addAsPrivateProps(this, result);
+        done();
       }.bind(this));
   },
 
@@ -50,6 +49,7 @@ module.exports = yeoman.generators.Base.extend({
       name: 'name',
       message: 'Name your extension:',
       default: this._package.name || this.appname,
+      filter: helpers.trimString,
       validate: function(name) {
         return !!name.match(/^[A-Za-z0-9\-_\.]+$/) || "That may not be a legal npm package name.";
       }
@@ -63,6 +63,7 @@ module.exports = yeoman.generators.Base.extend({
       name: 'version',
       message: 'Initial version:',
       default: this._package.version || "0.1.0",
+      filter: helpers.trimString,
       validate: function(ver) {
         return !!semver.valid(ver) || "Please supply a valid semantic version of the form major.minor.patch-annotation.\n\nExamples: 0.1.0, 3.21.103, 3.9.22-alt";
       }
@@ -78,42 +79,48 @@ module.exports = yeoman.generators.Base.extend({
         };
       }),
       when: function() {
-        return !!process.env.MOZUENV_INTERNAL;
-      }
+        return this.options.internal;
+      }.bind(this)
     }, {
       type: 'input',
       name: 'applicationKey',
       message: 'Developer Center Application Key for this extension:',
+      filter: helpers.trimString,
       default: this.config.get('applicationKey')
     }, {
       type: 'input',
       name: 'developerAccountId',
       message: 'Developer Account ID:',
+      filter: helpers.trimString,
       store: true
     }, {
       type: 'input',
       name: 'developerAccountLogin',
       message: 'Developer Account login email:',
+      filter: helpers.trimString,
       store: true
     }, {
       type: 'password',
       name: 'developerAccountPassword',
       message: 'Developer Account login password:',
-      store: true
+      filter: helpers.trimString
     }, { 
       type: 'input',
       name: 'developerAppKey',
       message: 'Application Key for your sync app:',
+      filter: helpers.trimString,
       store: true
     }, { 
       type: 'password',
       name: 'developerSharedSecret',
       message: 'Shared Secret for your sync app:',
+      filter: helpers.trimString,
       store: true
     }, {
       type: 'confirm',
       name: 'createGit',
       message: 'Create Git repository?',
+      filter: helpers.trimString,
       when: (function() {
         return this._gitInstalled && !this._inGitRepo;
       }.bind(this))
@@ -122,6 +129,7 @@ module.exports = yeoman.generators.Base.extend({
       name: 'repositoryUrl',
       message: 'Repository URL:',
       default: this._detectedRepositoryUrl,
+      filter: helpers.trimString,
       when: function(props) {
         return props.createGit;
       }
@@ -254,7 +262,7 @@ module.exports = yeoman.generators.Base.extend({
       );
 
       this.fs.writeJSON(
-        this.destinationPath('dist/functions.json'), 
+        this.destinationPath('assets/dist/functions.json'), 
         this._actions.reduce(function(memo, action){
           memo.exports.push({
             id: action.name,
@@ -360,22 +368,13 @@ module.exports = yeoman.generators.Base.extend({
       var done = this.async();
 
       if (this._createGit) {
-        buffspawn('git', ['init'], function(err) {
-          if (err) {
-            throw err;
-          }
+        quickGitHits.createRepoInDirectory(this.destinationPath(), { repositoryUrl: this._repositoryUrl }, function(err) {
+          if (err) throw err;
           this.log('Created git repository');
           if (this._repositoryUrl) {
-            buffspawn('git', ['remote', 'add', 'origin', this._repositoryUrl], function(err) {
-              if (err) {
-                throw err;
-              }
-              this.log('Added remote ' + this._repositoryUrl + ' to git repository');
-              done();
-            }.bind(this));
-          } else {
-            done();
+            this.log('Added remote ' + this._repositoryUrl + ' to git repository');
           }
+          done();
         }.bind(this));
       } else {
         done();
