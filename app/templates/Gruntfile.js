@@ -62,7 +62,7 @@ module.exports = function (grunt) {
           action: 'upload',
           noclobber: true
         },
-        src: ['./assets/dist/**/*']
+        src: ['./assets/**/*']
       },
       del: {
         options: {

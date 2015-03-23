@@ -262,7 +262,7 @@ module.exports = yeoman.generators.Base.extend({
       );
 
       this.fs.writeJSON(
-        this.destinationPath('assets/dist/functions.json'), 
+        this.destinationPath('assets/functions.json'), 
         this._actions.reduce(function(memo, action){
           memo.exports.push({
             id: action.name,
