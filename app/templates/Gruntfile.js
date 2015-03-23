@@ -62,13 +62,15 @@ module.exports = function (grunt) {
           action: 'upload',
           noclobber: true
         },
-        src: ['./assets/**/*']
+        src: ['./assets/**/*'], 
+        filter: 'isFile'
       },
       del: {
         options: {
           action: 'delete'
         },
         src: '<%= mozusync.upload.src %>',
+        filter: 'isFile',
         // grunt's "files" object doesn't work for deletes,
         // since it automatically filters patterns that don't
         // match existing files. but for the task to work, we

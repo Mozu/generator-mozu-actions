@@ -140,7 +140,8 @@ module.exports = yeoman.generators.Base.extend({
       choices: Object.keys(XDMetadata.domains),
       validate: function(chosen) {
         return chosen.length > 0 || "Please choose at least one domain to scaffold."
-      }
+      },
+      default: this.config.get('domains')
     }, {
       type: 'checkbox',
       name: 'actions',
@@ -157,8 +158,8 @@ module.exports = yeoman.generators.Base.extend({
             };
           })));
         }, []);
-      }
-
+      },
+      default: this.config.get('actions')
     }
     // , 
     // {
@@ -205,12 +206,12 @@ module.exports = yeoman.generators.Base.extend({
     app: function() {
       this.fs.copyTpl(
         this.templatePath('_package.json.tpt'),
-        this.destinationPath('package.json'), {
+        this.destinationPath('package.json'), helpers.trimAll({
           name: this._name,
           version: this._version,
           description: this._description,
           repository: this._repositoryUrl
-        }
+        })
       );
       this.fs.copyTpl(
         this.templatePath('_README.md.tpt'),
@@ -240,6 +241,8 @@ module.exports = yeoman.generators.Base.extend({
       );
       this.config.set('homePod', this._homePod || 'home.mozu.com');
       this.config.set('applicationKey', this._applicationKey);
+      this.config.set('domains', this._domains);
+      this.config.set('actions', this._actions);
     }
   },
 

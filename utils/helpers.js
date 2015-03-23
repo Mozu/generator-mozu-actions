@@ -6,5 +6,11 @@ module.exports = {
   },
   trimString: function(str) {
     return str.trim();
+  },
+  trimAll: function(obj) {
+    return Object.keys(obj).reduce(function(result, k) {
+      result[k] = (typeof obj[k] === "string") ? obj[k].trim() : obj[k];
+      return result;
+    }, {});
   }
 }
