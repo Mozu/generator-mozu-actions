@@ -4,7 +4,7 @@ var chalk = require('chalk');
 var mosay = require('mosay');
 var inquirer = require('inquirer');
 var semver = require('semver');
-var XDMetadata = require('mozuxd-metadata');
+var XDMetadata = require('../mozuxd-metadata');
 var buffspawn = require('buffered-spawn');
 var quickGitHits = require('quick-git-hits');
 
@@ -267,10 +267,18 @@ module.exports = yeoman.generators.Base.extend({
         }
       );
 
-      this.fs.copy(
-        this.templatePath('Gruntfile.js'),
-        this.destinationPath('Gruntfile.js')
-      );
+      [
+        'Gruntfile.js',
+        'grunt-mozu-appdev-sync/tasks/mozusync.js',
+        'grunt-mozu-appdev-sync/watch-adapter.js',
+        'grunt-mozu-appdev-sync/mozu-appdev-utils.js'
+      ].forEach(function(p) {
+        this.fs.copy(
+          this.templatePath(p),
+          this.destinationPath(p)
+        );
+      }.bind(this));
+
 
       this.fs.writeJSON(
         this.destinationPath('assets/functions.json'), 
@@ -365,7 +373,11 @@ module.exports = yeoman.generators.Base.extend({
           'grunt-contrib-jshint',
           'grunt-contrib-watch',
           'grunt-debug-task',
+          'when',
+          'mozu-node-sdk',
           //'grunt-mozu-appdev-sync',
+          'humanize',
+          'lodash.debounce',
           'load-grunt-tasks',
           'time-grunt'
         ], {

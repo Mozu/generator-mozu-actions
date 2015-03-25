@@ -1,7 +1,7 @@
 module.exports = function (grunt) {
   require('load-grunt-tasks')(grunt);
   require('time-grunt')(grunt);
-  var watchAdapter = require('grunt-mozu-appdev-sync/watch-adapter');
+  var watchAdapter = require('./grunt-mozu-appdev-sync/watch-adapter');
   grunt.initConfig({
     pkg: require('./package.json'),
     mozuconfig: require('./mozu.config.json'),
@@ -101,7 +101,7 @@ module.exports = function (grunt) {
   });
 
 
-  grunt.loadNpmTasks('grunt-mozu-appdev-sync');
+  grunt.loadTasks('./grunt-mozu-appdev-sync/tasks');
   grunt.loadNpmTasks('grunt-debug-task');
 
   watchAdapter(grunt, {
