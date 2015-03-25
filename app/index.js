@@ -197,8 +197,6 @@ module.exports = yeoman.generators.Base.extend({
         return memo;
       }, {});
 
-      console.log(JSON.stringify(this._actionsMap));
-
       done();
 
     }.bind(this));
