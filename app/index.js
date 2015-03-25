@@ -137,7 +137,7 @@ module.exports = yeoman.generators.Base.extend({
       type: 'checkbox',
       name: 'domains',
       message: 'Choose domains:',
-      choices: Object.keys(XDMetadata.domains),
+      choices: XDMetadata.actionDefinitions.domains,
       validate: function(chosen) {
         return chosen.length > 0 || "Please choose at least one domain to scaffold."
       },
@@ -148,12 +148,14 @@ module.exports = yeoman.generators.Base.extend({
       message: "Choose one or more actions to scaffold.",
       choices: function(props) {
         return props.domains.reduce(function(choices, domain, index) {
-          return choices.concat([new inquirer.Separator('- Domain ' + chalk.bold(domain))].concat(Object.keys(XDMetadata.domains[domain].actions).map(function(actionName) {
+          return choices.concat([new inquirer.Separator('- Domain ' + chalk.bold(domain))].concat(XDMetadata.actionDefinitions.actions.filter(function(action) {
+            return action.action.indexOf(domain) === 0;
+          }).map(function(action) {
             return {
-              name: actionName,
+              name: action.action.substring(domain.length + 1),
               value: {
                 domain: domain,
-                name: domain + "." + actionName
+                name: action.action
               }
             };
           })));
@@ -188,6 +190,14 @@ module.exports = yeoman.generators.Base.extend({
       // if (!this._testFramework || !this._testFramework.value) {
       //   this.log("\n" + chalk.bold.red('Unit tests are strongly recommended.') + ' If you prefer a framework this generator does not support, or framework-free tests, you can still use the ' + chalk.bold('mozuxd-simulator') + ' module to simulate a server-side environment for your action implementations.\n');
       // }
+
+
+      this._actionsMap = XDMetadata.actionDefinitions.actions.reduce(function(memo, action) {
+        memo[action.action] = action;
+        return memo;
+      }, {});
+
+      console.log(JSON.stringify(this._actionsMap));
 
       done();
 
@@ -284,7 +294,7 @@ module.exports = yeoman.generators.Base.extend({
             self.templatePath('_action_implementation.jst'),
             self.destinationPath('src/domains/' + domain + '/' + action.name + '.js'), {
               action: action,
-              context: JSON.stringify(XDMetadata.domains[action.domain].actions[action.name.replace(RegExp('^' + action.domain + '\.'), '')].context, null, 2)
+              context: JSON.stringify(self._actionsMap[action.name].context, null, 2)
             }
           )
         });
