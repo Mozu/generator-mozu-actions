@@ -6,7 +6,7 @@ module.exports = function (grunt) {
     pkg: require('./package.json'),
     mozuconfig: require('./mozu.config.json'),
     jshint: { 
-      normal: ['./src/**/*.js'],
+      normal: ['./assets/src/**/*.js'],
       continuous: {
         options: {
           force: true
@@ -17,7 +17,7 @@ module.exports = function (grunt) {
     browserify: {
       all: { 
         dest: './assets/dist/app.js',
-        src: ['./src/index.js'],
+        src: ['./assets/src/index.js'],
         options: {
           browserifyOptions: {
             standalone: 'index',
@@ -94,7 +94,7 @@ module.exports = function (grunt) {
         tasks: ['jshint:continuous']
       },
       sync: {
-        files: ['assets/', 'assets/**/*'],
+        files: ['assets/**/*'],
         tasks: ['mozusync:upload','mozusync:del']
       }
     }
@@ -114,9 +114,12 @@ module.exports = function (grunt) {
     action: 'delete'
   });
 
+  grunt.registerTask('test', []);
+
   grunt.registerTask('default', [
     'jshint:normal',
     'browserify:all',
+    'test',
     'mozusync:upload'
   ]);
   grunt.registerTask('reset', ['mozusync:wipe','mozusync:upload']);

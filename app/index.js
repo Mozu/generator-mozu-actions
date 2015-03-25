@@ -30,6 +30,10 @@ module.exports = yeoman.generators.Base.extend({
       var done = this.async();
       this.config.save();
       this._package = this.fs.readJSON('./package.json', {});
+      this._actionsMap = XDMetadata.actionDefinitions.actions.reduce(function(memo, action) {
+        memo[action.action] = action;
+        return memo;
+      }, {});
       quickGitHits.detectDirectory(this.destinationPath(), function(err, result) {
         if (err) throw err;
         helpers.addAsPrivateProps(this, result);
@@ -162,24 +166,21 @@ module.exports = yeoman.generators.Base.extend({
         }, []);
       },
       default: this.config.get('actions')
-    }
-    // , 
-    // {
-    //   type: 'list',
-    //   name: 'testFramework',
-    //   message: 'Choose test framework',
-    //   choices: [{
-    //     name: 'Nodeunit',
-    //     value: 'nodeunit'
-    //   }, {
-    //     name: 'Mocha',
-    //     value: 'mocha'
-    //   }, {
-    //     name: 'None/Manual',
-    //     value: false
-    //   }]
-    // }
-    ];
+    }, {
+      type: 'list',
+      name: 'testFramework',
+      message: 'Choose test framework',
+      choices: [{
+        name: 'Nodeunit',
+        value: 'nodeunit'
+      }, {
+        name: 'Mocha',
+        value: 'mocha'
+      }, {
+        name: 'None/Manual',
+        value: false
+      }]
+    }];
 
     this.prompt(prompts, function(props) {
 
@@ -187,15 +188,9 @@ module.exports = yeoman.generators.Base.extend({
         this['_' + key] = props[key];
       }, this);
 
-      // if (!this._testFramework || !this._testFramework.value) {
-      //   this.log("\n" + chalk.bold.red('Unit tests are strongly recommended.') + ' If you prefer a framework this generator does not support, or framework-free tests, you can still use the ' + chalk.bold('mozuxd-simulator') + ' module to simulate a server-side environment for your action implementations.\n');
-      // }
-
-
-      this._actionsMap = XDMetadata.actionDefinitions.actions.reduce(function(memo, action) {
-        memo[action.action] = action;
-        return memo;
-      }, {});
+      if (!this._testFramework) {
+        this.log("\n" + chalk.bold.red('Unit tests are strongly recommended.') + ' If you prefer a framework this generator does not support, or framework-free tests, you can still use the ' + chalk.bold('mozuxd-simulator') + ' module to simulate a server-side environment for your action implementations.\n');
+      }
 
       done();
 
@@ -218,7 +213,8 @@ module.exports = yeoman.generators.Base.extend({
           name: this._name,
           version: this._version,
           description: this._description,
-          repository: this._repositoryUrl
+          repository: this._repositoryUrl,
+          testFramework: this._testFramework
         })
       );
       this.fs.copyTpl(
@@ -261,7 +257,7 @@ module.exports = yeoman.generators.Base.extend({
       var self = this;
       this.fs.copyTpl(
         this.templatePath('_entry_index.jst'),
-        this.destinationPath('src/index.js'),
+        this.destinationPath('assets/src/index.js'),
         {
           actions: this._actions
         }
@@ -273,7 +269,7 @@ module.exports = yeoman.generators.Base.extend({
       );
 
       this.fs.writeJSON(
-        this.destinationPath('assets/functions.json'), 
+        this.destinationPath('assets/functions.json'),
         this._actions.reduce(function(memo, action){
           memo.exports.push({
             id: action.name,
@@ -290,7 +286,7 @@ module.exports = yeoman.generators.Base.extend({
         thisDomainsActions.forEach(function(action) {
           self.fs.copyTpl(
             self.templatePath('_action_implementation.jst'),
-            self.destinationPath('src/domains/' + domain + '/' + action.name + '.js'), {
+            self.destinationPath('assets/src/domains/' + domain + '/' + action.name + '.js'), {
               action: action,
               context: JSON.stringify(self._actionsMap[action.name].context, null, 2)
             }
@@ -299,60 +295,49 @@ module.exports = yeoman.generators.Base.extend({
       });
     },
 
-    // gruntfile: function() {
-
-    //   this.gruntfile.insertConfig('pkg', 'require("./package.json")');
-
-    //   this.gruntfile.insertConfig('jshint', JSON.stringify({
-    //     all: [
-    //       'src/**/*.js'
-    //     ]
-    //   }));
-
-    //   var browserifyTaskConfig = {
-    //     files: {
-    //       './assets/dist/app.js': ['./src/index.js']
-    //     },
-    //     options: {
-    //       browserifyOptions: {
-    //         standalone: 'index',
-    //         commondir: false,
-    //         builtins: ['stream', 'util', 'path', 'url', 'string_decoder', 'events', 'net', 'punycode', 'querystring', 'dgram', 'dns', 'assert', 'tls'],
-    //         insertGlobals: false,
-    //         detectGlobals: false
-    //       }
-    //     }
-    //   };
-
-    //   var watchifyTaskConfig = JSON.parse(JSON.stringify(browserifyTaskConfig));
-    //   watchifyTaskConfig.options.watch = true;
-    //   watchifyTaskConfig.options.keepAlive = true;
-
-    //   this.gruntfile.insertConfig('browserify', JSON.stringify({
-    //     all: browserifyTaskConfig,
-    //     watch: watchifyTaskConfig
-    //   }));
-
-    //   this.gruntfile.registerTask('default', ['jshint','browserify:all']);
-    //   this.gruntfile.registerTask('continuous', ['browserify:watch']);
-    //   this.gruntfile.registerTask('cont', ['continuous']);
-    //   this.gruntfile.registerTask('c', ['continuous']);
-    //   this.gruntfile.registerTask('w', ['continuous']);
-    // },
-
     tests: function() {
-      // if (this._testFramework) {
-      //   this.log('Installing ' + this._testFramework.name);
-      //   this._actions.forEach(function(action) {
-      //       this.fs.copyTpl(
-      //       this.templatePath('tests/' + this._testFramework.value + '.jst'),
-      //       this.destinationPath('test/' + action.name + '.t.js'),
-      //       XDMetadata.domains[action.domain].actions[action.name]
-      //     );
-      //   });
-      //   this.npmInstall([this._testFramework.value], { saveDev: true });
-      // }
-    }
+      if (this._testFramework) {
+
+
+        var requirements = ({
+          'mocha': {
+            install: ['grunt-mocha-test'],
+            taskName: 'mochaTest',
+            taskConfig: {
+              all: {
+                clearRequireCache: true,
+                src: ['assets/test/**/*.js']
+              }
+            }
+          },
+          'nodeunit': {
+            install: ['grunt-contrib-nodeunit'],
+            taskName: 'nodeunit',
+            taskConfig: {
+              all: ['assets/test/**/*.js']
+            }
+          }
+        })[this._testFramework];
+
+        this.log('Installing ' + this._testFramework);
+        this._actions.forEach(function(action) {
+
+            this.fs.copyTpl(
+            this.templatePath('test/' + this._testFramework + '.jst'),
+            this.destinationPath('assets/test/' + action.name + '.t.js'),
+            {
+              name: this._name,
+              description: this._description,
+              action: action, 
+              actionConfig: this._actionsMap[action.name]
+            }
+          );
+        }.bind(this));
+        this.gruntfile.insertConfig(requirements.taskName, JSON.stringify(requirements.taskConfig));
+        this.gruntfile.registerTask('test', requirements.taskName);
+        this.npmInstall(requirements.install, { saveDev: true });
+      }
+    } 
 
   },
 

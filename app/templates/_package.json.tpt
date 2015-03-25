@@ -2,11 +2,17 @@
   "name": "<%= name %>",
   "version": "<%= version %>",
   "description": "<%= description %>",
+  <% if (testFramework) { %>
+  "scripts": {
+    "test": "grunt test"
+  },
+  <% } %>
   <% if (repository) { %>
   "repository": "<%= repository %>",
   <% } %>
   "dependencies": {},
   "devDependencies": {
-  	"grunt-mozu-appdev-sync": "git+http://tfs.corp.volusion.com:8080/tfs/VNext/Prototype/_git/grunt-mozu-appdev-sync"
+  	"grunt-mozu-appdev-sync": "git+http://tfs.corp.volusion.com:8080/tfs/VNext/Prototype/_git/grunt-mozu-appdev-sync",
+    "mozuxd-simulator": "git+http://tfs.corp.volusion.com:8080/tfs/VNext/Prototype/_got/mozuxd-simulator"
   }
 }
