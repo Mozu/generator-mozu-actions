@@ -15,20 +15,31 @@ describe('<%= name %>, <%= action.name %>', function () {
   <% var context = actionConfig.context; %>
 
   it('runs successfully', function(done) {
-    assert.doesNotThrow(simulate(action.actionName, action.customFunction, {
+
+     var context = {
       get: {
-        <% Object.keys(context.get).forEach(function(k, i) { if (i < 0) { %>,<% } %>
+        <% if (typeof context.get === "object") {
+           Object.keys(context.get).forEach(function(k, i) { if (i < 0) { %>,<% } %>
           <%= k %>: fixtures.get("<%= context.get[k].type %>")
-        <% }); %>
+        <% }); } %>
       },
       exec: {
-        <% Object.keys(context.exec).forEach(function(k, i) { if (i < 0) { %>,<% } %>
+        <% if (typeof context.exec === "object") {
+           Object.keys(context.exec).forEach(function(k, i) { if (i < 0) { %>,<% } %>
           <%= k %>: function() {
-            assert.equal(arguments.length, <%= context.exec[k].paramaters.length %>, "Expected <%= k %> function to receive <%= context.exec[k].paramaters.length %> parameters.");
+            test.equal(arguments.length, <%= context.exec[k].paramaters.length %>, "Expected <%= k %> function to receive <%= context.exec[k].paramaters.length %> parameters.");
             // other assertions
           }
-        <% }); %>
+        <% }); } %>
       }
-    }, done));
+    };
+
+    var callback = function() {
+      assert.ok(true, "Callback was called");
+      // more assertions
+      done();
+    }
+
+    assert.doesNotThrow(simulate(action.actionName, action.customFunction, context, callback));
   });
 });

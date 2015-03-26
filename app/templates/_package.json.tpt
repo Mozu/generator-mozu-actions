@@ -13,6 +13,6 @@
   "dependencies": {},
   "devDependencies": {
   	"grunt-mozu-appdev-sync": "git+http://tfs.corp.volusion.com:8080/tfs/VNext/Prototype/_git/grunt-mozu-appdev-sync",
-    "mozuxd-simulator": "git+http://tfs.corp.volusion.com:8080/tfs/VNext/Prototype/_got/mozuxd-simulator"
+    "mozuxd-simulator": "git+http://tfs.corp.volusion.com:8080/tfs/VNext/Prototype/_git/mozuxd-simulator"
   }
 }

@@ -15,20 +15,31 @@ exports["<%= name %>, <%= action.name %>"] = {
     callback();
   },
   "runs successfully": function(test) {
-    test.doesNotThrow(simulate(action.actionName, action.customFunction, {
+
+    var context = {
       get: {
-        <% Object.keys(context.get).forEach(function(k, i) { if (i < 0) { %>,<% } %>
+        <% if (typeof context.get === "object") {
+           Object.keys(context.get).forEach(function(k, i) { if (i < 0) { %>,<% } %>
           <%= k %>: fixtures.get("<%= context.get[k].type %>")
-        <% }); %>
+        <% }); } %>
       },
       exec: {
-        <% Object.keys(context.exec).forEach(function(k, i) { if (i < 0) { %>,<% } %>
+        <% if (typeof context.exec === "object") {
+           Object.keys(context.exec).forEach(function(k, i) { if (i < 0) { %>,<% } %>
           <%= k %>: function() {
             test.equal(arguments.length, <%= context.exec[k].paramaters.length %>, "Expected <%= k %> function to receive <%= context.exec[k].paramaters.length %> parameters.");
             // other assertions
           }
-        <% }); %>
+        <% }); } %>
       }
-    }, test.done.bind(test)));
+    };
+
+    var callback = function() {
+      test.ok(true, "Callback was called");
+      // more assertions
+      test.done();
+    }
+
+    test.doesNotThrow(simulate(action.actionName, action.customFunction, context, callback));
   }
 }
