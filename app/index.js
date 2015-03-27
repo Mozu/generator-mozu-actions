@@ -42,11 +42,17 @@ module.exports = yeoman.generators.Base.extend({
     initializing: function() {
       var done = this.async();
       this.config.save();
-      this._package = this.fs.readJSON('./package.json', {});
+      try {
+        this._package = this.fs.readJSON('./package.json', {});
+      } catch(e) {
+        this._package = {};
+      }
       this._actionsMap = actionDefs.actions.reduce(function(memo, action) {
         action.domain = actionDefs.domains.reduce(function(match, domain) {
           if (action.action.indexOf(domain) === 0) return domain;
+          return match;
         });
+        console.log(action);
         memo[action.action] = action;
         return memo;
       }, {});
@@ -65,6 +71,11 @@ module.exports = yeoman.generators.Base.extend({
 
     var message;
     if (this.options['skip-prompts']) {
+      if (!this.config.get('domains')) {
+        message = "You cannot skip prompts if you have never run this generator in the current directory! Run again without the --skip-prompts or --quick options.";
+        this.log(mosay(message));
+        throw new Error(message);
+      }
       message = "Skipping prompts step because --skip-prompts was specified. Reinstalling generator..."
     } else {
       message = 'Follow the prompts to scaffold a Mozu Extension package. You\'ll get a directory structure, action file skeletons, and a test framework!';
@@ -393,6 +404,7 @@ module.exports = yeoman.generators.Base.extend({
           'grunt-debug-task',
           //'grunt-mozu-appdev-sync',
           'load-grunt-tasks',
+          'mozuxd-simulator',
           'time-grunt'
         ], {
           saveDev: true
