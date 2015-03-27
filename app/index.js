@@ -5,6 +5,7 @@ var mosay = require('mosay');
 var inquirer = require('inquirer');
 var semver = require('semver');
 var XDMetadata = require('mozuxd-metadata');
+var actionDefs = XDMetadata.actionDefinitions;
 var buffspawn = require('buffered-spawn');
 var quickGitHits = require('quick-git-hits');
 
@@ -24,13 +25,22 @@ module.exports = yeoman.generators.Base.extend({
       defaults: false,
       hide: true
     });
+
+    this.option('skip-prompts', {
+      type: 'Boolean',
+      desc: 'Skip prompts. Only use this option if you are re-running the generator!',
+      defaults: false
+    });
   },
 
     initializing: function() {
       var done = this.async();
       this.config.save();
       this._package = this.fs.readJSON('./package.json', {});
-      this._actionsMap = XDMetadata.actionDefinitions.actions.reduce(function(memo, action) {
+      this._actionsMap = actionDefs.actions.reduce(function(memo, action) {
+        action.domain = actionDefs.domains.reduce(function(match, domain) {
+          if (action.action.indexOf(domain) === 0) return domain;
+        });
         memo[action.action] = action;
         return memo;
       }, {});
@@ -44,9 +54,14 @@ module.exports = yeoman.generators.Base.extend({
   prompting: function() {
     var done = this.async();
 
-    this.log(mosay(
-      'Follow the prompts to scaffold a Mozu Extension package. You\'ll get a directory structure, action file skeletons, and a test framework!'
-    ));
+    var message;
+    if (this.options['skip-prompts']) {
+      message = "Skipping prompts step because --skip-prompts was specified. Reinstalling generator..."
+    } else {
+      message = 'Follow the prompts to scaffold a Mozu Extension package. You\'ll get a directory structure, action file skeletons, and a test framework!';
+    }
+
+    this.log(mosay(message));
 
     var prompts = [{
       type: 'input',
@@ -141,31 +156,28 @@ module.exports = yeoman.generators.Base.extend({
       type: 'checkbox',
       name: 'domains',
       message: 'Choose domains:',
-      choices: XDMetadata.actionDefinitions.domains,
+      choices: actionDefs.domains,
       validate: function(chosen) {
         return chosen.length > 0 || "Please choose at least one domain to scaffold."
       },
       default: this.config.get('domains')
     }, {
       type: 'checkbox',
-      name: 'actions',
+      name: 'actionNames',
       message: "Choose one or more actions to scaffold.",
       choices: function(props) {
         return props.domains.reduce(function(choices, domain, index) {
-          return choices.concat([new inquirer.Separator('- Domain ' + chalk.bold(domain))].concat(XDMetadata.actionDefinitions.actions.filter(function(action) {
+          return choices.concat([new inquirer.Separator('- Domain ' + chalk.bold(domain))].concat(actionDefs.actions.filter(function(action) {
             return action.action.indexOf(domain) === 0;
           }).map(function(action) {
             return {
               name: action.action.substring(domain.length + 1),
-              value: {
-                domain: domain,
-                name: action.action
-              }
+              value: action.action
             };
           })));
         }, []);
       },
-      default: this.config.get('actions')
+      default: this.config.get('actionNames')
     }, {
       type: 'list',
       name: 'testFramework',
@@ -179,25 +191,43 @@ module.exports = yeoman.generators.Base.extend({
       }, {
         name: 'None/Manual',
         value: false
-      }]
+      }],
+      default: this.config.get('testFramework')
     }];
 
-    this.prompt(prompts, function(props) {
-
-      Object.keys(props).forEach(function(key) {
-        this['_' + key] = props[key];
-      }, this);
-
-      if (!this._testFramework) {
-        this.log("\n" + chalk.bold.red('Unit tests are strongly recommended.') + ' If you prefer a framework this generator does not support, or framework-free tests, you can still use the ' + chalk.bold('mozuxd-simulator') + ' module to simulate a server-side environment for your action implementations.\n');
-      }
-
+    if (this.options['skip-prompts']) {
+      prompts.forEach(function(prompt) {
+        this['_' + prompt.name] = (typeof prompt.default === "function") ? prompt.default() : prompt.default;
+      }.bind(this));
       done();
+    } else {
 
-    }.bind(this));
+      this.prompt(prompts, function(props) {
+
+        Object.keys(props).forEach(function(key) {
+          this['_' + key] = props[key];
+        }, this);
+
+
+        if (!this._testFramework) {
+          this.log("\n" + chalk.bold.red('Unit tests are strongly recommended.') + ' If you prefer a framework this generator does not support, or framework-free tests, you can still use the ' + chalk.bold('mozuxd-simulator') + ' module to simulate a server-side environment for your action implementations.\n');
+        }
+
+        done();
+
+      }.bind(this));
+    }
   },
 
   configuring: {
+    actions: function() {
+      this._actions = this._actionNames.map(function(name) {
+        return {
+          name: name,
+          domain: this._actionsMap[name].domain
+        }
+      }.bind(this));
+    },
     dotfiles: function() {
       ['editorconfig', 'jshintrc', 'gitignore'].forEach(function(filename) {
         this.fs.copy(
@@ -228,25 +258,27 @@ module.exports = yeoman.generators.Base.extend({
       )
     },
     mozuconfig: function() {
-
-      this.fs.writeJSON(
-        this.destinationPath('mozu.config.json'),
-        {
-          appKey: this._developerAppKey,
-          sharedSecret: this._developerSharedSecret,
-          baseUrl: 'https://' + (this._homePod || 'home.mozu.com'),
-          developerAccountId: this._developerAccountId,
-          developerAccount: {
-            emailAddress: this._developerAccountLogin,
-            password: this._developerAccountPassword
-          },
-          workingApplicationKey: this._applicationKey
-        }
-      );
-      this.config.set('homePod', this._homePod || 'home.mozu.com');
-      this.config.set('applicationKey', this._applicationKey);
-      this.config.set('domains', this._domains);
-      this.config.set('actions', this._actions);
+      if (!this.options['skip-prompts']) {
+        this.fs.writeJSON(
+          this.destinationPath('mozu.config.json'),
+          {
+            appKey: this._developerAppKey,
+            sharedSecret: this._developerSharedSecret,
+            baseUrl: 'https://' + (this._homePod || 'home.mozu.com'),
+            developerAccountId: this._developerAccountId,
+            developerAccount: {
+              emailAddress: this._developerAccountLogin,
+              password: this._developerAccountPassword
+            },
+            workingApplicationKey: this._applicationKey
+          }
+        );
+        this.config.set('homePod', this._homePod || 'home.mozu.com');
+        this.config.set('applicationKey', this._applicationKey);
+        this.config.set('domains', this._domains);
+        this.config.set('actionNames', this._actionNames);
+        this.config.set('testFramework', this._testFramework);
+      }
     }
   },
 
@@ -335,7 +367,7 @@ module.exports = yeoman.generators.Base.extend({
         }.bind(this));
         this.gruntfile.insertConfig(requirements.taskName, JSON.stringify(requirements.taskConfig));
         this.gruntfile.registerTask('test', requirements.taskName);
-        this.npmInstall(requirements.install, { saveDev: true });
+        if (!this.options['skip-install']) this.npmInstall(requirements.install, { saveDev: true });
       }
     } 
 
