@@ -31,6 +31,12 @@ module.exports = yeoman.generators.Base.extend({
       desc: 'Skip prompts. Only use this option if you are re-running the generator!',
       defaults: false
     });
+
+    this.option('quick', {
+      type: 'Boolean',
+      desc: 'Skip prompts step and install step. Reruns copy methods and that\'s it.',
+      defaults: false
+    });
   },
 
     initializing: function() {
@@ -49,6 +55,9 @@ module.exports = yeoman.generators.Base.extend({
         helpers.addAsPrivateProps(this, result);
         done();
       }.bind(this));
+      if (this.options.quick) {
+        this.options['skip-install'] = this.options['skip-prompts'] = true;
+      }
   },
 
   prompting: function() {
