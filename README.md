@@ -1,47 +1,45 @@
-# generator-mozu-extension [![Build Status](https://secure.travis-ci.org/zetlen/generator-mozu-extension.png?branch=master)](https://travis-ci.org/zetlen/generator-mozu-extension)
+# Mozu Extension generator
 
-> [Yeoman](http://yeoman.io) generator
+Maintainer: [James Zetlen](https://github.com/zetlen)
 
+A Mozu Extension generator for Yeoman that provides boilerplate and structure for writing Mozu Custom Functions against the family of Mozu Extension Actions. It provides documented function stubs, a build process using Grunt and Browserify, remote sync with the Developer Center, and unit tests using Nodeunit or Mocha plus the Mozu Extension Simulator.
 
-## Getting Started
+![](screenshot.png)
 
-### What is Yeoman?
+## Usage
 
-Trick question. It's not a thing. It's this guy:
-
-![](http://i.imgur.com/JHaAlBJ.png)
-
-Basically, he wears a top hat, lives in your computer, and waits for you to tell him what kind of application you wish to create.
-
-Not every new computer comes with a Yeoman pre-installed. He lives in the [npm](https://npmjs.org) package repository. You only have to ask for him once, then he packs up and moves into your hard drive. *Make sure you clean up, he likes new and shiny things.*
+First, install [Yeoman](http://yeoman.io)'s command line tool if you haven't already!
 
 ```bash
 npm install -g yo
 ```
 
-### Yeoman Generators
+Yeoman looks for globally installed NPM packages that identify themselves as Yeoman generators. 
 
-Yeoman travels light. He didn't pack any generators when he moved in. You can think of a generator like a plug-in. You get to choose what type of application you wish to create, such as a Backbone application or even a Chrome extension.
-
-To install generator-mozu-extension from npm, run:
-
-```bash
-npm install -g generator-mozu-extension
+Make a new directory and `cd` into it:
+```
+mkdir new-mozu-ext && cd new-mozu-ext
 ```
 
-Finally, initiate the generator:
-
-```bash
+Run `yo mozu-extension`:
+```
 yo mozu-extension
 ```
 
-### Getting To Know Yeoman
+## Options
 
-Yeoman has a heart of gold. He's a person with feelings and opinions, but he's very easy to work with. If you think he's too opinionated, he can be easily convinced.
+* `--skip-install`
+  
+  Skips the automatic execution of `npm install` after scaffolding has finished.
 
-If you'd like to get to know Yeoman better and meet some of his friends, [Grunt](http://gruntjs.com) and [Bower](http://bower.io), check out the complete [Getting Started Guide](https://github.com/yeoman/yeoman/wiki/Getting-Started).
+* `--skip-prompts`
 
+  Often you may find yourself rerunning the generator in the same directory. Your answers to prompts are saved; if you want to quickly re-run the generator without prompts, use this option. Will not work if you've never run the generator in this directory before.
 
-## License
+* `--quick`
+  
+  Equivalent to `--skip-install --skip-prompts`.
 
-MIT
+* `--internal`
+
+  Allows integration with non-production Mozu environments. The prompts will include an extra question about which environment to sync with.

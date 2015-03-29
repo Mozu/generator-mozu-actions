@@ -52,7 +52,6 @@ module.exports = yeoman.generators.Base.extend({
           if (action.action.indexOf(domain) === 0) return domain;
           return match;
         });
-        console.log(action);
         memo[action.action] = action;
         return memo;
       }, {});
