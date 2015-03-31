@@ -31,6 +31,7 @@
     "mozuxd-metadata": "^1.17.1-dev1503272013-s",
     "quick-git-hits": "^0.1.0",
     "semver": "^4.3.1",
+    "update-notifier": "^0.3.1",
     "yeoman-generator": "^0.18.9"
   },
   "devDependencies": {
