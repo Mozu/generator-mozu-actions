@@ -10,7 +10,7 @@ describe('<%= name %>, <%= action.name %>', function () {
   var action;
 
   before(function () {
-    action = require('../dist/app')['<%= action.name %>'];
+    action = require('../src/domains/<%= action.domain %>/<%= action.name %>');
   });
   <% var context = actionConfig.context; %>
 
@@ -40,6 +40,6 @@ describe('<%= name %>, <%= action.name %>', function () {
       done();
     }
 
-    assert.doesNotThrow(simulate(action.actionName, action.customFunction, context, callback));
+    assert.doesNotThrow(simulate('<%= action.name %>', action, context, callback));
   });
 });

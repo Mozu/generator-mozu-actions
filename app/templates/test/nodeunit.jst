@@ -11,7 +11,7 @@ var action;
 
 exports["<%= name %>, <%= action.name %>"] = {
   setUp: function(callback) {
-    action = require('../dist/app')['<%= action.name %>'];
+    action = require('../src/domains/<%= action.domain %>/<%= action.name %>');
     callback();
   },
   "runs successfully": function(test) {
@@ -40,6 +40,6 @@ exports["<%= name %>, <%= action.name %>"] = {
       test.done();
     }
 
-    test.doesNotThrow(simulate(action.actionName, action.customFunction, context, callback));
+    test.doesNotThrow(simulate('<%= action.name %>', action, context, callback));
   }
 }
