@@ -19,13 +19,13 @@ exports["<%= name %>, <%= action.name %>"] = {
     var context = {
       get: {
         <% if (typeof context.get === "object") {
-           Object.keys(context.get).forEach(function(k, i) { if (i < 0) { %>,<% } %>
+           Object.keys(context.get).forEach(function(k, i) { if (i > 0) { %>,<% } %>
           <%= k %>: fixtures.get("<%= context.get[k].type %>")
         <% }); } %>
       },
       exec: {
         <% if (typeof context.exec === "object") {
-           Object.keys(context.exec).forEach(function(k, i) { if (i < 0) { %>,<% } %>
+           Object.keys(context.exec).forEach(function(k, i) { if (i > 0) { %>,<% } %>
           <%= k %>: function() {
             test.equal(arguments.length, <%= context.exec[k].parameters.length %>, "Expected <%= k %> function to receive <%= context.exec[k].parameters.length %> parameters.");
             // other assertions
