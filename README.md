@@ -7,7 +7,7 @@ A Mozu Extension generator for Yeoman that provides boilerplate and structure fo
 ## This package is currently a prerelease.
 **This contains pre-release code. It may have behaviors or rely on features that don't work in Mozu production environments. Use with caution!**
 
-![](screenshot.png)
+![](http://i.imgur.com/01FRhEd.png)
 
 ## Usage
 

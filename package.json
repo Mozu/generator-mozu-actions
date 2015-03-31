@@ -1,7 +1,7 @@
 {
   "name": "generator-mozu-extension",
   "version": "0.4.0",
-  "description": "Yeoman generator",
+  "description": "Yeoman generator for Mozu Extensions",
   "license": "MIT",
   "main": "app/index.js",
   "repository": "git+http://tfs.corp.volusion.com:8080/tfs/VNext/Prototype/_git/generator-mozu-extension",
