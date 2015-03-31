@@ -4,6 +4,9 @@ Maintainer: [James Zetlen](https://github.com/zetlen)
 
 A Mozu Extension generator for Yeoman that provides boilerplate and structure for writing Mozu Custom Functions against the family of Mozu Extension Actions. It provides documented function stubs, a build process using Grunt and Browserify, remote sync with the Developer Center, and unit tests using Nodeunit or Mocha plus the Mozu Extension Simulator.
 
+## This package is currently a prerelease.
+**This contains pre-release code. It may have behaviors or rely on features that don't work in Mozu production environments. Use with caution!**
+
 ![](screenshot.png)
 
 ## Usage

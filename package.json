@@ -27,7 +27,7 @@
     "chalk": "^1.0.0",
     "inquirer": "^0.8.0",
     "mosay": "^2.1.0",
-    "mozuxd-metadata": "git+http://tfs.corp.volusion.com:8080/tfs/VNext/Prototype/_git/mozuxd-metadata",
+    "mozuxd-metadata": "^1.17.1-dev1503272013-s",
     "quick-git-hits": "^0.1.0",
     "semver": "^4.3.1",
     "yeoman-generator": "^0.18.9"

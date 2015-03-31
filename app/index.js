@@ -401,14 +401,13 @@ module.exports = yeoman.generators.Base.extend({
           'grunt-contrib-jshint',
           'grunt-contrib-watch',
           'grunt-debug-task',
-          //'grunt-mozu-appdev-sync',
+          'grunt-mozu-appdev-sync',
           'load-grunt-tasks',
           'mozuxd-simulator',
           'time-grunt'
         ], {
           saveDev: true
         });
-        this.npmInstall();
       }
     },
 
