@@ -63,6 +63,8 @@ module.exports = yeoman.generators.Base.extend({
       if (this.options.quick) {
         this.options['skip-install'] = this.options['skip-prompts'] = true;
       }
+
+      require('update-notifier')({ pkg: require('../package.json') }).notify();
   },
 
   prompting: function() {
