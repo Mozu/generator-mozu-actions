@@ -43,7 +43,7 @@ module.exports = yeoman.generators.Base.extend({
       var done = this.async();
       this.config.save();
       try {
-        this._package = this.fs.readJSON('./package.json', {});
+        this._package = this.fs.readJSON(this.destinationPath('package.json'), {});
       } catch(e) {
         this._package = {};
       }
@@ -257,17 +257,36 @@ module.exports = yeoman.generators.Base.extend({
         );
       }, this);
     },
-    app: function() {
-      this.fs.copyTpl(
-        this.templatePath('_package.json.tpt'),
-        this.destinationPath('package.json'), helpers.trimAll({
-          name: this._name,
-          version: this._version,
-          description: this._description,
-          repository: this._repositoryUrl,
-          testFramework: this._testFramework
-        })
+    packagejson: function() {
+
+      var newPkg = {
+        name: this._name,
+        version: this._version,
+        description: this._description
+      }
+
+      if (this._repositoryUrl) {
+        newPkg.repository = {
+          type: 'git',
+          url: this._repositoryUrl
+        };
+      }
+
+      if (this._testFramework) {
+        newPkg.scripts = {
+          test: "grunt test"
+        };
+      }
+
+      this.fs.writeJSON(
+        this.destinationPath('package.json'),
+        helpers.merge(
+          helpers.trimAll(newPkg),
+          this._package
+        )
       );
+    },
+    readme: function() {
       this.fs.copyTpl(
         this.templatePath('_README.md.tpt'),
         this.destinationPath('README.md'), {

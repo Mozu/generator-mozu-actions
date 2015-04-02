@@ -27,6 +27,7 @@
     "buffered-spawn": "^1.0.1",
     "chalk": "^1.0.0",
     "inquirer": "^0.8.0",
+    "lodash.merge": "^3.1.0",
     "mosay": "^2.1.0",
     "mozuxd-metadata": "^1.17.1-dev1503272013-s",
     "quick-git-hits": "^0.1.0",
