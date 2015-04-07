@@ -140,11 +140,6 @@ module.exports = yeoman.generators.Base.extend({
       filter: helpers.trimString,
       store: true
     }, {
-      type: 'password',
-      name: 'developerAccountPassword',
-      message: 'Developer Account login password:',
-      filter: helpers.trimString
-    }, { 
       type: 'input',
       name: 'developerAppKey',
       message: 'Application Key for your sync app:',
@@ -307,8 +302,7 @@ module.exports = yeoman.generators.Base.extend({
             baseUrl: 'https://' + (this._homePod || 'home.mozu.com'),
             developerAccountId: this._developerAccountId,
             developerAccount: {
-              emailAddress: this._developerAccountLogin,
-              password: this._developerAccountPassword
+              emailAddress: this._developerAccountLogin
             },
             workingApplicationKey: this._applicationKey
           }
