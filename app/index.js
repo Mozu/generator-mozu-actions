@@ -385,19 +385,30 @@ module.exports = yeoman.generators.Base.extend({
           }
         })[this._testFramework];
 
-        this.log('Installing ' + this._testFramework);
+        helpers.remark(this, 'Installing ' + this._testFramework);
         this._actions.forEach(function(action) {
 
+          try {
             this.fs.copyTpl(
-            this.templatePath('test/' + this._testFramework + '.jst'),
-            this.destinationPath('assets/test/' + action.name + '.t.js'),
-            {
-              name: this._name,
-              description: this._description,
-              action: action, 
-              actionConfig: this._actionsMap[action.name]
+              this.templatePath('test/' + this._testFramework + '.jst'),
+              this.destinationPath('assets/test/' + action.name + '.t.js'),
+              {
+                name: this._name,
+                description: this._description,
+                action: action, 
+                actionConfig: this._actionsMap[action.name]
+              }
+            );
+          } catch(e) {
+            helpers.lament(this, 'There was an error creating unit tests. This may mean that there is missing metadata for one or more of the actions you chose.')
+            if (this.options.internal) {
+              helpers.lament(this, 'Examine the mozuxd-metadata package to make sure there is complete metadata for the context object for this action: ' + action.name + '. The original error is: ');
+            } else {
+              helpers.lament(this, 'Please contact Mozu Support to report this issue writing tests for action ' + action.name + ':');
             }
-          );
+            throw e;
+          }
+
         }.bind(this));
         this.gruntfile.insertConfig(requirements.taskName, JSON.stringify(requirements.taskConfig));
         this.gruntfile.registerTask('test', requirements.taskName);
@@ -432,9 +443,9 @@ module.exports = yeoman.generators.Base.extend({
       if (this._createGit) {
         quickGitHits.createRepoInDirectory(this.destinationPath(), { repositoryUrl: this._repositoryUrl }, function(err) {
           if (err) throw err;
-          this.log('Created git repository');
+          helpers.remark(this, 'Created git repository');
           if (this._repositoryUrl) {
-            this.log('Added remote ' + this._repositoryUrl + ' to git repository');
+            helpers.remark(this, 'Added remote ' + this._repositoryUrl + ' to git repository');
           }
           done();
         }.bind(this));

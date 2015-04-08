@@ -1,4 +1,5 @@
 var merge = require('lodash.merge');
+var chalk = require('chalk');
 module.exports = {
   addAsPrivateProps: function(target, source) {
     Object.keys(source).forEach(function(key) {
@@ -14,5 +15,11 @@ module.exports = {
       return result;
     }, {});
   },
-  merge: merge
+  merge: merge,
+  remark: function(ctx, str) {
+    ctx.log(chalk.green('>> ') + str + '\n');
+  },
+  lament: function(ctx, str) {
+    ctx.log(chalk.bold.red(str + '\n'));
+  }
 }
