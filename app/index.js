@@ -334,17 +334,6 @@ module.exports = yeoman.generators.Base.extend({
         this.destinationPath('Gruntfile.js')
       );
 
-      this.fs.writeJSON(
-        this.destinationPath('assets/functions.json'),
-        this._actions.reduce(function(memo, action){
-          memo.exports.push({
-            id: action.name,
-            virtualPath: './dist/app.js' ,
-            actionId: action.name
-          });
-          return memo;
-        }, {exports: []}));
-
       this._domains.forEach(function(domain) {
         var thisDomainsActions = self._actions.filter(function(action) {
           return action.domain === domain;
