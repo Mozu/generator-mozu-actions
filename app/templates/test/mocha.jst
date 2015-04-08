@@ -20,7 +20,7 @@ describe('<%= name %>, <%= action.name %>', function () {
       get: {
           <% if (typeof context.get === "object") {
              Object.keys(context.get).forEach(function(k, i) { if (i > 0) { %>,<% } %>
-            <%= k %>: fixtures.get("<%= context.get[k].return.type %>")
+             <%= k %>: <% if (context.get[k].return) { %>function() { return fixtures.get("<%= context.get[k].return.type %>") }<% } else { %>fixtures.get("<%= context.get[k].type %>")<% } %>
           <% }); } %>
       },
       exec: {
