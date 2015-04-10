@@ -33,7 +33,8 @@ module.exports = function (grunt) {
                             'dgram',
                             'dns',
                             'assert',
-                            'tls'
+                            'tls',
+                            'crypto'
                         ],
                         insertGlobals: false,
                         detectGlobals: false
