@@ -1,9 +1,0 @@
-# <%= name %>
-### version <%= version %>
-
-<%= description %>
-
-Implements the following actions:
-<% actions.forEach(function(action) { %>
- - `<%= action.name %>`
-<% }); %>

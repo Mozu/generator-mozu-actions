@@ -2,15 +2,13 @@
 var yeoman = require('yeoman-generator');
 var chalk = require('chalk');
 var mosay = require('mosay');
-var inquirer = require('inquirer');
 var semver = require('semver');
 var XDMetadata = require('mozuxd-metadata');
-var actionDefs = XDMetadata.actionDefinitions;
-var buffspawn = require('buffered-spawn');
 var quickGitHits = require('quick-git-hits');
 
-var helpers = require('../utils/helpers');
+var helpers = require('../../utils/helpers');
 
+var supportedTestFrameworks = require('../../utils/supported-test-frameworks');
 
 module.exports = yeoman.generators.Base.extend({
 
@@ -32,14 +30,21 @@ module.exports = yeoman.generators.Base.extend({
       defaults: false
     });
 
+    this.option('skip-install', {
+      type: Boolean,
+      desc: 'Skip install step. You will have to run `npm install` manually.',
+      defaults: false
+    });
+
     this.option('quick', {
       type: 'Boolean',
       desc: 'Skip prompts step and install step. Reruns copy methods and that\'s it.',
       defaults: false
     });
+
   },
 
-    initializing: function() {
+  initializing: function() {
       var done = this.async();
       this.config.save();
       try {
@@ -47,16 +52,10 @@ module.exports = yeoman.generators.Base.extend({
       } catch(e) {
         this._package = {};
       }
-      this._actionsMap = actionDefs.actions.reduce(function(memo, action) {
-        action.domain = actionDefs.domains.reduce(function(match, domain) {
-          if (action.action.indexOf(domain) === 0) return domain;
-          return match;
-        });
-        memo[action.action] = action;
-        return memo;
-      }, {});
       quickGitHits.detectDirectory(this.destinationPath(), function(err, result) {
-        if (err) throw err;
+        if (err) {
+          throw err;
+        }
         helpers.addAsPrivateProps(this, result);
         done();
       }.bind(this));
@@ -64,7 +63,8 @@ module.exports = yeoman.generators.Base.extend({
         this.options['skip-install'] = this.options['skip-prompts'] = true;
       }
 
-      require('update-notifier')({ pkg: require('../package.json') }).notify();
+      require('update-notifier')({ pkg: require('../../package.json') }).notify();
+
   },
 
   prompting: function() {
@@ -73,11 +73,11 @@ module.exports = yeoman.generators.Base.extend({
     var message;
     if (this.options['skip-prompts']) {
       if (!this.config.get('domains')) {
-        message = "You cannot skip prompts if you have never run this generator in the current directory! Run again without the --skip-prompts or --quick options.";
+        message = 'You cannot skip prompts if you have never run this generator in the current directory! Run again without the --skip-prompts or --quick options.';
         this.log(mosay(message));
         throw new Error(message);
       }
-      message = "Skipping prompts step because --skip-prompts was specified. Reinstalling generator..."
+      message = 'Skipping prompts step because --skip-prompts was specified. Reinstalling generator...';
     } else {
       message = 'Follow the prompts to scaffold a Mozu Extension package. You\'ll get a directory structure, action file skeletons, and a test framework!';
     }
@@ -91,21 +91,21 @@ module.exports = yeoman.generators.Base.extend({
       default: this._package.name || this.appname,
       filter: helpers.trimString,
       validate: function(name) {
-        return !!name.match(/^[A-Za-z0-9\-_\.]+$/) || "That may not be a legal npm package name.";
+        return !!name.match(/^[A-Za-z0-9\-_\.]+$/) || 'That may not be a legal npm package name.';
       }
     }, {
       type: 'input',
       name: 'description',
       message: 'Short description:',
-      default: this._package.description || "A Mozu Extension."
+      default: this._package.description || 'A Mozu Extension.'
     }, {
       type: 'input',
       name: 'version',
       message: 'Initial version:',
-      default: this._package.version || "0.1.0",
+      default: this._package.version || '0.1.0',
       filter: helpers.trimString,
       validate: function(ver) {
-        return !!semver.valid(ver) || "Please supply a valid semantic version of the form major.minor.patch-annotation.\n\nExamples: 0.1.0, 3.21.103, 3.9.22-alt";
+        return !!semver.valid(ver) || 'Please supply a valid semantic version of the form major.minor.patch-annotation.\n\nExamples: 0.1.0, 3.21.103, 3.9.22-alt';
       }
     }, {
       type: 'list',
@@ -169,32 +169,6 @@ module.exports = yeoman.generators.Base.extend({
         return props.createGit;
       }
     }, {
-      type: 'checkbox',
-      name: 'domains',
-      message: 'Choose domains:',
-      choices: actionDefs.domains,
-      validate: function(chosen) {
-        return chosen.length > 0 || "Please choose at least one domain to scaffold."
-      },
-      default: this.config.get('domains')
-    }, {
-      type: 'checkbox',
-      name: 'actionNames',
-      message: "Choose one or more actions to scaffold.",
-      choices: function(props) {
-        return props.domains.reduce(function(choices, domain, index) {
-          return choices.concat([new inquirer.Separator('- Domain ' + chalk.bold(domain))].concat(actionDefs.actions.filter(function(action) {
-            return action.action.indexOf(domain) === 0;
-          }).map(function(action) {
-            return {
-              name: action.action.substring(domain.length + 1),
-              value: action.action
-            };
-          })));
-        }, []);
-      },
-      default: this.config.get('actionNames')
-    }, {
       type: 'list',
       name: 'testFramework',
       message: 'Choose test framework',
@@ -213,7 +187,7 @@ module.exports = yeoman.generators.Base.extend({
 
     if (this.options['skip-prompts']) {
       prompts.forEach(function(prompt) {
-        this['_' + prompt.name] = (typeof prompt.default === "function") ? prompt.default() : prompt.default;
+        this['_' + prompt.name] = (typeof prompt.default === 'function') ? prompt.default() : prompt.default;
       }.bind(this));
       done();
     } else {
@@ -226,9 +200,17 @@ module.exports = yeoman.generators.Base.extend({
 
 
         if (!this._testFramework) {
-          this.log("\n" + chalk.bold.red('Unit tests are strongly recommended.') + ' If you prefer a framework this generator does not support, or framework-free tests, you can still use the ' + chalk.bold('mozuxd-simulator') + ' module to simulate a server-side environment for your action implementations.\n');
+          this.log('\n' + chalk.bold.red('Unit tests are strongly recommended.') + ' If you prefer a framework this generator does not support, or framework-free tests, you can still use the ' + chalk.bold('mozuxd-simulator') + ' module to simulate a server-side environment for your action implementations.\n');
         }
 
+        this.composeWith('mozu-extension:action', {
+          options: {
+            name: this._name,
+            description: this._description,
+            internal: this.options.internal,
+            testFramework: this._testFramework
+          }
+        });
         done();
 
       }.bind(this));
@@ -236,14 +218,6 @@ module.exports = yeoman.generators.Base.extend({
   },
 
   configuring: {
-    actions: function() {
-      this._actions = this._actionNames.map(function(name) {
-        return {
-          name: name,
-          domain: this._actionsMap[name].domain
-        }
-      }.bind(this));
-    },
     dotfiles: function() {
       ['editorconfig', 'jshintrc', 'gitignore'].forEach(function(filename) {
         this.fs.copy(
@@ -258,7 +232,7 @@ module.exports = yeoman.generators.Base.extend({
         name: this._name,
         version: this._version,
         description: this._description
-      }
+      };
 
       if (this._repositoryUrl) {
         newPkg.repository = {
@@ -269,7 +243,7 @@ module.exports = yeoman.generators.Base.extend({
 
       if (this._testFramework) {
         newPkg.scripts = {
-          test: "grunt test"
+          test: 'grunt test'
         };
       }
 
@@ -288,9 +262,8 @@ module.exports = yeoman.generators.Base.extend({
           name: this._name,
           version: this._version,
           description: this._description,
-          actions: this._actions
         }
-      )
+      );
     },
     mozuconfig: function() {
       if (!this.options['skip-prompts']) {
@@ -309,8 +282,6 @@ module.exports = yeoman.generators.Base.extend({
         );
         this.config.set('homePod', this._homePod || 'home.mozu.com');
         this.config.set('applicationKey', this._applicationKey);
-        this.config.set('domains', this._domains);
-        this.config.set('actionNames', this._actionNames);
         this.config.set('testFramework', this._testFramework);
       }
     }
@@ -320,88 +291,24 @@ module.exports = yeoman.generators.Base.extend({
 
     files: function() {
 
-      var self = this;
-      this.fs.copyTpl(
-        this.templatePath('_entry_index.jst'),
-        this.destinationPath('assets/src/index.js'),
-        {
-          actions: this._actions
-        }
-      );
-
       this.fs.copy(
         this.templatePath('Gruntfile.js'),
         this.destinationPath('Gruntfile.js')
       );
 
-      this._domains.forEach(function(domain) {
-        var thisDomainsActions = self._actions.filter(function(action) {
-          return action.domain === domain;
-        });
-        thisDomainsActions.forEach(function(action) {
-          self.fs.copyTpl(
-            self.templatePath('_action_implementation.jst'),
-            self.destinationPath('assets/src/domains/' + domain + '/' + action.name + '.js'), {
-              action: action,
-              context: JSON.stringify(self._actionsMap[action.name].context, null, 2)
-            }
-          )
-        });
-      });
     },
 
     tests: function() {
       if (this._testFramework) {
-
-
-        var requirements = ({
-          'mocha': {
-            install: ['grunt-mocha-test'],
-            taskName: 'mochaTest',
-            taskConfig: {
-              all: {
-                clearRequireCache: true,
-                src: ['assets/test/**/*.js']
-              }
-            }
-          },
-          'nodeunit': {
-            install: ['grunt-contrib-nodeunit'],
-            taskName: 'nodeunit',
-            taskConfig: {
-              all: ['assets/test/**/*.js']
-            }
-          }
-        })[this._testFramework];
-
-        helpers.remark(this, 'Installing ' + this._testFramework);
-        this._actions.forEach(function(action) {
-
-          try {
-            this.fs.copyTpl(
-              this.templatePath('test/' + this._testFramework + '.jst'),
-              this.destinationPath('assets/test/' + action.name + '.t.js'),
-              {
-                name: this._name,
-                description: this._description,
-                action: action, 
-                actionConfig: this._actionsMap[action.name]
-              }
-            );
-          } catch(e) {
-            helpers.lament(this, 'There was an error creating unit tests. This may mean that there is missing metadata for one or more of the actions you chose.')
-            if (this.options.internal) {
-              helpers.lament(this, 'Examine the mozuxd-metadata package to make sure there is complete metadata for the context object for this action: ' + action.name + '. The original error is: ');
-            } else {
-              helpers.lament(this, 'Please contact Mozu Support to report this issue writing tests for action ' + action.name + ':');
-            }
-            throw e;
-          }
-
-        }.bind(this));
+        var requirements = supportedTestFrameworks[this._testFramework];
+        if (!requirements) {
+          throw new Error('Unsupported test framework: ' + this.options.testFramework);
+        }
         this.gruntfile.insertConfig(requirements.taskName, JSON.stringify(requirements.taskConfig));
         this.gruntfile.registerTask('test', requirements.taskName);
-        if (!this.options['skip-install']) this.npmInstall(requirements.install, { saveDev: true });
+        if (!this.options['skip-install']) {
+          this.npmInstall(requirements.install, { saveDev: true });
+        }
       }
     } 
 
@@ -431,7 +338,9 @@ module.exports = yeoman.generators.Base.extend({
 
       if (this._createGit) {
         quickGitHits.createRepoInDirectory(this.destinationPath(), { repositoryUrl: this._repositoryUrl }, function(err) {
-          if (err) throw err;
+          if (err) {
+            throw err;
+          }
           helpers.remark(this, 'Created git repository');
           if (this._repositoryUrl) {
             helpers.remark(this, 'Added remote ' + this._repositoryUrl + ' to git repository');
@@ -443,4 +352,6 @@ module.exports = yeoman.generators.Base.extend({
       }
     }
   }
+
+
 });
