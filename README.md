@@ -46,3 +46,14 @@ yo mozu-extension
 * `--internal`
 
   Allows integration with non-production Mozu environments. The prompts will include an extra question about which environment to sync with.
+
+
+## Creating Additional Actions
+
+The generator uses a Yeoman sub-generator to create the action implementation scaffolds and unit test scaffolds. You can call this sub-generator directly, after creating your project, to add more scaffolding for additional actions:
+
+```
+yo mozu-extension:action
+```
+
+This will prompt you to add to your list of actions, and then will write the additional action scaffolds.

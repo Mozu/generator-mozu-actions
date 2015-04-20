@@ -43,6 +43,12 @@ module.exports = yeoman.generators.Base.extend({
       hide: true
     });
 
+    this.option('overwriteAll', {
+      type: Boolean,
+      defaults: false,
+      hide: true
+    });
+
   },
 
   initializing: function() {
@@ -160,13 +166,16 @@ module.exports = yeoman.generators.Base.extend({
         return action.domain === domain;
       });
       thisDomainsActions.forEach(function(action) {
-        self.fs.copyTpl(
-          self.templatePath('_action_implementation.jst'),
-          self.destinationPath('assets/src/domains/' + domain + '/' + action.name + '.js'), {
-            action: action,
-            context: JSON.stringify(self._actionsMap[action.name].context, null, 2)
-          }
-        );
+        var implPath = self.destinationPath('assets/src/domains/' + domain + '/' + action.name + '.js');
+        if (self.options.overwriteAll || !self.fs.exists(implPath)) {
+          self.fs.copyTpl(
+            self.templatePath('_action_implementation.jst'),
+            implPath, {
+              action: action,
+              context: JSON.stringify(self._actionsMap[action.name].context, null, 2)
+            }
+          );
+        }
       });
     });
 
@@ -187,25 +196,30 @@ module.exports = yeoman.generators.Base.extend({
       helpers.remark(this, 'Installing ' + this.options.testFramework);
       this._actions.forEach(function(action) {
 
-        try {
-          this.fs.copyTpl(
-            this.templatePath('test/' + this.options.testFramework + '.jst'),
-            this.destinationPath('assets/test/' + action.name + '.t.js'),
-            {
-              name: this.options.name,
-              description: this.options.description,
-              action: action, 
-              actionConfig: this._actionsMap[action.name]
+        var testPath = this.destinationPath('assets/test/' + action.name + '.t.js');
+
+        if (this.options.overwriteAll || !this.fs.exists(testPath)) {
+
+          try {
+            this.fs.copyTpl(
+              this.templatePath('test/' + this.options.testFramework + '.jst'),
+              testPath,
+              {
+                name: this.options.name,
+                description: this.options.description,
+                action: action, 
+                actionConfig: this._actionsMap[action.name]
+              }
+            );
+          } catch(e) {
+            helpers.lament(this, 'There was an error creating unit tests. This may mean that there is missing metadata for one or more of the actions you chose.');
+            if (this.options.internal) {
+              helpers.lament(this, 'Examine the mozuxd-metadata package to make sure there is complete metadata for the context object for this action: ' + action.name + '. The original error is: ');
+            } else {
+              helpers.lament(this, 'Please contact Mozu Support to report this issue writing tests for action ' + action.name + ':');
             }
-          );
-        } catch(e) {
-          helpers.lament(this, 'There was an error creating unit tests. This may mean that there is missing metadata for one or more of the actions you chose.');
-          if (this.options.internal) {
-            helpers.lament(this, 'Examine the mozuxd-metadata package to make sure there is complete metadata for the context object for this action: ' + action.name + '. The original error is: ');
-          } else {
-            helpers.lament(this, 'Please contact Mozu Support to report this issue writing tests for action ' + action.name + ':');
+            throw e;
           }
-          throw e;
         }
 
       }.bind(this));

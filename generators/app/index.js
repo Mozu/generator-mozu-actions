@@ -208,7 +208,8 @@ module.exports = yeoman.generators.Base.extend({
             name: this._name,
             description: this._description,
             internal: this.options.internal,
-            testFramework: this._testFramework
+            testFramework: this._testFramework,
+            overwriteAll: true
           }
         });
         done();
