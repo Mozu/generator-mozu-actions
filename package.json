@@ -28,7 +28,7 @@
     "inquirer": "^0.8.0",
     "lodash.merge": "^3.1.0",
     "mosay": "^2.1.0",
-    "mozuxd-metadata": "^1.17.1-dev1504152050-s",
+    "mozuxd-metadata": "^1.17.2-dev1504272200-s",
     "quick-git-hits": "^0.1.0",
     "semver": "^4.3.1",
     "update-notifier": "^0.3.1",
