@@ -5,13 +5,13 @@ var mosay = require('mosay');
 var semver = require('semver');
 var XDMetadata = require('mozuxd-metadata');
 var quickGitHits = require('quick-git-hits');
+var SDK = require('mozu-node-sdk');
 
 var helpers = require('../../utils/helpers');
 
 var supportedTestFrameworks = require('../../utils/supported-test-frameworks');
 
 module.exports = yeoman.generators.Base.extend({
-
 
    // note: arguments and options should be defined in the constructor.
   constructor: function () {
@@ -59,6 +59,7 @@ module.exports = yeoman.generators.Base.extend({
         helpers.addAsPrivateProps(this, result);
         done();
       }.bind(this));
+
       if (this.options.quick) {
         this.options['skip-install'] = this.options['skip-prompts'] = true;
       }
@@ -67,137 +68,190 @@ module.exports = yeoman.generators.Base.extend({
 
   },
 
-  prompting: function() {
-    var done = this.async();
+  prompting: {
 
-    var message;
-    if (this.options['skip-prompts']) {
-      if (!this.config.get('domains')) {
-        message = 'You cannot skip prompts if you have never run this generator in the current directory! Run again without the --skip-prompts or --quick options.';
-        this.log(mosay(message));
-        throw new Error(message);
-      }
-      message = 'Skipping prompts step because --skip-prompts was specified. Reinstalling generator...';
-    } else {
-      message = 'Follow the prompts to scaffold a Mozu Extension package. You\'ll get a directory structure, action file skeletons, and a test framework!';
-    }
+    banner: function() {
+      var message;
 
-    this.log(mosay(message));
+      if (this.options['skip-prompts']) {
+        if (!this.config.get('domains')) {
+          message = 'You cannot skip prompts if you have never run this generator in the current directory! Run again without the --skip-prompts or --quick options.';
+          this.log(mosay(message));
+          throw new Error(message);
+        }
+        message = 'Skipping prompts step because --skip-prompts was specified. Reinstalling generator...';
+      } else {
+        message = 'Follow the prompts to scaffold a Mozu Extension package. You\'ll get a directory structure, action file skeletons, and a test framework!';
+      }
 
-    var prompts = [{
-      type: 'input',
-      name: 'name',
-      message: 'Name your extension:',
-      default: this._package.name || this.appname,
-      filter: helpers.trimString,
-      validate: function(name) {
-        return !!name.match(/^[A-Za-z0-9\-_\.]+$/) || 'That may not be a legal npm package name.';
-      }
-    }, {
-      type: 'input',
-      name: 'description',
-      message: 'Short description:',
-      default: this._package.description || 'A Mozu Extension.'
-    }, {
-      type: 'input',
-      name: 'version',
-      message: 'Initial version:',
-      default: this._package.version || '0.1.0',
-      filter: helpers.trimString,
-      validate: function(ver) {
-        return !!semver.valid(ver) || 'Please supply a valid semantic version of the form major.minor.patch-annotation.\n\nExamples: 0.1.0, 3.21.103, 3.9.22-alt';
-      }
-    }, {
-      type: 'list',
-      name: 'homePod',
-      message: 'Select Mozu environment:',
-      default: this.config.get('homePod') || 'home.mozu.com',
-      choices: Object.keys(XDMetadata.environments).map(function(envName) {
-        return {
-          name: envName,
-          value: XDMetadata.environments[envName].homeDomain
-        };
-      }),
-      when: function() {
-        return this.options.internal;
-      }.bind(this)
-    }, {
-      type: 'input',
-      name: 'applicationKey',
-      message: 'Developer Center Application Key for this extension:',
-      filter: helpers.trimString,
-      default: this.config.get('applicationKey')
-    }, {
-      type: 'input',
-      name: 'developerAccountId',
-      message: 'Developer Account ID:',
-      filter: helpers.trimString,
-      store: true
-    }, {
-      type: 'input',
-      name: 'developerAccountLogin',
-      message: 'Developer Account login email:',
-      filter: helpers.trimString,
-      store: true
-    }, {
-      type: 'input',
-      name: 'developerAppKey',
-      message: 'Application Key for your sync app:',
-      filter: helpers.trimString,
-      store: true
-    }, { 
-      type: 'password',
-      name: 'developerSharedSecret',
-      message: 'Shared Secret for your sync app:',
-      filter: helpers.trimString,
-      store: true
-    }, {
-      type: 'confirm',
-      name: 'createGit',
-      message: 'Create Git repository?',
-      filter: helpers.trimString,
-      when: (function() {
-        return this._gitInstalled && !this._inGitRepo;
-      }.bind(this))
-    }, {
-      type: 'input',
-      name: 'repositoryUrl',
-      message: 'Repository URL:',
-      default: this._detectedRepositoryUrl,
-      filter: helpers.trimString,
-      when: function(props) {
-        return props.createGit;
-      }
-    }, {
-      type: 'list',
-      name: 'testFramework',
-      message: 'Choose test framework',
-      choices: [{
-        name: 'Nodeunit',
-        value: 'nodeunit'
+      this.log(mosay(message));
+
+    },
+
+    developerAccount: function() {
+
+      var self = this;
+      var done = this.async();
+
+      var prompts = [{
+        type: 'list',
+        name: 'homePod',
+        message: 'Select Mozu environment:',
+        default: this.config.get('homePod') || 'home.mozu.com',
+        choices: Object.keys(XDMetadata.environments).map(function(envName) {
+          return {
+            name: envName,
+            value: XDMetadata.environments[envName].homeDomain
+          };
+        }),
+        when: function() {
+          return self.options.internal;
+        }
       }, {
-        name: 'Mocha',
-        value: 'mocha'
+        type: 'input',
+        name: 'developerAccountLogin',
+        message: 'Enter your Developer Account login email:',
+        filter: helpers.trimString,
+        store: true
       }, {
-        name: 'None/Manual',
-        value: false
-      }],
-      default: this.config.get('testFramework')
-    }];
+        type: 'input',
+        name: 'developerAppKey',
+        message: 'Application Key for your developer sync app:',
+        filter: helpers.trimString,
+        store: true
+      }, { 
+        type: 'password',
+        name: 'developerSharedSecret',
+        message: 'Shared Secret for your developer sync app:',
+        filter: helpers.trimString,
+        store: true
+      }];
 
-    if (this.options['skip-prompts']) {
-      prompts.forEach(function(prompt) {
-        this['_' + prompt.name] = (typeof prompt.default === 'function') ? prompt.default() : prompt.default;
-      }.bind(this));
-      done();
-    } else {
+      helpers.promptAndSaveResponse(self, prompts, function getDeveloperAccountId() {
+        var developerAccountId = self.config.get('developerAccountId');
+        if (developerAccountId) {
+          self._developerAccountId = developerAccountId;
+          done();
+        } else {
+          helpers.promptAndSaveResponse(self, [{
+            type: 'password',
+            name: 'password', 
+            message: 'Developer Account password:',
+            validate: function(str) {
+              return !!str;
+            }
+          }], function() {
+            helpers.remark(self, 'Looking up developer accounts...');
+            var context = helpers.makeSDKContext(self);
+            context.developerAccount.password = self._password;
+            var p = SDK.client(context)
+              .platform()
+              .developer()
+              .developerAdminUserAuthTicket()
+              .createDeveloperUserAuthTicket(context.developerAccount).then(function(res) {
+                if (!res.availableAccounts) {
+                  helpers.lament(self, "No available accounts found for " + context.developerAccount.emailAddress);
+                } else {
+                  var accountChoices = res.availableAccounts.map(function(acct) {
+                    return {
+                      name: acct.name + ' (' + acct.id + ')',
+                      value: acct.id
+                    };
+                  });
+                  helpers.promptAndSaveResponse(self, [{
+                    type: 'list',
+                    name: 'developerAccountId',
+                    choices: accountChoices,
+                    message: 'Select a developer account for ' + chalk.bold.cyan(self._developerAccountLogin) + ':',
+                    default: self.config.get('developerAccountId')
+                  }], done);
+                }
+              }, function(err) {
+                if (err.originalError && err.originalError.errorCode === "INVALID_CREDENTIALS") {
+                  // terrible, awful, but can't figure out the lifecycle here and when.js is logging
+                  // a potential pending rejection which messes up the prompt
+                  SDK.suppressUnhandledRejections();
+                  helpers.lament(self, 'Invalid credentials. Retry password (or Ctrl-C to quit).')
+                  return getDeveloperAccountId();
+                } else {
+                  helpers.lament(self, err.message);
+                  process.exit(1);
+                }
+              });
+          });
+        }
+        return true;
+      });
 
-      this.prompt(prompts, function(props) {
+    },
 
-        Object.keys(props).forEach(function(key) {
-          this['_' + key] = props[key];
-        }, this);
+    extensionInfo: function() {
 
+      var done = this.async();
+      var prompts = [{
+        type: 'input',
+        name: 'name',
+        message: 'Name your extension:',
+        default: this._package.name || this.appname,
+        filter: helpers.trimString,
+        validate: function(name) {
+          return !!name.match(/^[A-Za-z0-9\-_\.]+$/) || 'That may not be a legal npm package name.';
+        }
+      }, {
+        type: 'input',
+        name: 'description',
+        message: 'Short description:',
+        default: this._package.description || 'A Mozu Extension.'
+      }, {
+        type: 'input',
+        name: 'version',
+        message: 'Initial version:',
+        default: this._package.version || '0.1.0',
+        filter: helpers.trimString,
+        validate: function(ver) {
+          return !!semver.valid(ver) || 'Please supply a valid semantic version of the form major.minor.patch-annotation.\n\nExamples: 0.1.0, 3.21.103, 3.9.22-alt';
+        }
+      }, {
+        type: 'input',
+        name: 'applicationKey',
+        message: 'Developer Center Application Key for this extension:',
+        filter: helpers.trimString,
+        default: this.config.get('applicationKey')
+      }, {
+        type: 'confirm',
+        name: 'createGit',
+        message: 'Create Git repository?',
+        filter: helpers.trimString,
+        when: (function() {
+          return this._gitInstalled && !this._inGitRepo && this.config.get('createGit') !== false;
+        }.bind(this))
+      }, {
+        type: 'input',
+        name: 'repositoryUrl',
+        message: 'Repository URL:',
+        default: this._detectedRepositoryUrl,
+        filter: helpers.trimString,
+        when: function(props) {
+          return props.createGit;
+        }
+      }, {
+        type: 'list',
+        name: 'testFramework',
+        message: 'Choose test framework',
+        choices: [{
+          name: 'Nodeunit',
+          value: 'nodeunit'
+        }, {
+          name: 'Mocha',
+          value: 'mocha'
+        }, {
+          name: 'None/Manual',
+          value: false
+        }],
+        default: this.config.get('testFramework')
+      }];
+
+      helpers.promptAndSaveResponse(this, prompts, function(props) {
 
         if (!this._testFramework) {
           this.log('\n' + chalk.bold.red('Unit tests are strongly recommended.') + ' If you prefer a framework this generator does not support, or framework-free tests, you can still use the ' + chalk.bold('mozuxd-simulator') + ' module to simulate a server-side environment for your action implementations.\n');
@@ -206,6 +260,7 @@ module.exports = yeoman.generators.Base.extend({
         this.composeWith('mozu-extension:action', {
           options: {
             name: this._name,
+            'skip-prompts': this.options['skip-prompts'],
             description: this._description,
             internal: this.options.internal,
             testFramework: this._testFramework,
@@ -270,20 +325,13 @@ module.exports = yeoman.generators.Base.extend({
       if (!this.options['skip-prompts']) {
         this.fs.writeJSON(
           this.destinationPath('mozu.config.json'),
-          {
-            appKey: this._developerAppKey,
-            sharedSecret: this._developerSharedSecret,
-            baseUrl: 'https://' + (this._homePod || 'home.mozu.com'),
-            developerAccountId: this._developerAccountId,
-            developerAccount: {
-              emailAddress: this._developerAccountLogin
-            },
-            workingApplicationKey: this._applicationKey
-          }
+          helpers.makeSDKContext(this)
         );
         this.config.set('homePod', this._homePod || 'home.mozu.com');
         this.config.set('applicationKey', this._applicationKey);
+        this.config.set('developerAccountId', this._developerAccountId);
         this.config.set('testFramework', this._testFramework);
+        this.config.set('createGit', this._createGit);
       }
     }
   },

@@ -128,11 +128,8 @@ module.exports = yeoman.generators.Base.extend({
         default: this.config.get('actionNames')
       }];
 
-      this.prompt(prompts, function(props) {
-        this._domains = props.domains;
-        this._actionNames = props.actionNames;
-        done();
-      }.bind(this));
+      helpers.promptAndSaveResponse(this, prompts, done);
+
     }
 
   },
