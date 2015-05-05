@@ -55,7 +55,7 @@ module.exports = yeoman.generators.Base.extend({
     this.config.save();
     this._actionsMap = actionDefs.actions.reduce(function(memo, action) {
       action.domain = actionDefs.domains.reduce(function(match, domain) {
-        if (action.action.indexOf(domain) === 0) {
+        if (action.action.indexOf(domain) !== -1) {
           return domain;
         }
         return match;
@@ -68,9 +68,9 @@ module.exports = yeoman.generators.Base.extend({
 
   prompting: function() {
 
-    function createActionName(action, domain) {
+    function createActionName(action) {
       return {
-        name: action.substring(domain.length + 1),
+        name: action,
         value: action
       };
     }

@@ -17,6 +17,9 @@ exports["<%= name %>, <%= action.name %>"] = {
   "runs successfully": function(test) {
 
     var context = {
+      <% if ( context.type ) {%>
+      type: '<%= context.type %>',
+      <% } %>
       get: {
         <% if (typeof context.get === "object") {
            Object.keys(context.get).forEach(function(k, i) { if (i > 0) { %>,<% } %>

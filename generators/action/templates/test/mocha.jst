@@ -17,6 +17,9 @@ describe('<%= name %>, <%= action.name %>', function () {
   it('runs successfully', function(done) {
 
      var context = {
+      <% if ( context.type ) {%>
+      type: '<%= context.type %>',
+      <% } %>
       get: {
           <% if (typeof context.get === "object") {
              Object.keys(context.get).forEach(function(k, i) { if (i > 0) { %>,<% } %>
