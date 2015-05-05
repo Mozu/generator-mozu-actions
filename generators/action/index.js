@@ -55,7 +55,7 @@ module.exports = yeoman.generators.Base.extend({
     this.config.save();
     this._actionsMap = actionDefs.actions.reduce(function(memo, action) {
       action.domain = actionDefs.domains.reduce(function(match, domain) {
-        if (action.action.indexOf(domain) !== -1) {
+        if (action.action.substring( action.action.indexOf('.') + 1 ).indexOf(domain) === 0) {
           return domain;
         }
         return match;
@@ -88,7 +88,7 @@ module.exports = yeoman.generators.Base.extend({
 
       actionNameArgs.forEach(function(name) {
         var domain = actionDefs.domains.reduce(function(match, domain) {
-          return name.indexOf(domain) === 0 ? domain : match;
+          return name.substring(name.indexof('.')+1).indexOf(domain) === 0 ? domain : match;
         }, null);
         if (!domain) {
           throw new Error('No domain found for action name ' + name + '. It appears to be an invalid action.');
@@ -119,7 +119,7 @@ module.exports = yeoman.generators.Base.extend({
         choices: function(props) {
           return props.domains.reduce(function(choices, domain) {
             return choices.concat([new inquirer.Separator('- Domain ' + chalk.bold(domain))].concat(actionDefs.actions.filter(function(action) {
-              return action.action.indexOf(domain) === 0;
+              return action.action.substring( action.action.indexOf('.') + 1 ).indexOf(domain) === 0;
             }).map(function(action) {
               return createActionName(action.action, domain);
             })));
