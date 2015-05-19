@@ -25,7 +25,7 @@
   "dependencies": {
     "buffered-spawn": "^1.0.1",
     "chalk": "^1.0.0",
-    "generator-mozu-app": "^0.1.0",
+    "generator-mozu-app": "^0.2.0",
     "inquirer": "^0.8.0",
     "lodash.merge": "^3.1.0",
     "mosay": "^2.1.0",
