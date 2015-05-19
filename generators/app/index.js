@@ -15,7 +15,8 @@ module.exports = mozuAppGenerator.extend({
 
   initializing: function() {
 
-    require('update-notifier')({ pkg: require('../../package.json') }).notify();
+
+    require('update-notifier')({ pkg: require('../../package.json'), updateCheckInterval: 1}).notify({ defer: false });
 
     this.composeWith('mozu-app', {
       options: helpers.merge(this.options, {
