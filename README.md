@@ -17,7 +17,11 @@ First, install [Yeoman](http://yeoman.io)'s command line tool if you haven't alr
 npm install -g yo
 ```
 
-Yeoman looks for globally installed NPM packages that identify themselves as Yeoman generators. 
+Yeoman looks for globally installed NPM packages that identify themselves as Yeoman generators. So install the generator globally.
+
+```bash
+npm install -g generator-mozu-extension
+```
 
 Make a new directory and `cd` into it:
 ```
