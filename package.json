@@ -30,7 +30,7 @@
     "lodash.merge": "^3.1.0",
     "mosay": "^2.1.0",
     "mozu-node-sdk": "^1.17.1512-4.0-hotfix3",
-    "mozuxd-metadata": "^1.17.3",
+    "mozuxd-metadata": "^1.17.4",
     "quick-git-hits": "^0.1.0",
     "semver": "^4.3.1",
     "update-notifier": "^0.3.1",
