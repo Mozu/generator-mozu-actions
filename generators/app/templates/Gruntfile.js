@@ -40,6 +40,21 @@ module.exports = function (grunt) {
                         detectGlobals: false
                     }
                 }
+            },
+            discview: {
+                dest: './app.tmp.js',
+                src: '<%= browserify.all.src %>',
+                options: {
+                    ignore: '<%= browserify.all.options.ignore',
+                    browserifyOptions: {
+                        standalone: 'index',
+                        commondir: false,
+                        fullPaths: true,
+                        builtins: '<%= browserify.all.options.browserifyOptions.builtins',
+                        insertGlobals: false,
+                        detectGlobals: false
+                    }
+                }
             }
         },
         mozusync: {
@@ -88,6 +103,9 @@ module.exports = function (grunt) {
                     'mozusync:del'
                 ]
             }
+        },
+        clean: {
+            tmp: ['./*.tmp.js']   
         }
     });
     grunt.loadNpmTasks('grunt-debug-task');
@@ -108,7 +126,13 @@ module.exports = function (grunt) {
         grunt.file.write('./assets/functions.json', JSON.stringify({ exports: manifest }, null, 2));
         grunt.log.ok('Wrote ' + manifest.length + ' custom functions to functions.json');
     });
-
+    grunt.registerTask('discview', 'Uses discify to view the size of the dependency tree', function() {
+       var done = this.async();
+       grunt.util.spawn({
+        cmd: './node_modules/.bin/discify',
+        args: ['./app.tmp.js', '--open']
+       }, done);
+    });
     watchAdapter(grunt, {
         src: 'mozusync.upload.src',
         action: 'upload',
@@ -129,6 +153,11 @@ module.exports = function (grunt) {
     grunt.registerTask('reset', [
         'mozusync:wipe',
         'mozusync:upload'
+    ]);
+    grunt.registerTask('viewsize', [
+        'browserify:discview',
+        'discview',
+        'clean'
     ]);
     grunt.registerTask('cont', ['watch']);
     grunt.registerTask('c', ['watch']);
