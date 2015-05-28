@@ -45,12 +45,12 @@ module.exports = function (grunt) {
                 dest: './app.tmp.js',
                 src: '<%= browserify.all.src %>',
                 options: {
-                    ignore: '<%= browserify.all.options.ignore',
+                    ignore: '<%= browserify.all.options.ignore %>',
                     browserifyOptions: {
                         standalone: 'index',
                         commondir: false,
                         fullPaths: true,
-                        builtins: '<%= browserify.all.options.browserifyOptions.builtins',
+                        builtins: '<%= browserify.all.options.browserifyOptions.builtins %>',
                         insertGlobals: false,
                         detectGlobals: false
                     }
