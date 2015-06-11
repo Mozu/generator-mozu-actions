@@ -1,8 +1,8 @@
-# Mozu Extension generator
+# Mozu ActionPack generator
 
 Maintainer: [James Zetlen](https://github.com/zetlen)
 
-A Mozu Extension generator for Yeoman that provides boilerplate and structure for writing Mozu Custom Functions against the family of Mozu Extension Actions. It provides documented function stubs, a build process using Grunt and Browserify, remote sync with the Developer Center, and unit tests using Nodeunit or Mocha plus the Mozu Extension Simulator.
+A Mozu ActionPack generator for Yeoman that provides boilerplate and structure for writing Mozu Custom Functions against the family of Mozu Code Actions. It provides documented function stubs, a build process using Grunt and Browserify, remote sync with the Developer Center, and unit tests using Nodeunit or Mocha plus the Mozu Extension Simulator.
 
 ## This package is currently a prerelease.
 **This contains pre-release code. It may have behaviors or rely on features that don't work in Mozu production environments. Use with caution!**
@@ -20,17 +20,17 @@ npm install -g yo
 Yeoman looks for globally installed NPM packages that identify themselves as Yeoman generators. So install the generator globally.
 
 ```bash
-npm install -g generator-mozu-extension
+npm install -g generator-mozu-actionpack
 ```
 
 Make a new directory and `cd` into it:
 ```
-mkdir new-mozu-ext && cd new-mozu-ext
+mkdir new-mozu-ap && cd new-mozu-ap
 ```
 
-Run `yo mozu-extension`:
+Run `yo mozu-actionpack`:
 ```
-yo mozu-extension
+yo mozu-actionpack
 ```
 
 ## Options
@@ -57,7 +57,7 @@ yo mozu-extension
 The generator uses a Yeoman sub-generator to create the action implementation scaffolds and unit test scaffolds. You can call this sub-generator directly, after creating your project, to add more scaffolding for additional actions:
 
 ```
-yo mozu-extension:action
+yo mozu-actionpack:action
 ```
 
 This will prompt you to add to your list of actions, and then will write the additional action scaffolds.

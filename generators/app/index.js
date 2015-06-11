@@ -1,10 +1,6 @@
 'use strict';
-var yeoman = require('yeoman-generator');
 var chalk = require('chalk');
-var mosay = require('mosay');
 var semver = require('semver');
-var XDMetadata = require('mozuxd-metadata');
-var SDK = require('mozu-node-sdk');
 
 var mozuAppGenerator = require('generator-mozu-app');
 var helpers = mozuAppGenerator.helpers;
@@ -20,7 +16,7 @@ module.exports = mozuAppGenerator.extend({
 
     this.composeWith('mozu-app', {
       options: helpers.merge(this.options, {
-        intro: 'Follow the prompts to scaffold a Mozu Extension package. You\'ll get a directory structure, action file skeletons, and a test framework!'
+        intro: 'Follow the prompts to scaffold a Mozu Application that contains Actions. You\'ll get a directory structure, action file skeletons, and a test framework!'
       })
     }, {
       local: require.resolve('generator-mozu-app')
@@ -35,7 +31,7 @@ module.exports = mozuAppGenerator.extend({
     var prompts = [{
       type: 'input',
       name: 'name',
-      message: 'Name your extension:',
+      message: 'Internal name for the Mozu Application that will contain your Actions:',
       default: this._package.name || this.appname,
       filter: helpers.trimString,
       validate: function(name) {
@@ -45,7 +41,7 @@ module.exports = mozuAppGenerator.extend({
       type: 'input',
       name: 'description',
       message: 'Short description:',
-      default: this._package.description || 'A Mozu Extension.'
+      default: this._package.description || 'A Mozu Application containing Actions.'
     }, {
       type: 'input',
       name: 'version',
@@ -58,7 +54,7 @@ module.exports = mozuAppGenerator.extend({
     }, {
       type: 'input',
       name: 'applicationKey',
-      message: 'Developer Center Application Key for this extension:',
+      message: 'Developer Center Application Key for this Application:',
       filter: helpers.trimString,
       default: this.config.get('applicationKey')
     }, {
@@ -78,13 +74,13 @@ module.exports = mozuAppGenerator.extend({
       default: this.config.get('testFramework')
     }];
 
-    helpers.promptAndSaveResponse(this, prompts, function(props) {
+    helpers.promptAndSaveResponse(this, prompts, function() {
 
       if (!this._testFramework) {
         this.log('\n' + chalk.bold.red('Unit tests are strongly recommended.') + ' If you prefer a framework this generator does not support, or framework-free tests, you can still use the ' + chalk.bold('mozuxd-simulator') + ' module to simulate a server-side environment for your action implementations.\n');
       }
       process.stdout.write(' ');
-      this.composeWith('mozu-extension:action', {
+      this.composeWith('mozu-actions:action', {
         options: {
           name: this._name,
           'skip-prompts': this.options['skip-prompts'],
@@ -168,7 +164,7 @@ module.exports = mozuAppGenerator.extend({
     },
 
     addWorkingKey: function() {
-      var jsonPath = this.destinationPath('mozu.config.json')
+      var jsonPath = this.destinationPath('mozu.config.json');
       var mozuConfigJson = this.fs.readJSON(jsonPath);
       mozuConfigJson.workingApplicationKey = this._applicationKey;
       this.fs.writeJSON(jsonPath, mozuConfigJson, null, 2);
@@ -195,9 +191,7 @@ module.exports = mozuAppGenerator.extend({
     deps: function() {
       if (!this.options['skip-install']) {
         this.npmInstall([
-          'disc',
           'grunt-browserify',
-          'grunt-contrib-clean',
           'grunt-contrib-jshint',
           'grunt-contrib-watch',
           'grunt-debug-task',

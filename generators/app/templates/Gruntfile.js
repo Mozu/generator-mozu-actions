@@ -14,8 +14,16 @@ module.exports = function (grunt) {
         },
         browserify: {
             all: {
-                dest: './assets/dist/app.js',
-                src: ['./assets/src/index.js'],
+                files: [
+                    {
+                        expand: true,
+                        cwd: 'assets/src/',
+                        src: ['**/*.manifest.js'],
+                        dest: 'assets/dist/',
+                        ext: '.all.js',
+                        extDot: 'first'
+                    }
+                ],
                 options: {
                     browserifyOptions: {
                         standalone: 'index',
@@ -40,21 +48,11 @@ module.exports = function (grunt) {
                         detectGlobals: false
                     }
                 }
-            },
-            discview: {
-                dest: './app.tmp.js',
-                src: '<%= browserify.all.src %>',
-                options: {
-                    ignore: '<%= browserify.all.options.ignore %>',
-                    browserifyOptions: {
-                        standalone: 'index',
-                        commondir: false,
-                        fullPaths: true,
-                        builtins: '<%= browserify.all.options.browserifyOptions.builtins %>',
-                        insertGlobals: false,
-                        detectGlobals: false
-                    }
-                }
+            }
+        },
+        manifest: {
+            all: {
+                files: '<%= browserify.all.files %>'
             }
         },
         mozusync: {
@@ -111,9 +109,8 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-debug-task');
 
     var path = require('path');
-    grunt.registerTask('manifest', 'Compiles the `functions.json` manifest for the Mozu Extensions Framework to read which custom functions are extended.', function() {
-        var conf = grunt.config.get('browserify').all;
-        var manifest = conf.src.reduce(function(functionsManifest, indexFile) {
+    grunt.registerMultiTask('manifest', 'Compiles the `functions.json` manifest for the Mozu Actions Framework to read which custom functions are extended.', function() {
+        this.files.reduce(function(functionsManifest, indexFile) {
             var index = require(indexFile);
             return functionsManifest.concat(Object.keys(index).map(function(key) {
                return {
@@ -126,17 +123,10 @@ module.exports = function (grunt) {
         grunt.file.write('./assets/functions.json', JSON.stringify({ exports: manifest }, null, 2));
         grunt.log.ok('Wrote ' + manifest.length + ' custom functions to functions.json');
     });
-    grunt.registerTask('discview', 'Uses discify to view the size of the dependency tree', function() {
-       var done = this.async();
-       grunt.util.spawn({
-        cmd: './node_modules/.bin/discify',
-        args: ['./app.tmp.js', '--open']
-       }, done);
-    });
     watchAdapter(grunt, {
         src: 'mozusync.upload.src',
         action: 'upload',
-        always: ['<%= browserify.all.dest %>','./assets/functions.json']
+        always: ['./assets/functions.json']
     });
     watchAdapter(grunt, {
         src: 'mozusync.del.remove',
@@ -153,11 +143,6 @@ module.exports = function (grunt) {
     grunt.registerTask('reset', [
         'mozusync:wipe',
         'mozusync:upload'
-    ]);
-    grunt.registerTask('viewsize', [
-        'browserify:discview',
-        'discview',
-        'clean'
     ]);
     grunt.registerTask('cont', ['watch']);
     grunt.registerTask('c', ['watch']);

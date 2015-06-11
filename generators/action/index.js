@@ -150,18 +150,16 @@ module.exports = yeoman.generators.Base.extend({
     var self = this;
     var requirements;
 
-    this.fs.copyTpl(
-      this.templatePath('_entry_index.jst'),
-      this.destinationPath('assets/src/index.js'),
-      {
-        actions: this._actions
-      }
-    );
-
     this._domains.forEach(function(domain) {
       var thisDomainsActions = self._actions.filter(function(action) {
         return action.domain === domain;
       });
+      self.fs.copyTpl(
+        self.templatePath('_manifest.jst'),
+        self.destinationPath('assets/src/' + domain + '.manifest.js'),
+        {
+          actions: thisDomainsActions
+        });
       thisDomainsActions.forEach(function(action) {
         var implPath = self.destinationPath('assets/src/domains/' + domain + '/' + action.name + '.js');
         if (self.options.overwriteAll || !self.fs.exists(implPath)) {
