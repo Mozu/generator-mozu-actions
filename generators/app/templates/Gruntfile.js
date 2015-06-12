@@ -14,16 +14,14 @@ module.exports = function (grunt) {
         },
         browserify: {
             all: {
-                files: [
-                    {
+                files: [{
                         expand: true,
                         cwd: 'assets/src/',
                         src: ['**/*.manifest.js'],
                         dest: 'assets/dist/',
                         ext: '.all.js',
                         extDot: 'first'
-                    }
-                ],
+                    }],
                 options: {
                     browserifyOptions: {
                         standalone: 'index',
@@ -50,11 +48,7 @@ module.exports = function (grunt) {
                 }
             }
         },
-        manifest: {
-            all: {
-                files: '<%= browserify.all.files %>'
-            }
-        },
+        manifest: { all: { files: '<%= browserify.all.files %>' } },
         mozusync: {
             options: {
                 applicationKey: '<%= mozuconfig.workingApplicationKey %>',
@@ -101,23 +95,19 @@ module.exports = function (grunt) {
                     'mozusync:del'
                 ]
             }
-        },
-        clean: {
-            tmp: ['./*.tmp.js']   
         }
     });
     grunt.loadNpmTasks('grunt-debug-task');
-
     var path = require('path');
-    grunt.registerMultiTask('manifest', 'Compiles the `functions.json` manifest for the Mozu Actions Framework to read which custom functions are extended.', function() {
-        this.files.reduce(function(functionsManifest, indexFile) {
-            var index = require(indexFile);
-            return functionsManifest.concat(Object.keys(index).map(function(key) {
-               return {
-                id: key,
-                virtualPath: './' + path.relative('assets', conf.dest),
-                actionId: index[key].actionName
-               }; 
+    grunt.registerMultiTask('manifest', 'Compiles the `functions.json` manifest for the Mozu Actions Framework to read which custom functions are extended.', function () {
+        var manifest = this.files.reduce(function (functionsManifest, conf) {
+            var index = require('./' + conf.src[0]);
+            return functionsManifest.concat(Object.keys(index).map(function (key) {
+                return {
+                    id: key,
+                    virtualPath: './' + path.relative('assets', conf.dest),
+                    actionId: index[key].actionName
+                };
             }));
         }, []);
         grunt.file.write('./assets/functions.json', JSON.stringify({ exports: manifest }, null, 2));
