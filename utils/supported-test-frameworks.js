@@ -9,13 +9,13 @@ module.exports = {
         src: ['assets/test/**/*.js']
       }
     }
-  },
-  'nodeunit': {
-    name: 'Nodeunit',
-    install: ['grunt-contrib-nodeunit'],
-    taskName: 'nodeunit',
-    taskConfig: {
-      all: ['assets/test/**/*.js']
-    }
+  // },
+  // 'nodeunit': {
+  //   name: 'Nodeunit',
+  //   install: ['grunt-contrib-nodeunit'],
+  //   taskName: 'nodeunit',
+  //   taskConfig: {
+  //     all: ['assets/test/**/*.js']
+  //   }
   }
 };

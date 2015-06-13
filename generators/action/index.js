@@ -192,18 +192,20 @@ module.exports = yeoman.generators.Base.extend({
       this._actions.forEach(function(action) {
 
         var testPath = this.destinationPath('assets/test/' + action.name + '.t.js');
+        var actionType = action.name.split('.').shift();
+        var actionConfig = this._actionsMap[action.name];
 
         if (this.options.overwriteAll || !this.fs.exists(testPath)) {
 
           try {
             this.fs.copyTpl(
-              this.templatePath('test/' + this.options.testFramework + '.jst'),
+              this.templatePath('test/' + this.options.testFramework + '_' + actionType + '.jst'),
               testPath,
               {
                 name: this.options.name,
                 description: this.options.description,
                 action: action, 
-                actionConfig: this._actionsMap[action.name]
+                context: actionConfig.context
               }
             );
           } catch(e) {

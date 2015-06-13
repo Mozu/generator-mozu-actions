@@ -31,7 +31,7 @@ module.exports = mozuAppGenerator.extend({
     var prompts = [{
       type: 'input',
       name: 'name',
-      message: 'Internal name for the Mozu Application that will contain your Actions:',
+      message: 'Name this Mozu Application (no spaces):',
       default: this._package.name || this.appname,
       filter: helpers.trimString,
       validate: function(name) {
@@ -60,13 +60,10 @@ module.exports = mozuAppGenerator.extend({
     }, {
       type: 'list',
       name: 'testFramework',
-      message: 'Choose test framework',
+      message: 'Choose a test framework:',
       choices: [{
         name: 'Mocha',
         value: 'mocha'
-      }, {
-        name: 'Nodeunit',
-        value: 'nodeunit'
       }, {
         name: 'None/Manual',
         value: false
@@ -77,7 +74,7 @@ module.exports = mozuAppGenerator.extend({
     helpers.promptAndSaveResponse(this, prompts, function() {
 
       if (!this._testFramework) {
-        this.log('\n' + chalk.bold.red('Unit tests are strongly recommended.') + ' If you prefer a framework this generator does not support, or framework-free tests, you can still use the ' + chalk.bold('mozuxd-simulator') + ' module to simulate a server-side environment for your action implementations.\n');
+        this.log('\n' + chalk.bold.red('Unit tests are strongly recommended.') + ' If you prefer a framework this generator does not support, or framework-free tests, you can still use the ' + chalk.bold('mozu-action-simulator') + ' module to simulate a server-side environment for your action implementations.\n');
       }
       process.stdout.write(' ');
       this.composeWith('mozu-actions:action', {
@@ -197,7 +194,7 @@ module.exports = mozuAppGenerator.extend({
           'grunt-debug-task',
           'grunt-mozu-appdev-sync',
           'load-grunt-tasks',
-          'mozuxd-simulator',
+          'mozu-action-simulator',
           'time-grunt'
         ], {
           saveDev: true
