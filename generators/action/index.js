@@ -149,6 +149,7 @@ module.exports = yeoman.generators.Base.extend({
 
     var self = this;
     var requirements;
+    var exclude = self.options.exclude || [];
 
     this._domains.forEach(function(domain) {
       var thisDomainsActions = self._actions.filter(function(action) {
@@ -162,7 +163,7 @@ module.exports = yeoman.generators.Base.extend({
         });
       thisDomainsActions.forEach(function(action) {
         var implPath = self.destinationPath('assets/src/domains/' + domain + '/' + action.name + '.js');
-        if (self.options.overwriteAll || !self.fs.exists(implPath)) {
+        if (self.options.overwriteAll || (!self.fs.exists(implPath) && exclude.indexOf(action.name) == -1)) {
           self.fs.copyTpl(
             self.templatePath('_action_implementation.jst'),
             implPath, {

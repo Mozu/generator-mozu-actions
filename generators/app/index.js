@@ -11,7 +11,6 @@ module.exports = mozuAppGenerator.extend({
 
   initializing: function() {
 
-
     require('update-notifier')({ pkg: require('../../package.json'), updateCheckInterval: 1}).notify({ defer: false });
 
     this.composeWith('mozu-app', {
@@ -69,6 +68,10 @@ module.exports = mozuAppGenerator.extend({
         value: false
       }],
       default: this.config.get('testFramework')
+    }, {
+      type: 'confirm',
+      name: 'enableOnInstall',
+      message: 'Enable actions on install? ' + chalk.yellow('(This will add a custom function to the embedded.platform.applications.install action.)')
     }];
 
     helpers.promptAndSaveResponse(this, prompts, function() {
@@ -84,7 +87,8 @@ module.exports = mozuAppGenerator.extend({
           description: this._description,
           internal: this.options.internal,
           testFramework: this._testFramework,
-          overwriteAll: true
+          overwriteAll: true,
+          exclude: this._enableOnInstall ? ['embedded.platform.applications.install'] : []
         }
       });
       done();
@@ -167,6 +171,14 @@ module.exports = mozuAppGenerator.extend({
       this.fs.writeJSON(jsonPath, mozuConfigJson, null, 2);
     },
 
+    enableOnInstall: function() {
+      if (this._enableOnInstall) {
+        this.fs.copy(
+          this.templatePath('enableactions.js'),
+          this.destinationPath('/assets/src/domains/platform.applications/embedded.platform.applications.install.js'));
+      }
+    },
+
     tests: function() {
       if (this._testFramework) {
         var requirements = supportedTestFrameworks[this._testFramework];
@@ -194,6 +206,7 @@ module.exports = mozuAppGenerator.extend({
           'grunt-debug-task',
           'grunt-mozu-appdev-sync',
           'load-grunt-tasks',
+          'mozu-action-helpers',
           'mozu-action-simulator',
           'time-grunt'
         ], {
