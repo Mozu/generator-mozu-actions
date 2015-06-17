@@ -49,6 +49,12 @@ module.exports = yeoman.generators.Base.extend({
       hide: true
     });
 
+    this.option('exclude', {
+      type: Array,
+      required: false,
+      hide: true
+    });
+
   },
 
   initializing: function() {
@@ -63,7 +69,6 @@ module.exports = yeoman.generators.Base.extend({
       memo[action.action] = action;
       return memo;
     }, {});
-    require('update-notifier')({ pkg: require('../../package.json') }).notify();
   },
 
   prompting: function() {
@@ -162,8 +167,9 @@ module.exports = yeoman.generators.Base.extend({
           actions: thisDomainsActions
         });
       thisDomainsActions.forEach(function(action) {
+        self.log(action.name);
         var implPath = self.destinationPath('assets/src/domains/' + domain + '/' + action.name + '.js');
-        if (self.options.overwriteAll || (!self.fs.exists(implPath) && exclude.indexOf(action.name) == -1)) {
+        if ((self.options.overwriteAll || !self.fs.exists(implPath)) && (exclude.indexOf(action.name) === -1)) {
           self.fs.copyTpl(
             self.templatePath('_action_implementation.jst'),
             implPath, {
