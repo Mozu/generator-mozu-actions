@@ -20,7 +20,7 @@ module.exports = function (grunt) {
                         src: ['**/*.manifest.js'],
                         dest: 'assets/dist/',
                         ext: '.all.js',
-                        extDot: 'first'
+                        extDot: 'last'
                     }],
                 options: {
                     browserifyOptions: {

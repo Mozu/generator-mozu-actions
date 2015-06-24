@@ -3,7 +3,7 @@ var chalk = require('chalk');
 var semver = require('semver');
 
 var mozuAppGenerator = require('generator-mozu-app');
-var helpers = mozuAppGenerator.helpers;
+var helpers = mozuAppGenerator.helpers.merge(mozuAppGenerator.helpers, require('../../utils/helpers'));
 
 var supportedTestFrameworks = require('../../utils/supported-test-frameworks');
 
@@ -79,17 +79,14 @@ module.exports = mozuAppGenerator.extend({
       if (!this._testFramework) {
         this.log('\n' + chalk.bold.red('Unit tests are strongly recommended.') + ' If you prefer a framework this generator does not support, or framework-free tests, you can still use the ' + chalk.bold('mozu-action-simulator') + ' module to simulate a server-side environment for your action implementations.\n');
       }
-      process.stdout.write(' ');
+
+      var preconfiguredActions = [];
+
+      if (this._enableOnInstall) preconfiguredActions.push('embedded.platform.applications.install');
+
+      process.stdout.write(' '); // hack to kick off the console for the subprocess
       this.composeWith('mozu-actions:action', {
-        options: {
-          name: this._name,
-          'skip-prompts': this.options['skip-prompts'],
-          description: this._description,
-          internal: this.options.internal,
-          testFramework: this._testFramework,
-          overwriteAll: true,
-          exclude: this._enableOnInstall ? ['embedded.platform.applications.install'] : []
-        }
+        options: helpers.createActionOptions(this, preconfiguredActions)
       });
       done();
 

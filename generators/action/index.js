@@ -2,10 +2,11 @@
 var yeoman = require('yeoman-generator');
 var chalk = require('chalk');
 var inquirer = require('inquirer');
-var XDMetadata = require('mozuxd-metadata');
-var actionDefs = XDMetadata.actionDefinitions;
+var Metadata = require('mozu-metadata');
+var actionDefs = Metadata.actionDefinitions;
 
-var helpers = require('../../utils/helpers');
+var helpers = require('generator-mozu-app').helpers;
+helpers = helpers.merge(helpers, require('../../utils/helpers'));
 
 var supportedTestFrameworks = require('../../utils/supported-test-frameworks');
 
@@ -49,7 +50,19 @@ module.exports = yeoman.generators.Base.extend({
       hide: true
     });
 
-    this.option('exclude', {
+    this.option('doNotWrite', {
+      type: Array,
+      required: false,
+      hide: true
+    });
+
+    this.option('actionNames', {
+      type: Array,
+      required: false,
+      hide: true
+    });
+
+    this.option('domains', {
       type: Array,
       required: false,
       hide: true
@@ -60,12 +73,7 @@ module.exports = yeoman.generators.Base.extend({
   initializing: function() {
     this.config.save();
     this._actionsMap = actionDefs.actions.reduce(function(memo, action) {
-      action.domain = actionDefs.domains.reduce(function(match, domain) {
-        if (action.action.substring( action.action.indexOf('.') + 1 ).indexOf(domain) === 0) {
-          return domain;
-        }
-        return match;
-      });
+      action.domain = helpers.getDomainFromActionName(action.action);
       memo[action.action] = action;
       return memo;
     }, {});
@@ -92,9 +100,7 @@ module.exports = yeoman.generators.Base.extend({
       this._domains = [];
 
       actionNameArgs.forEach(function(name) {
-        var domain = actionDefs.domains.reduce(function(match, domain) {
-          return name.substring(name.indexof('.')+1).indexOf(domain) === 0 ? domain : match;
-        }, null);
+        var domain = helpers.getDomainFromActionName(name);
         if (!domain) {
           throw new Error('No domain found for action name ' + name + '. It appears to be an invalid action.');
         }
@@ -116,7 +122,7 @@ module.exports = yeoman.generators.Base.extend({
         validate: function(chosen) {
           return chosen.length > 0 || 'Please choose at least one domain to scaffold.';
         },
-        default: this.config.get('domains')
+        default: this.options.domains || this.config.get('domains')
       }, {
         type: 'checkbox',
         name: 'actionNames',
@@ -130,7 +136,7 @@ module.exports = yeoman.generators.Base.extend({
             })));
           }, []);
         },
-        default: this.config.get('actionNames')
+        default: this.options.actionNames || this.config.get('actionNames')
       }];
 
       helpers.promptAndSaveResponse(this, prompts, done);
@@ -154,7 +160,7 @@ module.exports = yeoman.generators.Base.extend({
 
     var self = this;
     var requirements;
-    var exclude = self.options.exclude || [];
+    var doNotWrite = self.options.doNotWrite || [];
 
     this._domains.forEach(function(domain) {
       var thisDomainsActions = self._actions.filter(function(action) {
@@ -167,9 +173,8 @@ module.exports = yeoman.generators.Base.extend({
           actions: thisDomainsActions
         });
       thisDomainsActions.forEach(function(action) {
-        self.log(action.name);
         var implPath = self.destinationPath('assets/src/domains/' + domain + '/' + action.name + '.js');
-        if ((self.options.overwriteAll || !self.fs.exists(implPath)) && (exclude.indexOf(action.name) === -1)) {
+        if ((self.options.overwriteAll || !self.fs.exists(implPath)) && (doNotWrite.indexOf(action.name) === -1)) {
           self.fs.copyTpl(
             self.templatePath('_action_implementation.jst'),
             implPath, {

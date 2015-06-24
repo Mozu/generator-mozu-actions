@@ -1,54 +1,34 @@
 'use strict';
 
-var merge = require('lodash.merge');
-var chalk = require('chalk');
-module.exports = {
-  addAsPrivateProps: function(target, source) {
-    Object.keys(source).forEach(function(key) {
-      target['_' + key] = source[key];
-    });
+var uniq = require('lodash.uniq');
+var actionDefs = require('mozu-metadata').actionDefinitions;
+
+var helpers = module.exports = {
+  getDomainFromActionName: function(name) {
+    name = name.split('.').slice(1).join('.');
+    return actionDefs.domains.reduce(function(match, domain) {
+      if (name.indexOf(domain) === 0) {
+        return domain;
+      }
+      return match;
+    }); 
   },
-  promptAndSaveResponse: function(generator, prompts, cb) {
-    if (generator.options['skip-prompts']) {
-      prompts.forEach(function(prompt) {
-        generator['_' + prompt.name] = (typeof prompt.default === 'function') ? prompt.default() : prompt.default;
-      });
-      cb();
-    } else {
-      generator.prompt(prompts, function(answers) {
-        Object.keys(answers).forEach(function(key) {
-          generator['_' + key] = answers[key];
-        });
-        cb();
-      });
-    }
-  },
-  makeSDKContext: function(generator) {
+  createActionOptions: function(self, preconfiguredActions) {
+    preconfiguredActions = preconfiguredActions || [];
+    var domains = self.config.get('domains') || [];
+    var actionNames = self.config.get('actionNames') || [];
+    var allActionNames = uniq(actionNames.concat(preconfiguredActions));
+    var preconfiguredDomains = uniq(domains.concat(preconfiguredActions.map(helpers.getDomainFromActionName)));
     return {
-      appKey: generator._developerAppKey,
-      sharedSecret: generator._developerSharedSecret,
-      baseUrl: 'https://' + (generator._homePod || 'home.mozu.com'),
-      developerAccountId: generator._developerAccountId,
-      developerAccount: {
-        emailAddress: generator._developerAccountLogin
-      },
-      workingApplicationKey: generator._applicationKey
-    };
-  },
-  trimString: function(str) {
-    return str.trim();
-  },
-  trimAll: function(obj) {
-    return Object.keys(obj).reduce(function(result, k) {
-      result[k] = (typeof obj[k] === 'string') ? obj[k].trim() : obj[k];
-      return result;
-    }, {});
-  },
-  merge: merge,
-  remark: function(ctx, str) {
-    ctx.log(chalk.green('>> ') + str + '\n');
-  },
-  lament: function(ctx, str) {
-    ctx.log(chalk.bold.red(str + '\n'));
+      name: self._name,
+      'skip-prompts': self.options['skip-prompts'],
+      description: self._description,
+      internal: self.options.internal,
+      testFramework: self._testFramework,
+      overwriteAll: true,
+      actionNames: allActionNames,
+      doNotWrite: preconfiguredActions,
+      domains: preconfiguredDomains
+    }
   }
 };
