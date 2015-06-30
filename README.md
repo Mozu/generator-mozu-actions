@@ -1,8 +1,8 @@
-# Mozu ActionPack generator
+# Mozu Actions generator
 
 Maintainer: [James Zetlen](https://github.com/zetlen)
 
-A Mozu ActionPack generator for Yeoman that provides boilerplate and structure for writing Mozu Custom Functions against the family of Mozu Code Actions. It provides documented function stubs, a build process using Grunt and Browserify, remote sync with the Developer Center, and unit tests using Nodeunit or Mocha plus the Mozu Extension Simulator.
+A Mozu Actions generator for Yeoman that provides boilerplate and structure for writing Mozu Custom Functions against the family of Mozu Code Actions. It provides documented function stubs, a build process using Grunt and Browserify, remote sync with the Developer Center, and unit tests using Mocha plus the Mozu Action Simulator.
 
 ## This package is currently a prerelease.
 **This contains pre-release code. It may have behaviors or rely on features that don't work in Mozu production environments. Use with caution!**
@@ -17,20 +17,22 @@ First, install [Yeoman](http://yeoman.io)'s command line tool if you haven't alr
 npm install -g yo
 ```
 
-Yeoman looks for globally installed NPM packages that identify themselves as Yeoman generators. So install the generator globally.
+Yeoman looks for globally installed NPM packages that identify themselves as Yeoman generators. So install the generator globally. Also, install the `grunt-cli` command line Grunt package, because you'll need it.
 
 ```bash
-npm install -g generator-mozu-actionpack
+npm install -g generator-mozu-actions grunt-cli
 ```
+
+Create a [Sync App](./docs/sync-app.md) and note the Application Key and Shared Secret.
 
 Make a new directory and `cd` into it:
 ```
-mkdir new-mozu-ap && cd new-mozu-ap
+mkdir example && cd example
 ```
 
-Run `yo mozu-actionpack`:
+Run the Yeoman generator!
 ```
-yo mozu-actionpack
+yo mozu-actions
 ```
 
 ## Options
@@ -57,7 +59,7 @@ yo mozu-actionpack
 The generator uses a Yeoman sub-generator to create the action implementation scaffolds and unit test scaffolds. You can call this sub-generator directly, after creating your project, to add more scaffolding for additional actions:
 
 ```
-yo mozu-actionpack:action
+yo mozu-actions:action
 ```
 
 This will prompt you to add to your list of actions, and then will write the additional action scaffolds.
