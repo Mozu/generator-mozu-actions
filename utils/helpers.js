@@ -20,9 +20,7 @@ var helpers = module.exports = {
     var allActionNames = uniq(actionNames.concat(preconfiguredActions));
     var preconfiguredDomains = uniq(domains.concat(preconfiguredActions.map(helpers.getDomainFromActionName)));
     return {
-      name: self._name,
       'skip-prompts': self.options['skip-prompts'],
-      description: self._description,
       internal: self.options.internal,
       testFramework: self._testFramework,
       overwriteAll: true,

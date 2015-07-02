@@ -190,12 +190,6 @@ module.exports = yeoman.generators.Base.extend({
 
       requirements = supportedTestFrameworks[this.options.testFramework];
 
-      if (!this.options.name) {
-        throw new Error('Missing project name.');
-      }
-      if (!this.options.description) {
-        throw new Error('Missing project description.');
-      }
       if (!requirements) {
         throw new Error('Unsupported test framework: ' + this.options.testFramework);
       }
@@ -214,8 +208,6 @@ module.exports = yeoman.generators.Base.extend({
               this.templatePath('test/' + this.options.testFramework + '_' + actionType + '.jst'),
               testPath,
               {
-                name: this.options.name,
-                description: this.options.description,
                 action: action, 
                 context: actionConfig.context
               }

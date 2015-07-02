@@ -23,18 +23,13 @@
     "yeoman-generator"
   ],
   "dependencies": {
-    "buffered-spawn": "^1.0.1",
     "chalk": "^1.0.0",
     "generator-mozu-app": "^0.2.3",
     "inquirer": "^0.8.0",
     "lodash.uniq": "^3.2.1",
-    "mosay": "^2.1.0",
     "mozu-metadata": "^1.17.4-dev1505181422-s2",
-    "mozu-node-sdk": "^1.17.15154-hotfix1",
-    "quick-git-hits": "^0.1.0",
-    "semver": "^4.3.1",
     "update-notifier": "^0.3.1",
-    "yeoman-generator": "^0.18.9"
+    "yeoman-generator": "^0.20.1"
   },
   "devDependencies": {
     "mocha": "*"

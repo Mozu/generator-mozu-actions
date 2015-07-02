@@ -1,6 +1,5 @@
 'use strict';
 var chalk = require('chalk');
-var semver = require('semver');
 
 var mozuAppGenerator = require('generator-mozu-app');
 var helpers = mozuAppGenerator.helpers.merge(mozuAppGenerator.helpers, require('../../utils/helpers'));
@@ -23,79 +22,51 @@ module.exports = mozuAppGenerator.extend({
 
   },
 
-  prompting: function() {
+  prompting: {
+    zang: function() {
 
-    var done = this.async();
+      var done = this.async();
 
-    var prompts = [{
-      type: 'input',
-      name: 'name',
-      message: 'Name this Mozu Application (no spaces):',
-      default: this._package.name || this.appname,
-      filter: helpers.trimString,
-      validate: function(name) {
-        return !!name.match(/^[A-Za-z0-9\-_\.]+$/) || 'That may not be a legal npm package name.';
-      }
-    }, {
-      type: 'input',
-      name: 'description',
-      message: 'Short description:',
-      default: this._package.description || 'A Mozu Application containing Actions.'
-    }, {
-      type: 'input',
-      name: 'version',
-      message: 'Initial version:',
-      default: this._package.version || '0.1.0',
-      filter: helpers.trimString,
-      validate: function(ver) {
-        return !!semver.valid(ver) || 'Please supply a valid semantic version of the form major.minor.patch-annotation.\n\nExamples: 0.1.0, 3.21.103, 3.9.22-alt';
-      }
-    }, {
-      type: 'input',
-      name: 'applicationKey',
-      message: 'Developer Center Application Key for this Application:',
-      filter: helpers.trimString,
-      default: this.config.get('applicationKey')
-    }, {
-      type: 'list',
-      name: 'testFramework',
-      message: 'Choose a test framework:',
-      choices: [{
-        name: 'Mocha',
-        value: 'mocha'
+      var prompts = [{
+        type: 'list',
+        name: 'testFramework',
+        message: 'Choose a test framework:',
+        choices: [{
+          name: 'Mocha',
+          value: 'mocha'
+        }, {
+          name: 'None/Manual',
+          value: false
+        }],
+        default: this.config.get('testFramework')
       }, {
-        name: 'None/Manual',
-        value: false
-      }],
-      default: this.config.get('testFramework')
-    }, {
-      type: 'confirm',
-      name: 'enableOnInstall',
-      message: 'Enable actions on install? ' + chalk.yellow('(This will add a custom function to the embedded.platform.applications.install action.)')
-    }];
+        type: 'confirm',
+        name: 'enableOnInstall',
+        message: 'Enable actions on install? ' + chalk.yellow('(This will add a custom function to the embedded.platform.applications.install action.)')
+      }];
 
-    helpers.promptAndSaveResponse(this, prompts, function() {
+      helpers.promptAndSaveResponse(this, prompts, function() {
 
-      if (!this._testFramework) {
-        this.log('\n' + chalk.bold.red('Unit tests are strongly recommended.') + ' If you prefer a framework this generator does not support, or framework-free tests, you can still use the ' + chalk.bold('mozu-action-simulator') + ' module to simulate a server-side environment for your action implementations.\n');
-      }
+        if (!this._testFramework) {
+          this.log('\n' + chalk.bold.red('Unit tests are strongly recommended.') + ' If you prefer a framework this generator does not support, or framework-free tests, you can still use the ' + chalk.bold('mozu-action-simulator') + ' module to simulate a server-side environment for your action implementations.\n');
+        }
 
-      var preconfiguredActions = [];
+        var preconfiguredActions = [];
 
-      if (this._enableOnInstall) preconfiguredActions.push('embedded.platform.applications.install');
+        if (this._enableOnInstall) preconfiguredActions.push('embedded.platform.applications.install');
 
-      process.stdout.write(' '); // hack to kick off the console for the subprocess
-      this.composeWith('mozu-actions:action', {
-        options: helpers.createActionOptions(this, preconfiguredActions)
-      });
-      done();
+        process.stdout.write(' '); // hack to kick off the console for the subprocess
+        this.composeWith('mozu-actions:action', {
+          options: helpers.createActionOptions(this, preconfiguredActions)
+        });
+        done();
 
-    }.bind(this));
+      }.bind(this));
+    }
   },
 
   configuring: {
     rc: function() {
-      this.config.set('applicationKey', this._applicationKey);
       this.config.set('testFramework', this._testFramework);
     }
   },
@@ -111,36 +82,7 @@ module.exports = mozuAppGenerator.extend({
       }, this);
     },
 
-    packagejson: function() {
-
-      var newPkg = {
-        name: this._name,
-        version: this._version,
-        description: this._description
-      };
-
-      if (this._repositoryUrl) {
-        newPkg.repository = {
-          type: 'git',
-          url: this._repositoryUrl
-        };
-      }
-
-      if (this._testFramework) {
-        newPkg.scripts = {
-          test: 'grunt test'
-        };
-      }
-
-      this.fs.writeJSON(
-        this.destinationPath('package.json'),
-        helpers.merge(
-          helpers.trimAll(newPkg),
-          this._package
-        )
-      );
-    },
-
+    
     readme: function() {
       this.fs.copyTpl(
         this.templatePath('_README.md.tpt'),
@@ -154,25 +96,46 @@ module.exports = mozuAppGenerator.extend({
 
     gruntfile: function() {
 
+      var self = this;
+
+      var taskConfig = this.fs.readJSON(this.templatePath('gruntfile-config.json'));
+
+      var existingLines = this.fs.read(this.destinationPath('Gruntfile.js'), { defaults: '' })
+        .split('\n')
+        .map(function(l) {
+          return l.trim();
+      });
+
+      [
+        "require('load-grunt-tasks')(grunt);",
+        "require('time-grunt')(grunt);",
+        "grunt.loadTasks('./tasks');"
+      ].forEach(function(line) {
+        if (existingLines.indexOf(line) === -1) {
+          self.gruntfile.prependJavaScript(line);
+        }
+      });
+
+      this.gruntfile.insertConfig('mozuconfig', "require('./mozu.config.json')");
+
+      Object.keys(taskConfig.configs).forEach(function(name) {
+        self.gruntfile.insertConfig(name, JSON.stringify(taskConfig.configs[name], null, 2));
+      });
+
+      Object.keys(taskConfig.tasks).forEach(function(name) {
+        self.gruntfile.registerTask(name, taskConfig.tasks[name]);
+      });
+
       this.fs.copy(
-        this.templatePath('Gruntfile.js'),
-        this.destinationPath('Gruntfile.js')
-      );
-
-    },
-
-    addWorkingKey: function() {
-      var jsonPath = this.destinationPath('mozu.config.json');
-      var mozuConfigJson = this.fs.readJSON(jsonPath);
-      mozuConfigJson.workingApplicationKey = this._applicationKey;
-      this.fs.writeJSON(jsonPath, mozuConfigJson, null, 2);
+        this.templatePath('manifest.js'),
+        this.destinationPath('tasks/manifest.js'));
     },
 
     enableOnInstall: function() {
       if (this._enableOnInstall) {
         this.fs.copy(
           this.templatePath('enableactions.js'),
-          this.destinationPath('/assets/src/domains/platform.applications/embedded.platform.applications.install.js'));
+          this.destinationPath('assets/src/domains/platform.applications/embedded.platform.applications.install.js'));
       }
     },
 
@@ -200,7 +163,6 @@ module.exports = mozuAppGenerator.extend({
           'grunt-browserify',
           'grunt-contrib-jshint',
           'grunt-contrib-watch',
-          'grunt-debug-task',
           'grunt-mozu-appdev-sync',
           'load-grunt-tasks',
           'mozu-action-helpers',
