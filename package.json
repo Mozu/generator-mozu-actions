@@ -23,12 +23,12 @@
     "yeoman-generator"
   ],
   "dependencies": {
-    "chalk": "^1.0.0",
-    "generator-mozu-app": "^0.3.2",
-    "inquirer": "^0.8.0",
-    "lodash.uniq": "^3.2.1",
+    "chalk": "^1.1.0",
+    "generator-mozu-app": "^0.3.3",
+    "inquirer": "^0.8.5",
+    "lodash.uniq": "^3.2.2",
     "mozu-metadata": "^1.17.4-dev1505181422-s2",
-    "update-notifier": "^0.3.1",
+    "update-notifier": "^0.5.0",
     "yeoman-generator": "^0.20.1"
   },
   "devDependencies": {
