@@ -27,7 +27,7 @@
     "generator-mozu-app": "^0.3.3",
     "inquirer": "^0.8.5",
     "lodash.uniq": "^3.2.2",
-    "mozu-metadata": "*",
+    "mozu-metadata": "^1.18.1-dev1507171402",
     "update-notifier": "^0.5.0",
     "yeoman-generator": "^0.20.1"
   },

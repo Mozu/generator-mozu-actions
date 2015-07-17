@@ -72,7 +72,12 @@ module.exports = yeoman.generators.Base.extend({
 
   initializing: function() {
     this.config.save();
-    this._actionsMap = actionDefs.actions.reduce(function(memo, action) {
+    this._availableActions = this.options.internal ? 
+      actionDefs.actions : 
+      actionDefs.actions.filter(function(action) {
+        return !action.beta;
+      });
+    this._actionsMap = this._availableActions.reduce(function(memo, action) {
       action.domain = helpers.getDomainFromActionName(action.action);
       memo[action.action] = action;
       return memo;
@@ -87,6 +92,8 @@ module.exports = yeoman.generators.Base.extend({
         value: action
       };
     }
+
+    var self = this;
 
     var done = this.async();
 
@@ -129,7 +136,7 @@ module.exports = yeoman.generators.Base.extend({
         message: 'Choose one or more actions to scaffold.',
         choices: function(props) {
           return props.domains.reduce(function(choices, domain) {
-            return choices.concat([new inquirer.Separator('- Domain ' + chalk.bold(domain))].concat(actionDefs.actions.filter(function(action) {
+            return choices.concat([new inquirer.Separator('- Domain ' + chalk.bold(domain))].concat(self._availableActions.filter(function(action) {
               return action.action.substring( action.action.indexOf('.') + 1 ).indexOf(domain) === 0;
             }).map(function(action) {
               return createActionName(action.action, domain);
