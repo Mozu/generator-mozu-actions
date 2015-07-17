@@ -24,10 +24,10 @@
   ],
   "dependencies": {
     "chalk": "^1.1.0",
-    "generator-mozu-app": "^0.3.7",
+    "generator-mozu-app": "^0.3.8",
     "inquirer": "^0.9.0",
     "lodash.uniq": "^3.2.2",
-    "mozu-metadata": "^1.18.1-dev1507171402",
+    "mozu-metadata": "latest",
     "update-notifier": "^0.5.0",
     "yeoman-generator": "^0.20.2"
   },
