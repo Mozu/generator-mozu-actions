@@ -1,6 +1,6 @@
 'use strict';
 var chalk = require('chalk');
-
+var updateNotifier = require('update-notifier');
 var mozuAppGenerator = require('generator-mozu-app');
 var helpers = mozuAppGenerator.helpers.merge(mozuAppGenerator.helpers, require('../../utils/helpers'));
 
@@ -11,6 +11,7 @@ module.exports = mozuAppGenerator.extend({
   initializing: function() {
 
     require('update-notifier')({ pkg: require('../../package.json'), updateCheckInterval: 1}).notify({ defer: false });
+    require('')
 
     this.composeWith('mozu-app', {
       options: helpers.merge(this.options, {
@@ -116,7 +117,11 @@ module.exports = mozuAppGenerator.extend({
         }
       });
 
-      this.gruntfile.insertConfig('mozuconfig', "require('./mozu.config.json')");
+      if (existingLines.some(function(line) {
+        return line.indexOf('mozuconfig') !== -1 && line.indexOf("require('./mozu.config.json')") !== -1;
+      })) {
+        this.gruntfile.insertConfig('mozuconfig', "require('./mozu.config.json')");
+      }
 
       Object.keys(taskConfig.configs).forEach(function(name) {
         self.gruntfile.insertConfig(name, JSON.stringify(taskConfig.configs[name], null, 2));

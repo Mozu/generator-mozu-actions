@@ -2,7 +2,7 @@ var path = require('path');
 module.exports = function(grunt) {
     grunt.registerMultiTask('manifest', 'Compiles the `functions.json` manifest for the Mozu Actions Framework to read which custom functions are extended.', function () {
         var manifest = this.files.reduce(function (functionsManifest, conf) {
-            var index = require('./' + conf.src[0]);
+            var index = require('../' + conf.src[0].replace(/\.js$/,''));
             return functionsManifest.concat(Object.keys(index).map(function (key) {
                 return {
                     id: key,
