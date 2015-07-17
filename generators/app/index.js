@@ -18,66 +18,8 @@ module.exports = mozuAppGenerator.extend({
 
     parent.acquireGitStatus.call(this);
     parent.displayMozuBanner.call(this, 'Follow the prompts to scaffold a Mozu Application that contains Actions. You\'ll get a directory structure, action file skeletons, and a test framework!');
-    // this.composeWith('mozu-app', {
-    //   options: helpers.merge(this.options, {
-    //     intro: 'Follow the prompts to scaffold a Mozu Application that contains Actions. You\'ll get a directory structure, action file skeletons, and a test framework!'
-    //   })
-    // }, {
-    //   local: require.resolve('generator-mozu-app')
-    // });
 
   },
-
-  // prompting: function() {
-
-  //   var parent = mozuAppGenerator.prototype.prompting;
-  //   var me = this;
-
-  //   parent.promptForEnvironment.call(me, function() {
-  //     parent.promptForDeveloperAccount.call(me, function() {
-  //       parent.promptForGitRepo.call(me, function() {
-  //         var done = this.async();
-
-  //         var prompts = [{
-  //           type: 'list',
-  //           name: 'testFramework',
-  //           message: 'Choose a test framework:',
-  //           choices: [{
-  //             name: 'Mocha',
-  //             value: 'mocha'
-  //           }, {
-  //             name: 'None/Manual',
-  //             value: false
-  //           }],
-  //           default: this.config.get('testFramework')
-  //         }, {
-  //           type: 'confirm',
-  //           name: 'enableOnInstall',
-  //           message: 'Enable actions on install? ' + chalk.yellow('(This will add a custom function to the embedded.platform.applications.install action.)')
-  //         }];
-
-  //         helpers.promptAndSaveResponse(this, prompts, function() {
-
-  //           if (!this._testFramework) {
-  //             this.log('\n' + chalk.bold.red('Unit tests are strongly recommended.') + ' If you prefer a framework this generator does not support, or framework-free tests, you can still use the ' + chalk.bold('mozu-action-simulator') + ' module to simulate a server-side environment for your action implementations.\n');
-  //           }
-
-  //           var preconfiguredActions = [];
-
-  //           if (this._enableOnInstall) preconfiguredActions.push('embedded.platform.applications.install');
-
-  //           process.stdout.write(' '); // hack to kick off the console for the subprocess
-  //           this.composeWith('mozu-actions:action', {
-  //             options: helpers.createActionOptions(this, preconfiguredActions)
-  //           });
-  //           done();
-
-  //         }.bind(this));
-  //       }.bind(me));
-  //     });
-  //   });
-
-  // },
 
   prompting: helpers.merge({}, mozuAppGenerator.prototype.prompting, {
     zang: function() {
