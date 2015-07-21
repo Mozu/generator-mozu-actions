@@ -123,11 +123,13 @@
     }
   },
   "tasks": {
-    "default": [
+    "build": [
       "jshint:normal",
       "browserify:all",
-      "manifest",
-      "test",
+      "manifest"
+    ],
+    "default": [
+      "build",
       "mozusync:upload"
     ],
     "reset": [

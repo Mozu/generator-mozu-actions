@@ -34,7 +34,7 @@ module.exports = mozuAppGenerator.extend({
           value: 'mocha'
         }, {
           name: 'None/Manual',
-          value: false
+          value: 'manual'
         }],
         default: this.config.get('testFramework')
       }, {
@@ -45,7 +45,7 @@ module.exports = mozuAppGenerator.extend({
 
       helpers.promptAndSaveResponse(this, prompts, function() {
 
-        if (!this._testFramework) {
+        if (this._testFramework === 'manual') {
           this.log('\n' + chalk.bold.red('Unit tests are strongly recommended.') + ' If you prefer a framework this generator does not support, or framework-free tests, you can still use the ' + chalk.bold('mozu-action-simulator') + ' module to simulate a server-side environment for your action implementations.\n');
         }
 
@@ -113,10 +113,10 @@ module.exports = mozuAppGenerator.extend({
         }
       });
 
-      if (existingLines.some(function(line) {
-        return line.indexOf('mozuconfig') !== -1 && line.indexOf("require('./mozu.config.json')") !== -1;
+      if (existingLines.every(function(line) {
+        return line.indexOf('mozuconfig') == -1 && line.indexOf("require('./mozu.config.json')") == -1;
       })) {
-        this.gruntfile.insertConfig('mozuconfig', "require('./mozu.config.json')");
+        this.gruntfile.insertConfig('mozuconfig', "grunt.file.readJSON('./mozu.config.json')");
       }
 
       Object.keys(taskConfig.configs).forEach(function(name) {
@@ -141,13 +141,15 @@ module.exports = mozuAppGenerator.extend({
     },
 
     tests: function() {
-      if (this._testFramework) {
+      this.log(this._testFramework)
+      if (this._testFramework !== 'manual') {
         var requirements = supportedTestFrameworks[this._testFramework];
         if (!requirements) {
           throw new Error('Unsupported test framework: ' + this.options.testFramework);
         }
         this.gruntfile.insertConfig(requirements.taskName, JSON.stringify(requirements.taskConfig));
         this.gruntfile.registerTask('test', requirements.taskName);
+        this.gruntfile.registerTask('build', 'test'); // should append
         if (!this.options['skip-install']) {
           this.npmInstall(requirements.install, { saveDev: true });
         }

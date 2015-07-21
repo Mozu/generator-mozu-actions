@@ -193,7 +193,7 @@ module.exports = yeoman.generators.Base.extend({
       });
     });
 
-    if (this.options.testFramework) {
+    if (this.options.testFramework !== "manual") {
 
       requirements = supportedTestFrameworks[this.options.testFramework];
 
