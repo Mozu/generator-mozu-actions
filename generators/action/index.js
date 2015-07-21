@@ -23,7 +23,8 @@ module.exports = yeoman.generators.Base.extend({
 
     this.option('testFramework', {
       desc: 'Name of the test framework to use when scaffolding test templates. Options include: ' + Object.keys(supportedTestFrameworks).join(', '),
-      type: String
+      type: String,
+      defaults: this.config.get('testFramework') || "manual"
     });
 
     this.option('internal', {
