@@ -10,6 +10,10 @@ helpers = helpers.merge(helpers, require('../../utils/helpers'));
 
 var supportedTestFrameworks = require('../../utils/supported-test-frameworks');
 
+function getActionType(actionName) {
+  return actionName.split('.')[0];
+}
+
 module.exports = yeoman.generators.Base.extend({
 
   constructor: function() {
@@ -187,6 +191,7 @@ module.exports = yeoman.generators.Base.extend({
             self.templatePath('_action_implementation.jst'),
             implPath, {
               action: action,
+              actionType: getActionType(action.name),
               context: JSON.stringify(self._actionsMap[action.name].context, null, 2)
             }
           );
@@ -206,7 +211,7 @@ module.exports = yeoman.generators.Base.extend({
       this._actions.forEach(function(action) {
 
         var testPath = this.destinationPath('assets/test/' + action.name + '.t.js');
-        var actionType = action.name.split('.').shift();
+        var actionType = getActionType(action.name);
         var actionConfig = this._actionsMap[action.name];
 
         if (this.options.overwriteAll || !this.fs.exists(testPath)) {
