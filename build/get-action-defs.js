@@ -6,10 +6,16 @@ var LATEST_DEFS_URL = process.env.ACTION_DEFS_URL || "http://aus02niserv001.dev.
 console.log('Downloading latest action definitions from ' + LATEST_DEFS_URL + "...\n");
 
 needle.get(LATEST_DEFS_URL, { parse_response: false }, function(error, response) {
-  if (error) throw new Error("Retrieval of definitions at " + LATEST_DEFS_URL + " failed: " + error);
+  if (error) {
+    if (error.code === "ENOTFOUND") {
+      return retrievalError("The domain was not found. This script will only run successfully on an internal Mozu development network or VPN.");
+    } else {
+      return retrievalError(error);
+    }
+  }
 
   if (response.statusCode !== 200) {
-    throw new Error("Retrieval of definitions at " + LATEST_DEFS_URL + " failed: " + response.body);
+    return retrievalError(response.body);
   }
 
   var actions;
@@ -36,3 +42,8 @@ needle.get(LATEST_DEFS_URL, { parse_response: false }, function(error, response)
   })
 
 });
+
+function retrievalError(e) {
+  console.error("Retrieval of definitions at " + LATEST_DEFS_URL + " failed: ", e);
+  process.exit(1);
+}

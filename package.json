@@ -13,7 +13,7 @@
     "node": ">=0.12.0"
   },
   "scripts": {
-    "update-defs": "node ./build/get-action-defs.js",
+    "prepublish": "node ./build/get-action-defs.js",
     "test": "mocha"
   },
   "files": [
