@@ -2,7 +2,7 @@
 var yeoman = require('yeoman-generator');
 var chalk = require('chalk');
 var inquirer = require('inquirer');
-var actionDefs = require('./action-definitions.json');
+var actionDefs = require('../../action-definitions.json');
 var helpers = require('generator-mozu-app').helpers;
 helpers = helpers.merge(helpers, require('../../utils/helpers'));
 
