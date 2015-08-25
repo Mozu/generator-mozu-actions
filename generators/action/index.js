@@ -2,9 +2,7 @@
 var yeoman = require('yeoman-generator');
 var chalk = require('chalk');
 var inquirer = require('inquirer');
-var Metadata = require('mozu-metadata');
-var actionDefs = Metadata.actionDefinitions;
-
+var actionDefs = require('./action-definitions.json');
 var helpers = require('generator-mozu-app').helpers;
 helpers = helpers.merge(helpers, require('../../utils/helpers'));
 
@@ -83,7 +81,6 @@ module.exports = yeoman.generators.Base.extend({
         return !action.beta;
       });
     this._actionsMap = this._availableActions.reduce(function(memo, action) {
-      action.domain = helpers.getDomainFromActionName(action.action);
       memo[action.action] = action;
       return memo;
     }, {});
