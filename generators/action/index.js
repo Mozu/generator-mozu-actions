@@ -3,6 +3,7 @@ var yeoman = require('yeoman-generator');
 var chalk = require('chalk');
 var inquirer = require('inquirer');
 var actionDefs = require('../../action-definitions.json');
+var getActionDefs = require('mozu-metadata/utils/get-action-defs');
 var helpers = require('generator-mozu-app').helpers;
 helpers = helpers.merge(helpers, require('../../utils/helpers'));
 
@@ -71,19 +72,42 @@ module.exports = yeoman.generators.Base.extend({
       hide: true
     });
 
+    this.option('definitions', {
+      type: String,
+      required: false,
+      hide: true
+    });
+
   },
 
   initializing: function() {
+    var self = this;
+    var done = this.async();
     this.config.save();
-    this._availableActions = this.options.internal ? 
-      actionDefs.actions : 
-      actionDefs.actions.filter(function(action) {
+    if (this.options.internal) {
+      getActionDefs({
+        url: this.options.definitions
+      }).then(function(defs) {
+        self._actionDefs = defs;
+        self._availableActions = defs.actions;
+      }).catch(function() {
+        self._actionDefs = actionDefs;
+        self._availableActions = actionDefs.actions;
+      }).then(createActionsMap);
+    } else {
+      self._actionDefs = actionDefs;
+      self._availableActions = actionDefs.actions.filter(function(action) {
         return !action.beta;
       });
-    this._actionsMap = this._availableActions.reduce(function(memo, action) {
-      memo[action.action] = action;
-      return memo;
-    }, {});
+      createActionsMap();
+    }
+    function createActionsMap() {
+      self._actionsMap = self._availableActions.reduce(function(memo, action) {
+        memo[action.action] = action;
+        return memo;
+      }, {});
+      done();
+    }
   },
 
   prompting: function() {
@@ -127,7 +151,7 @@ module.exports = yeoman.generators.Base.extend({
         type: 'checkbox',
         name: 'domains',
         message: 'Choose domains:',
-        choices: actionDefs.domains,
+        choices: self._actionDefs.domains,
         validate: function(chosen) {
           return chosen.length > 0 || 'Please choose at least one domain to scaffold.';
         },
