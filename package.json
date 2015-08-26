@@ -25,13 +25,13 @@
     "yeoman-generator"
   ],
   "dependencies": {
-    "chalk": "^1.1.0",
+    "chalk": "^1.1.1",
     "generator-mozu-app": "^0.4.1",
     "inquirer": "^0.9.0",
     "lodash.uniq": "^3.2.2",
     "mozu-metadata": "^2.0.0",
     "update-notifier": "^0.5.0",
-    "yeoman-generator": "^0.20.2"
+    "yeoman-generator": "^0.20.3"
   },
   "devDependencies": {
     "mocha": "*",
