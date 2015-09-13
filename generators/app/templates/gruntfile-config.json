@@ -28,25 +28,11 @@
         "options": {
           "browserifyOptions": {
             "standalone": "index",
+            "node":true,
             "commondir": false,
-            "builtins": [
-              "stream",
-              "util",
-              "path",
-              "url",
-              "string_decoder",
-              "events",
-              "net",
-              "punycode",
-              "querystring",
-              "dgram",
-              "dns",
-              "assert",
-              "tls",
-              "crypto"
-            ],
-            "insertGlobals": false,
-            "detectGlobals": false
+            "browserField": false,
+            "builtins": false,
+            "insertGlobals": false
           }
         }
       }
