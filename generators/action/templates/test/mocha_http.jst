@@ -13,7 +13,9 @@
 var Simulator = require('mozu-action-simulator');
 var assert = Simulator.assert;
 
-describe('<%= action.name %>', function () {
+var actionName = '<%= action.name %>';
+
+describe(actionName, function () {
 
   var action;
 
@@ -29,7 +31,7 @@ describe('<%= action.name %>', function () {
       done();
     };
 
-    var context = Simulator.context('<%= action.name %>', callback);
+    var context = Simulator.context(actionName, callback);
 
     // modify context as necessary
 
@@ -42,7 +44,7 @@ describe('<%= action.name %>', function () {
      var server = http.createServer(function(req, res) {
       context.request = req;
       context.response = res;
-      assert.ok(Simulator.simulate('<%= action.name %>', action, context, callback));
+      assert.ok(Simulator.simulate(actionName, action, context, callback));
      }).listen(9000);
      http.get('http://localhost:9000/', function(req, res) {
       // add the request body here
@@ -50,6 +52,6 @@ describe('<%= action.name %>', function () {
 
     */
 
-    Simulator.simulate('<%= action.name %>', action, context, callback);
+    Simulator.simulate(actionName, action, context, callback);
   });
 });

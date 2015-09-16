@@ -12,7 +12,9 @@
 var Simulator = require('mozu-action-simulator');
 var assert = Simulator.assert;
 
-describe('<%= action.name %>', function () {
+var actionName = '<%= action.name %>';
+
+describe(actionName, function () {
 
   var action;
 
@@ -28,11 +30,11 @@ describe('<%= action.name %>', function () {
       done();
     };
 
-    var context = Simulator.context('<%= action.name %>', callback);
+    var context = Simulator.context(actionName, callback);
 
     // modify context as necessary
 
 
-    Simulator.simulate('<%= action.name %>', action, context, callback);
+    Simulator.simulate(actionName, action, context, callback);
   });
 });
