@@ -235,7 +235,7 @@ module.exports = yeoman.generators.Base.extend({
         var actionType = getActionType(action.name);
         var actionConfig = this._actionsMap[action.name];
 
-        if (this.options.overwriteAll || !this.fs.exists(testPath)) {
+        if ((doNotWrite.indexOf(action.name) === -1) && (this.options.overwriteAll || !this.fs.exists(testPath))) {
 
           try {
             this.fs.copyTpl(
