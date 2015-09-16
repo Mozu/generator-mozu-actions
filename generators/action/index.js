@@ -133,7 +133,7 @@ module.exports = yeoman.generators.Base.extend({
       this._domains = [];
 
       actionNameArgs.forEach(function(name) {
-        var domain = helpers.getDomainFromActionName(name);
+        var domain = helpers.getDomainFromActionName(self._actionDefs, name);
         if (!domain) {
           throw new Error('No domain found for action name ' + name + '. It appears to be an invalid action.');
         }
