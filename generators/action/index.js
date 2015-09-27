@@ -217,6 +217,8 @@ module.exports = yeoman.generators.Base.extend({
       
       if (!this.options['skip-prompts']) {
         this.prompt(prompts, function(answers) {
+          self._domains = answers.domains;
+          delete answers.domains;
           self._actionNames = Object.keys(answers).reduce(function(m, k) {
             return m.concat(answers[k]);
           }, []);
