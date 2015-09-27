@@ -1,5 +1,8 @@
 'use strict';
 var yeoman = require('yeoman-generator');
+var glob = require('glob');
+var acorn = require('acorn');
+var acornWalk = require('acorn/dist/walk');
 var chalk = require('chalk');
 var inquirer = require('inquirer');
 var actionDefs = require('../../action-definitions.json');
@@ -80,33 +83,65 @@ module.exports = yeoman.generators.Base.extend({
 
   },
 
-  initializing: function() {
-    var self = this;
-    var done = this.async();
-    this.config.save();
-    if (this.options.internal) {
-      getActionDefs({
-        url: this.options.definitions
-      }).then(function(defs) {
-        self._actionDefs = defs;
-        self._availableActions = defs.actions;
-      }).catch(function() {
+  initializing: {
+    detectAvailable: function() {
+      var self = this;
+      var done = this.async();
+      this.config.save();
+      if (this.options.internal) {
+        getActionDefs({
+          url: this.options.definitions
+        }).then(function(defs) {
+          self._actionDefs = defs;
+          self._availableActions = defs.actions;
+        }).catch(function() {
+          self._actionDefs = actionDefs;
+          self._availableActions = actionDefs.actions;
+        }).then(createActionsMap);
+      } else {
         self._actionDefs = actionDefs;
-        self._availableActions = actionDefs.actions;
-      }).then(createActionsMap);
-    } else {
-      self._actionDefs = actionDefs;
-      self._availableActions = actionDefs.actions.filter(function(action) {
-        return !action.beta;
-      });
-      createActionsMap();
-    }
-    function createActionsMap() {
-      self._actionsMap = self._availableActions.reduce(function(memo, action) {
-        memo[action.action] = action;
-        return memo;
-      }, {});
-      done();
+        self._availableActions = actionDefs.actions.filter(function(action) {
+          return !action.beta;
+        });
+        createActionsMap();
+      }
+      function createActionsMap() {
+        self._actionsMap = self._availableActions.reduce(function(memo, action) {
+          memo[action.action] = action;
+          return memo;
+        }, {});
+        done();
+      }
+    },
+    detectExisting: function() {
+      var self = this;
+      var manifestFilenames = glob.sync(this.destinationPath('**/*.manifest.js'));
+      
+      var detectedActionNames = manifestFilenames.reduce(function(detected, filename) {
+        var source;
+        // in case implementations are broken,
+        // avoid running them and just read out metadata
+        try {
+          source = self.fs.read(filename);
+
+          acornWalk.simple(acorn.parse(source), {
+            Property: function(node) {
+              if (node.key.name === "actionName") {
+                detected.push(node.value.value);
+              }
+            }
+          });
+
+          return detected;
+
+        } catch(e) {
+          helpers.remark(self, "Unable to parse " + filename + " to detect implemented actions. Won't be detecting any actions in there! " + e);
+          throw e;
+        }
+      }, []);
+
+      this.implementedActions = detectedActionNames;
+
     }
   },
 
@@ -117,6 +152,11 @@ module.exports = yeoman.generators.Base.extend({
         name: action,
         value: action
       };
+    }
+
+    function actionIsInDomain(name, domain) {
+      var withoutType = name.split('.').slice(1).join('.');
+      return withoutType.indexOf(domain) === 0;
     }
 
     var self = this;
@@ -156,23 +196,33 @@ module.exports = yeoman.generators.Base.extend({
           return chosen.length > 0 || 'Please choose at least one domain to scaffold.';
         },
         default: this.options.domains || this.config.get('domains')
-      }, {
-        type: 'checkbox',
-        name: 'actionNames',
-        message: 'Choose one or more actions to scaffold.',
-        choices: function(props) {
-          return props.domains.reduce(function(choices, domain) {
-            return choices.concat([new inquirer.Separator('- Domain ' + chalk.bold(domain))].concat(self._availableActions.filter(function(action) {
-              return action.action.substring( action.action.indexOf('.') + 1 ).indexOf(domain) === 0;
-            }).map(function(action) {
-              return createActionName(action.action, domain);
-            })));
+      }].concat(self._actionDefs.domains.map(function(domain) {
+        return {
+          type: 'checkbox',
+          name: domain,
+          message: 'Actions for domain ' + chalk.bold(domain),
+          choices: self._availableActions.filter(function(action) {
+            return actionIsInDomain(action.action, domain);
+          }).map(function(action) {
+            return createActionName(action.action, domain);
+          }),
+          default: (self.options.actionNames || self.implementedActions).filter(function(name) {
+            return actionIsInDomain(name, domain);
+          }),
+          when: function(props) {
+            return props.domains.indexOf(domain) !== -1;
+          }
+        };
+      }));
+      
+      if (!this.options['skip-prompts']) {
+        this.prompt(prompts, function(answers) {
+          self._actionNames = Object.keys(answers).reduce(function(m, k) {
+            return m.concat(answers[k]);
           }, []);
-        },
-        default: this.options.actionNames || this.config.get('actionNames')
-      }];
-
-      helpers.promptAndSaveResponse(this, prompts, done);
+          done();
+        });
+      }
 
     }
 
