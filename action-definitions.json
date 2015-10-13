@@ -3304,7 +3304,8 @@
     {
       "action": "http.storefront.pages.global.request.before",
       "aliases": [
-        "storefront.pages.global.beforeRequest"
+        "storefront.pages.global.beforeRequest",
+        "http.storefront.pages.global.beforeRequest"
       ],
       "domain": "storefront",
       "contextLevel": "Site",
@@ -3316,43 +3317,19 @@
     {
       "action": "http.storefront.pages.global.request.after",
       "aliases": [
-        "storefront.pages.global.afterRequest"
+        "storefront.pages.global.afterRequest",
+        "http.storefront.pages.global.afterRequest"
       ],
       "domain": "storefront",
       "contextLevel": "Site",
       "supportsMultipleCustomFunctions": true,
       "context": {
         "type": "mozu.actions.context.http"
-      }
-    },
-    {
-      "action": "http.storefront.routes",
-      "aliases": [
-        "hypr.storefront.filters"
-      ],
-      "domain": "storefront",
-      "contextLevel": "Site",
-      "supportsMultipleCustomFunctions": true,
-      "context": {
-        "type": "mozu.actions.context.http"
-      }
-    },
-    {
-      "action": "hypr.storefront.tags",
-      "aliases": [
-        "hypr.storefront.filters"
-      ],
-      "contextLevel": "Site",
-      "supportsMultipleCustomFunctions": true,
-      "context": {
-        "type": "mozu.actions.context.tag"
       }
     },
     {
       "action": "http.storefront.pages.search.request.before",
-      "aliases": [
-        "storefront.pages.search.request.before"
-      ],
+      "beta": true,
       "domain": "storefront",
       "contextLevel": "Site",
       "supportsMultipleCustomFunctions": true,
@@ -3362,9 +3339,7 @@
     },
     {
       "action": "http.storefront.pages.search.request.after",
-      "aliases": [
-        "storefront.pages.search.request.after"
-      ],
+      "beta": true,
       "domain": "storefront",
       "contextLevel": "Site",
       "supportsMultipleCustomFunctions": true,
@@ -3374,9 +3349,7 @@
     },
     {
       "action": "http.storefront.pages.productDetails.request.before",
-      "aliases": [
-        "storefront.pages.productDetails.request.before"
-      ],
+      "beta": true,
       "domain": "storefront",
       "contextLevel": "Site",
       "supportsMultipleCustomFunctions": true,
@@ -3386,9 +3359,7 @@
     },
     {
       "action": "http.storefront.pages.productDetails.request.after",
-      "aliases": [
-        "storefront.pages.productDetails.request.after"
-      ],
+      "beta": true,
       "domain": "storefront",
       "contextLevel": "Site",
       "supportsMultipleCustomFunctions": true,
@@ -3398,9 +3369,7 @@
     },
     {
       "action": "http.storefront.pages.category.request.before",
-      "aliases": [
-        "storefront.pages.category.request.before"
-      ],
+      "beta": true,
       "domain": "storefront",
       "contextLevel": "Site",
       "supportsMultipleCustomFunctions": true,
@@ -3410,9 +3379,7 @@
     },
     {
       "action": "http.storefront.pages.category.request.after",
-      "aliases": [
-        "storefront.pages.category.request.after"
-      ],
+      "beta": true,
       "domain": "storefront",
       "contextLevel": "Site",
       "supportsMultipleCustomFunctions": true,
@@ -3422,9 +3389,7 @@
     },
     {
       "action": "http.storefront.pages.cart.request.before",
-      "aliases": [
-        "storefront.pages.cart.request.before"
-      ],
+      "beta": true,
       "domain": "storefront",
       "contextLevel": "Site",
       "supportsMultipleCustomFunctions": true,
@@ -3434,9 +3399,27 @@
     },
     {
       "action": "http.storefront.pages.cart.request.after",
-      "aliases": [
-        "storefront.pages.cart.request.after"
-      ],
+      "beta": true,
+      "domain": "storefront",
+      "contextLevel": "Site",
+      "supportsMultipleCustomFunctions": true,
+      "context": {
+        "type": "mozu.actions.context.http"
+      }
+    },
+    {
+      "action": "http.storefront.pages.cmspage.request.before",
+      "beta": true,
+      "domain": "storefront",
+      "contextLevel": "Site",
+      "supportsMultipleCustomFunctions": true,
+      "context": {
+        "type": "mozu.actions.context.http"
+      }
+    },
+    {
+      "action": "http.storefront.pages.cmspage.request.after",
+      "beta": true,
       "domain": "storefront",
       "contextLevel": "Site",
       "supportsMultipleCustomFunctions": true,
@@ -3446,9 +3429,7 @@
     },
     {
       "action": "http.storefront.pages.checkout.request.before",
-      "aliases": [
-        "storefront.pages.checkout.request.before"
-      ],
+      "beta": true,
       "domain": "storefront",
       "contextLevel": "Site",
       "supportsMultipleCustomFunctions": true,
@@ -3458,9 +3439,7 @@
     },
     {
       "action": "http.storefront.pages.checkout.request.after",
-      "aliases": [
-        "storefront.pages.checkout.request.after"
-      ],
+      "beta": true,
       "domain": "storefront",
       "contextLevel": "Site",
       "supportsMultipleCustomFunctions": true,
@@ -3470,9 +3449,7 @@
     },
     {
       "action": "http.storefront.pages.orderConfirmation.request.before",
-      "aliases": [
-        "storefront.pages.orderConfirmation.request.before"
-      ],
+      "beta": true,
       "domain": "storefront",
       "contextLevel": "Site",
       "supportsMultipleCustomFunctions": true,
@@ -3482,9 +3459,7 @@
     },
     {
       "action": "http.storefront.pages.orderConfirmation.request.after",
-      "aliases": [
-        "storefront.pages.orderConfirmation.request.after"
-      ],
+      "beta": true,
       "domain": "storefront",
       "contextLevel": "Site",
       "supportsMultipleCustomFunctions": true,
@@ -3494,9 +3469,7 @@
     },
     {
       "action": "http.storefront.pages.myAccount.request.before",
-      "aliases": [
-        "storefront.pages.myAccount.request.before"
-      ],
+      "beta": true,
       "domain": "storefront",
       "contextLevel": "Site",
       "supportsMultipleCustomFunctions": true,
@@ -3506,9 +3479,7 @@
     },
     {
       "action": "http.storefront.pages.myAccount.request.after",
-      "aliases": [
-        "storefront.pages.myAccount.request.after"
-      ],
+      "beta": true,
       "domain": "storefront",
       "contextLevel": "Site",
       "supportsMultipleCustomFunctions": true,
@@ -3518,9 +3489,7 @@
     },
     {
       "action": "http.storefront.pages.404.request.before",
-      "aliases": [
-        "storefront.pages.404.request.before"
-      ],
+      "beta": true,
       "domain": "storefront",
       "contextLevel": "Site",
       "supportsMultipleCustomFunctions": true,
@@ -3530,9 +3499,37 @@
     },
     {
       "action": "http.storefront.pages.404.request.after",
-      "aliases": [
-        "storefront.pages.404.request.after"
-      ],
+      "beta": true,
+      "domain": "storefront",
+      "contextLevel": "Site",
+      "supportsMultipleCustomFunctions": true,
+      "context": {
+        "type": "mozu.actions.context.http"
+      }
+    },
+    {
+      "action": "hypr.storefront.filters",
+      "beta": true,
+      "domain": "storefront",
+      "contextLevel": "Site",
+      "supportsMultipleCustomFunctions": true,
+      "context": {
+        "type": "mozu.actions.context.filter"
+      }
+    },
+    {
+      "action": "hypr.storefront.tags",
+      "beta": true,
+      "domain": "storefront",
+      "contextLevel": "Site",
+      "supportsMultipleCustomFunctions": true,
+      "context": {
+        "type": "mozu.actions.context.tag"
+      }
+    },
+    {
+      "action": "http.storefront.routes",
+      "beta": true,
       "domain": "storefront",
       "contextLevel": "Site",
       "supportsMultipleCustomFunctions": true,
