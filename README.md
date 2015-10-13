@@ -20,8 +20,6 @@ Yeoman looks for globally installed NPM packages that identify themselves as Yeo
 npm install -g generator-mozu-actions grunt-cli
 ```
 
-Create a [Sync App](./docs/sync-app.md) and note the Application Key and Shared Secret.
-
 Make a new directory and `cd` into it:
 ```
 mkdir example && cd example
