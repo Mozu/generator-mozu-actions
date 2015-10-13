@@ -4,10 +4,7 @@ Maintainer: [James Zetlen](https://github.com/zetlen)
 
 A Mozu Actions generator for Yeoman that provides boilerplate and structure for writing Mozu Custom Functions against the family of Mozu Code Actions. It provides documented function stubs, a build process using Grunt and Browserify, remote sync with the Developer Center, and unit tests using Mocha plus the Mozu Action Simulator.
 
-## This package is currently a prerelease.
-**This contains pre-release code. It may have behaviors or rely on features that don't work in Mozu production environments. Use with caution!**
-
-![](http://i.imgur.com/01FRhEd.png)
+![A screenshot of the generator in action in an OSX terminal.](http://i.imgur.com/r3sSEvX.png)
 
 ## Usage
 
