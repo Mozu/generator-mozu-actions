@@ -1,7 +1,7 @@
 module.exports = {
   'mocha': {
     name: 'Mocha',
-    install: ['grunt-mocha-test'],
+    install: ['mocha','grunt-mocha-test'],
     taskName: 'mochaTest',
     taskConfig: {
       all: {

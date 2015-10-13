@@ -163,6 +163,7 @@ module.exports = mozuAppGenerator.extend({
     deps: function() {
       if (!this.options['skip-install']) {
         this.npmInstall([
+          'grunt',
           'grunt-browserify',
           'grunt-contrib-jshint',
           'grunt-contrib-watch',
