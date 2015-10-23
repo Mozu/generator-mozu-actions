@@ -1,8 +1,10 @@
 module.exports = {
-  <% actions.forEach(function(action, i) { %>
-  '<%= action.name %>': {
+<% actions.forEach(function(action, i) { -%>
+  <% action.customFunctionNames.forEach(function(customFunctionName, j) { -%>
+  '<%= customFunctionName %>': {
       actionName:'<%= action.name %>',
-      customFunction: require('./domains/<%= action.domain %>/<%= action.name %>')
-   }<% if (i < actions.length - 1) { %>,<% } %>
-  <% }); %>
+      customFunction: require('./domains/<%= action.domain %>/<%= customFunctionName %>')
+  }<% if (j < action.customFunctionNames.length - 1 || i < actions.length - 1) { %>,<% }
+     }); -%>
+<% }); -%>
 };
