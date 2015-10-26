@@ -226,14 +226,23 @@ module.exports = yeoman.generators.Base.extend({
                    'this later.)',
           choices: [
             {
-              name: 'Multiple (advanced mode)',
-              value: true,
-            },
-            {
               name: 'One (simple mode)',
               value: false
+            },
+            {
+              name: 'Multiple (advanced mode)',
+              value: "yes"
             }
           ],
+          default: function(answers) {
+            return answers.storefront &&
+                   ['http.storefront.routes',
+                    'hypr.storefront.tags',
+                    'hypr.storefront.filters']
+                   .some(function(shouldBeMultiple) {
+                     return !!~answers.storefront.indexOf(shouldBeMultiple);
+                   }) && "yes";
+          },
           when: function(answers) {
             return answers.domains.some(function(domain) {
               return answers[domain].some(function(action) {
