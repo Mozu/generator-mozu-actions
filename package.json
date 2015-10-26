@@ -14,6 +14,7 @@
   },
   "scripts": {
     "preversion": "update-arc-defs",
+    "version": "git add action-definitions.json",
     "test": "mocha"
   },
   "files": [
