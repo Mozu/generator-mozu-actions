@@ -2,6 +2,7 @@
   "domains": [
     "commerce.carts",
     "commerce.orders",
+    "commerce.settings",
     "commerce.payments",
     "commerce.catalog.admin.products",
     "commerce.customer",
@@ -2652,6 +2653,17 @@
       }
     },
     {
+      "action": "http.commerce.settings.checkout.paymentsettings.updatePaymentSettings.before",
+      "aliases": [],
+      "beta": true,
+      "domain": "commerce.settings",
+      "contextLevel": "Site",
+      "supportsMultipleCustomFunctions": true,
+      "context": {
+        "type": "mozu.actions.context.http"
+      }
+    },
+    {
       "action": "embedded.commerce.payments.action.performPaymentInteraction",
       "aliases": [],
       "domain": "commerce.payments",
@@ -2702,6 +2714,152 @@
             "return": {
               "type": "mozu.commerceRuntime.contracts.payments.payment"
             }
+          },
+          "setActionAmount": {
+            "parameters": [
+              {
+                "name": "amount",
+                "type": "number"
+              }
+            ],
+            "return": {
+              "type": "mozu.commerceRuntime.contracts.payments.paymentAction"
+            }
+          }
+        },
+        "get": {
+          "payment": {
+            "parameters": [],
+            "return": {
+              "type": "mozu.commerceRuntime.contracts.payments.payment"
+            }
+          },
+          "paymentAction": {
+            "parameters": [],
+            "return": {
+              "type": "mozu.commerceRuntime.contracts.payments.paymentAction"
+            }
+          }
+        }
+      }
+    },
+    {
+      "action": "embedded.commerce.payments.action.before",
+      "aliases": [],
+      "beta": true,
+      "domain": "commerce.payments",
+      "contextLevel": "Site",
+      "supportsMultipleCustomFunctions": true,
+      "context": {
+        "exec": {
+          "setActionAmount": {
+            "parameters": [
+              {
+                "name": "amount",
+                "type": "number"
+              }
+            ],
+            "return": {
+              "type": "mozu.commerceRuntime.contracts.payments.paymentAction"
+            }
+          },
+          "setPaymentData": {
+            "parameters": [
+              {
+                "name": "key",
+                "type": "string"
+              },
+              {
+                "name": "value",
+                "type": "object"
+              }
+            ]
+          },
+          "removePaymentData": {
+            "parameters": [
+              {
+                "name": "key",
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "get": {
+          "payment": {
+            "parameters": [],
+            "return": {
+              "type": "mozu.commerceRuntime.contracts.payments.payment"
+            }
+          },
+          "paymentAction": {
+            "parameters": [],
+            "return": {
+              "type": "mozu.commerceRuntime.contracts.payments.paymentAction"
+            }
+          }
+        }
+      }
+    },
+    {
+      "action": "embedded.commerce.payments.action.after",
+      "aliases": [],
+      "beta": true,
+      "domain": "commerce.payments",
+      "contextLevel": "Site",
+      "supportsMultipleCustomFunctions": true,
+      "context": {
+        "exec": {
+          "setFailedStateName": {
+            "parameters": [
+              {
+                "name": "stateName",
+                "type": "string"
+              }
+            ]
+          },
+          "setSuccessFlag": {
+            "parameters": [
+              {
+                "name": "isSuccess",
+                "type": "bool"
+              }
+            ]
+          },
+          "setNewStateName": {
+            "parameters": [
+              {
+                "name": "stateName",
+                "type": "string"
+              }
+            ]
+          },
+          "setPaymentData": {
+            "parameters": [
+              {
+                "name": "key",
+                "type": "string"
+              },
+              {
+                "name": "value",
+                "type": "object"
+              }
+            ]
+          },
+          "removePaymentData": {
+            "parameters": [
+              {
+                "name": "key",
+                "type": "string"
+              }
+            ]
+          },
+          "setRetryFlag": {
+            "parameters": [
+              {
+                "name": "shouldRetry",
+                "type": "bool"
+              }
+            ]
           }
         },
         "get": {
