@@ -51,7 +51,10 @@ module.exports = mozuAppGenerator.extend({
 
         var preconfiguredActions = [];
 
-        if (this._enableOnInstall) preconfiguredActions.push('embedded.platform.applications.install');
+        if (this._enableOnInstall) preconfiguredActions.push({
+          actionId: 'embedded.platform.applications.install',
+          functionIds: ['enableOnInstall']
+        });
 
         process.stdout.write(' '); // hack to kick off the console for the subprocess
         this.composeWith('mozu-actions:action', {
@@ -79,7 +82,18 @@ module.exports = mozuAppGenerator.extend({
       }, this);
     },
 
-    
+    packagejson: function() {
+      this.fs.writeJSON(
+        this.destinationPath('package.json'), helpers.merge(
+          this._package,
+          this.fs.readJSON('package.json'),
+          {
+            scripts: {
+              test: 'grunt test'
+            }
+          }
+        )); 
+    },
     readme: function() {
       this.fs.copyTpl(
         this.templatePath('_README.md.tpt'),
@@ -136,7 +150,7 @@ module.exports = mozuAppGenerator.extend({
       if (this._enableOnInstall) {
         this.fs.copy(
           this.templatePath('enableactions.js'),
-          this.destinationPath('assets/src/domains/platform.applications/embedded.platform.applications.install.js'));
+          this.destinationPath('assets/src/domains/platform.applications/enableOnInstall.js'));
       }
     },
 

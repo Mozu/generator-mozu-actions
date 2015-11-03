@@ -64,7 +64,7 @@ module.exports = yeoman.generators.Base.extend({
       hide: true
     });
 
-    this.option('doNotWrite', {
+    this.option('preconfigured', {
       type: Array,
       required: false,
       hide: true
@@ -356,13 +356,21 @@ module.exports = yeoman.generators.Base.extend({
   },
 
   configuring: function() {
+    let preconfigured = (this.options.preconfigured || []).slice();
     this._actions = this._actionNames.map(function(name) {
+      let functionNames = this._multipleCustomFunctions[name] || [name];
+      preconfigured.forEach(function(def) {
+        if (def.actionId === name) {
+          functionNames = functionNames.concat(def.functionIds);
+        }
+      });
       return {
         name: name,
         domain: this._actionsMap[name].domain,
-        customFunctionNames: this._multipleCustomFunctions[name] || [name]
+        customFunctionNames: functionNames
       };
     }.bind(this));
+
     this.config.set('domains', this._domains);
     this.config.set('actionNames', this._actionNames);
   },
@@ -371,7 +379,10 @@ module.exports = yeoman.generators.Base.extend({
 
     var self = this;
     var requirements;
-    var doNotWrite = self.options.doNotWrite || [];
+    var doNotWrite = (self.options.preconfigured || []).reduce(
+      function(functionIds, def) {
+        return functionIds.concat(def.functionIds);
+      }, []);
 
     this._domains.forEach(function(domain) {
       var thisDomainsActions = self._actions.filter(function(action) {
@@ -388,7 +399,7 @@ module.exports = yeoman.generators.Base.extend({
           var implPath = self.destinationPath('assets/src/domains/' + 
                          domain + '/' + customFunctionName + '.js');
           if ((self.options.overwriteAll || !self.fs.exists(implPath)) &&
-              (doNotWrite.indexOf(action.name) === -1)) {
+              (doNotWrite.indexOf(customFunctionName) === -1)) {
             self.fs.copyTpl(
               self.templatePath('_action_implementation.jst'),
               implPath, {
@@ -419,7 +430,7 @@ module.exports = yeoman.generators.Base.extend({
           var actionType = getActionType(action.name);
           var actionConfig = this._actionsMap[action.name];
 
-          if ((doNotWrite.indexOf(action.name) === -1) &&
+          if ((doNotWrite.indexOf(customFunctionName) === -1) &&
               (this.options.overwriteAll || !this.fs.exists(testPath))) {
 
             try {
@@ -427,6 +438,7 @@ module.exports = yeoman.generators.Base.extend({
                 this.templatePath('test/' + this.options.testFramework + '_' + actionType + '.jst'),
                 testPath,
                 {
+                  functionId: customFunctionName,
                   action: action, 
                   context: actionConfig.context
                 }

@@ -13,19 +13,31 @@ var helpers = module.exports = {
       return match;
     }); 
   },
-  createActionOptions: function(self, preconfiguredActions, actionDefs) {
-    preconfiguredActions = preconfiguredActions || [];
+  createActionOptions: function(self, preconfiguredFunctions, actionDefs) {
+    preconfiguredFunctions = preconfiguredFunctions || [];
     var domains = self.config.get('domains') || [];
     var actionNames = self.config.get('actionNames') || [];
-    var allActionNames = uniq(actionNames.concat(preconfiguredActions));
-    var preconfiguredDomains = uniq(domains.concat(preconfiguredActions.map(helpers.getDomainFromActionName.bind(null, actionDefs || savedActionDefinitions))));
+    var allActionNames = uniq(actionNames.concat(
+      preconfiguredFunctions.map(function(def) {
+        return def.actionId;
+      })));
+    var preconfiguredDomains = uniq(
+      domains.concat(
+        preconfiguredFunctions.map(function(def) {
+          return helpers.getDomainFromActionName(
+            actionDefs || savedActionDefinitions,
+            def.actionId
+          );
+        })
+      )
+    );
     return {
       'skip-prompts': self.options['skip-prompts'],
       internal: self.options.internal,
       testFramework: self._testFramework,
       overwriteAll: true,
       actionNames: allActionNames,
-      doNotWrite: preconfiguredActions,
+      preconfigured: preconfiguredFunctions,
       domains: preconfiguredDomains
     }
   }

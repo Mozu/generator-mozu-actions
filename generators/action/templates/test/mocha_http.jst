@@ -15,12 +15,12 @@ var assert = Simulator.assert;
 
 var actionName = '<%= action.name %>';
 
-describe(actionName, function () {
+describe('<%= functionId %> implementing <%= action.name %>', function () {
 
   var action;
 
   before(function () {
-    action = require('../src/domains/<%= action.domain %>/<%= action.name %>');
+    action = require('../src/domains/<%= action.domain %>/<%= functionId %>');
   });
 
   it('runs successfully', function(done) {
