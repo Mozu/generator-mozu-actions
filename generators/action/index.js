@@ -124,7 +124,7 @@ module.exports = yeoman.generators.Base.extend({
       var self = this;
       var manifestFilenames = glob.sync(this.destinationPath('**/*.manifest.js'));
       
-      var detectedActionNames = manifestFilenames.reduce(function(detected, filename) {
+      var detectedCustomFunctions = manifestFilenames.reduce(function(detected, filename) {
         var source;
         // in case implementations are broken,
         // avoid running them and just read out metadata
@@ -132,9 +132,22 @@ module.exports = yeoman.generators.Base.extend({
           source = self.fs.read(filename);
 
           acornWalk.simple(acorn.parse(source), {
-            Property: function(node) {
-              if (node.key.name === "actionName") {
-                detected.push(node.value.value);
+            ExpressionStatement: function(node) {
+              if (node.expression.left.object &&
+                node.expression.left.object.name === "module" &&
+                node.expression.left.property &&
+                node.expression.left.property.name === "exports") {
+
+                  node.expression.right.properties.forEach(function(prop) {
+                    var actionName = prop.value.properties.reduce(function(found, pr) {
+                      return pr.key.name === "actionName" ? pr.value.value : found;
+                    }, null);
+                    if (!detected[actionName]) {
+                      detected[actionName] = [];
+                    }
+                    detected[actionName].push(prop.key.value);
+                  });
+
               }
             }
           });
@@ -145,9 +158,9 @@ module.exports = yeoman.generators.Base.extend({
           helpers.remark(self, "Unable to parse " + filename + " to detect implemented actions. Won't be detecting any actions in there! " + e);
           throw e;
         }
-      }, []);
+      }, {});
 
-      this.implementedActions = detectedActionNames;
+      this.implementedCustomFunctions = detectedCustomFunctions;
 
     }
   },
@@ -169,6 +182,8 @@ module.exports = yeoman.generators.Base.extend({
 
       var actionNameArgs = this.actionNames;
 
+      var defaults;
+
       if (actionNameArgs) {
 
         this._actionNames = [];
@@ -189,6 +204,10 @@ module.exports = yeoman.generators.Base.extend({
 
       } else {
 
+        var defaults = self.options.actionNames ||
+          self.implementedCustomFunctions ? 
+            Object.keys(self.implementedCustomFunctions) : [];
+
         prompts = [{
           type: 'checkbox',
           name: 'domains',
@@ -208,7 +227,7 @@ module.exports = yeoman.generators.Base.extend({
             }).map(function(action) {
               return createActionName(action.action, domain);
             }),
-            default: (self.options.actionNames || self.implementedActions).filter(function(name) {
+            default: defaults.filter(function(name) {
               return actionIsInDomain(name, domain);
             }),
             when: function(props) {
@@ -235,6 +254,12 @@ module.exports = yeoman.generators.Base.extend({
             }
           ],
           default: function(answers) {
+            if (self.implementedCustomFunctions &&
+                Object.keys(self.implementedCustomFunctions).some(function(a) {
+                  return self.implementedCustomFunctions[a].length > 1;
+                })) {
+                  return "yes";
+                }
             return answers.storefront &&
                    ['http.storefront.routes',
                     'hypr.storefront.tags',
@@ -310,6 +335,9 @@ module.exports = yeoman.generators.Base.extend({
               name: name,
               message: 'Custom function names for ' + chalk.bold.yellow(name) +
                        ':',
+              default: self.implementedCustomFunctions &&
+                self.implementedCustomFunctions[name] &&
+                self.implementedCustomFunctions[name].join(','),
               validate: function(value) { 
                 if (!value || value.length == 0) {
                   return 'Please enter at least one name for a custom ' +
