@@ -53,7 +53,7 @@ module.exports = mozuAppGenerator.extend({
 
         if (this._enableOnInstall) preconfiguredActions.push({
           actionId: 'embedded.platform.applications.install',
-          functionIds: ['enableOnInstall']
+          functionIds: ['embedded.platform.applications.install']
         });
 
         process.stdout.write(' '); // hack to kick off the console for the subprocess
@@ -150,7 +150,7 @@ module.exports = mozuAppGenerator.extend({
       if (this._enableOnInstall) {
         this.fs.copy(
           this.templatePath('enableactions.js'),
-          this.destinationPath('assets/src/domains/platform.applications/enableOnInstall.js'));
+          this.destinationPath('assets/src/domains/platform.applications/embedded.platform.applications.install.js'));
       }
     },
 
