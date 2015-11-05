@@ -1,4 +1,5 @@
 'use strict';
+var uniq = require('lodash.uniq');
 var yeoman = require('yeoman-generator');
 var glob = require('glob');
 var acorn = require('acorn');
@@ -204,9 +205,10 @@ module.exports = yeoman.generators.Base.extend({
 
       } else {
 
-        var defaults = self.options.actionNames ||
-          self.implementedCustomFunctions ? 
-            Object.keys(self.implementedCustomFunctions) : [];
+        defaults = self.options.actionNames ||
+          (self.implementedCustomFunctions ? 
+            Object.keys(self.implementedCustomFunctions) : []);
+
 
         prompts = [{
           type: 'checkbox',
@@ -389,7 +391,7 @@ module.exports = yeoman.generators.Base.extend({
       let functionNames = this._multipleCustomFunctions[name] || [name];
       preconfigured.forEach(function(def) {
         if (def.actionId === name) {
-          functionNames = functionNames.concat(def.functionIds);
+          functionNames = uniq(functionNames.concat(def.functionIds));
         }
       });
       return {
