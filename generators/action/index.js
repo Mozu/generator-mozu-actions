@@ -1,5 +1,6 @@
 'use strict';
 var uniq = require('lodash.uniq');
+var find = require('lodash.find');
 var yeoman = require('yeoman-generator');
 var glob = require('glob');
 var acorn = require('acorn');
@@ -110,6 +111,11 @@ module.exports = yeoman.generators.Base.extend({
         self._actionDefs = actionDefs;
         self._availableActions = actionDefs.actions.filter(function(action) {
           return !action.beta;
+        });
+        self._actionDefs.domains = actionDefs.domains.filter(function(domain) {
+          return !!self._availableActions.find(function(action) {
+            return action.domain === domain;
+          });
         });
         createActionsMap();
       }
