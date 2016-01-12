@@ -3,11 +3,12 @@
   "version": "1.2.5",
   "description": "Yeoman generator for Mozu Actions",
   "license": "MIT",
-  "repository": "git+http://tfs.corp.volusion.com:8080/tfs/VNext/Prototype/_git/generator-mozu-extension",
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/Mozu/generator-mozu-actions.git"
+  },
   "author": {
-    "name": "James Zetlen",
-    "email": "zetlen@gmail.com",
-    "url": "https://github.com/zetlen"
+    "name": "Volusion, LLC."
   },
   "engines": {
     "node": ">=0.12.0"
@@ -15,7 +16,11 @@
   "scripts": {
     "preversion": "update-arc-defs",
     "version": "git add action-definitions.json",
-    "test": "mocha"
+    "test": "echo YAAAAAAAAAAAAY",
+    "ci-build": "npm test",
+    "ci-build-stable": "npm run ci-build",
+    "postci-build-stable": "mozu-validate-npm-package",
+    "cov": "echo EVERYTHING IS PERFECT"
   },
   "files": [
     "generators",
@@ -26,19 +31,20 @@
     "yeoman-generator"
   ],
   "dependencies": {
-    "acorn": "^2.4.0",
+    "acorn": "^2.7.0",
     "chalk": "^1.1.1",
-    "generator-mozu-app": "^1.0.1",
-    "glob": "^5.0.15",
-    "inquirer": "^0.10.1",
+    "generator-mozu-app": "^1.2.0",
+    "glob": "^6.0.4",
+    "inquirer": "^0.11.2",
     "lodash.find": "^3.2.1",
     "lodash.uniq": "^3.2.2",
-    "mozu-metadata": "^2.1.0",
-    "update-notifier": "^0.5.0",
-    "yeoman-generator": "^0.20.3"
+    "mozu-metadata": "^2.3.1",
+    "update-notifier": "^0.6.0",
+    "yeoman-generator": "^0.22.3"
   },
   "devDependencies": {
-    "mocha": "*",
-    "needle": "^0.10.0"
+    "mozu-validate-npm-package": "^1.0.1",
+    "yeoman-assert": "^2.1.1",
+    "yeoman-test": "^1.0.0"
   }
 }

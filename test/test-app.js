@@ -1,24 +1,27 @@
 'use strict';
 
 var path = require('path');
-var assert = require('yeoman-generator').assert;
-var helpers = require('yeoman-generator').test;
+var assert = require('assert');
+var yassert = require('yeoman-assert');
+var helpers = require('yeoman-test');
 var os = require('os');
 
-describe('mozu-extension:app', function () {
+describe('mozu-actions generator', function () {
   before(function (done) {
-    helpers.run(path.join(__dirname, '../app'))
-      .inDir(path.join(os.tmpdir(), './temp-test'))
-      .withOptions({ 'skip-install': true })
-      .withPrompt({
+    helpers.run(path.join(__dirname, '../generators/app'))
+      .withOptions({
+        'skip-install': true,
+        'skip-app': true
+      })
+      .withPrompts({
         someOption: true
       })
+      .on('error', function(e) { assert.fail(e) })
       .on('end', done);
   });
 
   it('creates files', function () {
-    assert.file([
-      'bower.json',
+    yassert.file([
       'package.json',
       '.editorconfig',
       '.jshintrc'
