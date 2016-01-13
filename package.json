@@ -5,14 +5,13 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "http://github.com/Mozu/generator-mozu-actions.git"
+    "url": "https://github.com/Mozu/generator-mozu-actions"
   },
-  "author": {
-    "name": "Volusion, LLC."
-  },
+  "author": "Volusion, LLC",
   "engines": {
     "node": ">=4.1"
   },
+  "main": "./generators/app/index.js",
   "scripts": {
     "preversion": "update-arc-defs",
     "version": "git add action-definitions.json",
@@ -20,7 +19,8 @@
     "ci-build": "npm test",
     "ci-build-stable": "npm run ci-build",
     "postci-build-stable": "mozu-validate-npm-package",
-    "cov": "echo EVERYTHING IS PERFECT"
+    "cov": "echo EVERYTHING IS PERFECT",
+    "prepublish": "mozu-npm-publish-check"
   },
   "files": [
     "generators",
