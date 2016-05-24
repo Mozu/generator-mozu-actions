@@ -3029,6 +3029,26 @@
       }
     },
     {
+      "action": "http.commerce.customer.authTickets.createUserAuthTicket.after",
+      "aliases": [],
+      "domain": "commerce.customer",
+      "contextLevel": "Tenant",
+      "supportsMultipleCustomFunctions": true,
+      "context": {
+        "type": "mozu.actions.context.http"
+      }
+    },
+    {
+      "action": "http.commerce.customer.authTickets.createUserAuthTicket.before",
+      "aliases": [],
+      "domain": "commerce.customer",
+      "contextLevel": "Tenant",
+      "supportsMultipleCustomFunctions": true,
+      "context": {
+        "type": "mozu.actions.context.http"
+      }
+    },
+    {
       "action": "embedded.commerce.customer.accounts.verifyExternalPassword",
       "aliases": [
         "api.commerce.customer.accounts.embedded.verifyExternalPassword"
