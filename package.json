@@ -19,8 +19,7 @@
     "ci-build": "npm test",
     "ci-build-stable": "npm run ci-build",
     "postci-build-stable": "mozu-validate-npm-package",
-    "cov": "echo EVERYTHING IS PERFECT",
-    "prepublish": "mozu-npm-publish-check"
+    "cov": "echo EVERYTHING IS PERFECT"
   },
   "files": [
     "generators",

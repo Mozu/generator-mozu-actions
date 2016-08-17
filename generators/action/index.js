@@ -130,7 +130,7 @@ module.exports = yeoman.generators.Base.extend({
     detectExisting: function() {
       var self = this;
       var manifestFilenames = glob.sync(this.destinationPath('**/*.manifest.js'));
-      
+
       var detectedCustomFunctions = manifestFilenames.reduce(function(detected, filename) {
         var source;
         // in case implementations are broken,
@@ -212,7 +212,7 @@ module.exports = yeoman.generators.Base.extend({
       } else {
 
         defaults = self.options.actionNames ||
-          (self.implementedCustomFunctions ? 
+          (self.implementedCustomFunctions ?
             Object.keys(self.implementedCustomFunctions) : []);
 
 
@@ -301,7 +301,7 @@ module.exports = yeoman.generators.Base.extend({
 
       }
 
-    }, 
+    },
     createMultipleActionsFor: function() {
       var self = this;
       var done;
@@ -328,9 +328,9 @@ module.exports = yeoman.generators.Base.extend({
       var seenNames = {};
       if (self._createMultipleFor && self._createMultipleFor.length > 0) {
         done = self.async();
-        helpers.remark(this, 
+        helpers.remark(this,
                        'For each of the following actions, please provide ' +
-                       'a list of custom function names.\nThey must be ' + 
+                       'a list of custom function names.\nThey must be ' +
                        'unique, comma separated, and contain no spaces.');
         helpers.remark(this,
                        'For instance, to create three custom functions ' +
@@ -346,28 +346,32 @@ module.exports = yeoman.generators.Base.extend({
               default: self.implementedCustomFunctions &&
                 self.implementedCustomFunctions[name] &&
                 self.implementedCustomFunctions[name].join(','),
-              validate: function(value) { 
+              validate: function(value) {
                 if (!value || value.length == 0) {
                   return 'Please enter at least one name for a custom ' +
                          'function.';
                 }
-                var seen = value.split(',').filter(function(v) {
-                  return !!seenNames[v];
-                });
-                switch (seen.length) {
-                  case 0:
-                    return true;
-                  case 1:
-                    return 'You have already used the custom function name ' +
-                           chalk.yellow(seen[0]) + '. Please select a ' +
-                           'different name.';
-                  default:
-                    return 'You have already used the custom function ' +
-                           'names ' + chalk.yellow(seen.join(', ')) + '. ' +
-                           ' Please select different names.'
-                }
+                return true;
+                // not sure what the orig intent was but the the seenNames as populated
+                // by filter is fed all of the entred action names so seing if it exist
+                // in it makes the little sense to me as of course it would be.
+                // var seen = Array.prototype.filter.call(null,function(v) {
+                //   return !!seenNames[v];
+                // });
+                // switch (seen.length) {
+                //   case 0:
+                //     return true;
+                //   case 1:
+                //     return 'You have already used the custom function name ' +
+                //            chalk.yellow(seen[0]) + '. Please select a ' +
+                //            'different name.';
+                //   default:
+                //     return 'You have already used the custom function ' +
+                //            'names ' + chalk.yellow(seen.join(', ')) + '. ' +
+                //            ' Please select different names.'
+                // }
               },
-              filter: function(value) { 
+              filter: function(value) {
                 // big cheat but helps with validation;
                 // a side effect in the filter function, where we keep track
                 // of custom function names we have already seen.
@@ -432,7 +436,7 @@ module.exports = yeoman.generators.Base.extend({
         });
       thisDomainsActions.forEach(function(action) {
         action.customFunctionNames.forEach(function(customFunctionName) {
-          var implPath = self.destinationPath('assets/src/domains/' + 
+          var implPath = self.destinationPath('assets/src/domains/' +
                          domain + '/' + customFunctionName + '.js');
           if ((self.options.overwriteAll || !self.fs.exists(implPath)) &&
               (doNotWrite.indexOf(customFunctionName) === -1)) {
@@ -475,7 +479,7 @@ module.exports = yeoman.generators.Base.extend({
                 testPath,
                 {
                   functionId: customFunctionName,
-                  action: action, 
+                  action: action,
                   context: actionConfig.context
                 }
               );
@@ -494,5 +498,5 @@ module.exports = yeoman.generators.Base.extend({
 
       }.bind(this));
     }
-  } 
+  }
 });
