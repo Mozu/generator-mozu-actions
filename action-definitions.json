@@ -4,7 +4,7 @@
     "commerce.orders",
     "commerce.settings",
     "commerce.payments",
-    "commerce.catalog.admin.products",
+    "commerce.catalog.admin",
     "commerce.customer",
     "commerce.return",
     "commerce.catalog.storefront.shipping",
@@ -2780,6 +2780,17 @@
             ]
           }
         },
+        "setPaymentTerm": {
+          "parameters": [
+            {
+              "name": "purchaseOrderPaymentTermObject",
+              "type": "object"
+            }
+          ],
+          "return": {
+            "type": "mozu.commerceRuntime.contracts.payments.purchaseorderpaymentterm"
+          }
+        },
         "get": {
           "payment": {
             "parameters": [],
@@ -2897,7 +2908,7 @@
       "aliases": [
         "api.commerce.catalog.admin.products.filter.beforeUpdateProduct"
       ],
-      "domain": "commerce.catalog.admin.products",
+      "domain": "commerce.catalog.admin",
       "contextLevel": "MasterCatalog",
       "supportsMultipleCustomFunctions": true,
       "context": {
@@ -2909,7 +2920,55 @@
       "aliases": [
         "api.commerce.catalog.admin.products.filter.afterUpdateProduct"
       ],
-      "domain": "commerce.catalog.admin.products",
+      "domain": "commerce.catalog.admin",
+      "contextLevel": "MasterCatalog",
+      "supportsMultipleCustomFunctions": true,
+      "context": {
+        "type": "mozu.actions.context.http"
+      }
+    },
+    {
+      "action": "http.commerce.catalog.admin.categories.addCategory.before",
+      "aliases": [
+        "api.commerce.catalog.admin.categories.filter.beforeAddCategory"
+      ],
+      "domain": "commerce.catalog.admin",
+      "contextLevel": "MasterCatalog",
+      "supportsMultipleCustomFunctions": true,
+      "context": {
+        "type": "mozu.actions.context.http"
+      }
+    },
+    {
+      "action": "http.commerce.catalog.admin.categories.addCategory.after",
+      "aliases": [
+        "api.commerce.catalog.admin.categories.filter.afterAddCategory"
+      ],
+      "domain": "commerce.catalog.admin",
+      "contextLevel": "MasterCatalog",
+      "supportsMultipleCustomFunctions": true,
+      "context": {
+        "type": "mozu.actions.context.http"
+      }
+    },
+    {
+      "action": "http.commerce.catalog.admin.categories.updateCategory.before",
+      "aliases": [
+        "api.commerce.catalog.admin.categories.filter.beforeUpdateCategory"
+      ],
+      "domain": "commerce.catalog.admin",
+      "contextLevel": "MasterCatalog",
+      "supportsMultipleCustomFunctions": true,
+      "context": {
+        "type": "mozu.actions.context.http"
+      }
+    },
+    {
+      "action": "http.commerce.catalog.admin.categories.updateCategory.after",
+      "aliases": [
+        "api.commerce.catalog.admin.categories.filter.afterUpdateCategory"
+      ],
+      "domain": "commerce.catalog.admin",
       "contextLevel": "MasterCatalog",
       "supportsMultipleCustomFunctions": true,
       "context": {
@@ -3513,6 +3572,26 @@
     },
     {
       "action": "http.commerce.catalog.storefront.products.validateProduct.after",
+      "aliases": [],
+      "domain": "commerce.catalog.storefront.products",
+      "contextLevel": "Site",
+      "supportsMultipleCustomFunctions": true,
+      "context": {
+        "type": "mozu.actions.context.http"
+      }
+    },
+    {
+      "action": "http.commerce.catalog.storefront.products.resolvePriceList.before",
+      "aliases": [],
+      "domain": "commerce.catalog.storefront.products",
+      "contextLevel": "Site",
+      "supportsMultipleCustomFunctions": true,
+      "context": {
+        "type": "mozu.actions.context.http"
+      }
+    },
+    {
+      "action": "http.commerce.catalog.storefront.products.resolvePriceList.after",
       "aliases": [],
       "domain": "commerce.catalog.storefront.products",
       "contextLevel": "Site",

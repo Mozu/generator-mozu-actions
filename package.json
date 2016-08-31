@@ -13,8 +13,8 @@
   },
   "main": "./generators/app/index.js",
   "scripts": {
-    "preversion": "update-arc-defs",
-    "version": "git add action-definitions.json",
+    "preversion_rem": "update-arc-defs",
+    "version_rem": "git add action-definitions.json",
     "test": "echo YAAAAAAAAAAAAY",
     "ci-build": "npm test",
     "ci-build-stable": "npm run ci-build",
