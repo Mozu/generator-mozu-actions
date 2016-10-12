@@ -3456,7 +3456,6 @@
     {
       "action": "http.commerce.catalog.storefront.pricing.priceProduct.before",
       "aliases": [],
-      "beta": true,
       "domain": "commerce.catalog.storefront.pricing",
       "contextLevel": "Site",
       "supportsMultipleCustomFunctions": true,
@@ -3467,7 +3466,6 @@
     {
       "action": "http.commerce.catalog.storefront.pricing.priceProduct.after",
       "aliases": [],
-      "beta": true,
       "domain": "commerce.catalog.storefront.pricing",
       "contextLevel": "Site",
       "supportsMultipleCustomFunctions": true,
