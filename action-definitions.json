@@ -1565,6 +1565,32 @@
             "return": {
               "type": "mozu.commerceRuntime.contracts.order.order"
             }
+          },
+          "setHandlingAmount": {
+            "parameters": [
+              {
+                "name": "handlingAmount",
+                "type": "number"
+              }
+            ],
+            "return": {
+              "type": "mozu.commerceRuntime.contracts.order.order"
+            }
+          },
+          "setItemHandlingAmount": {
+            "parameters": [
+              {
+                "name": "handlingAmount",
+                "type": "number"
+              },
+              {
+                "name": "itemId",
+                "type": "string"
+              }
+            ],
+            "return": {
+              "type": "mozu.commerceRuntime.contracts.order.order"
+            }
           }
         },
         "get": {
@@ -3726,6 +3752,310 @@
       }
     },
     {
+      "action": "http.commerce.returns.updateReturn.before",
+      "aliases": [],
+      "beta": true,
+      "domain": "commerce.return",
+      "contextLevel": "Tenant",
+      "supportsMultipleCustomFunctions": true,
+      "context": {
+        "type": "mozu.actions.context.http"
+      }
+    },
+    {
+      "action": "http.commerce.returns.updateReturn.after",
+      "aliases": [],
+      "beta": true,
+      "domain": "commerce.return",
+      "contextLevel": "Tenant",
+      "supportsMultipleCustomFunctions": true,
+      "context": {
+        "type": "mozu.actions.context.http"
+      }
+    },
+    {
+      "action": "http.commerce.returns.deleteReturn.before",
+      "aliases": [],
+      "beta": true,
+      "domain": "commerce.return",
+      "contextLevel": "Tenant",
+      "supportsMultipleCustomFunctions": true,
+      "context": {
+        "type": "mozu.actions.context.http"
+      }
+    },
+    {
+      "action": "http.commerce.returns.deleteReturn.after",
+      "aliases": [],
+      "beta": true,
+      "domain": "commerce.return",
+      "contextLevel": "Tenant",
+      "supportsMultipleCustomFunctions": true,
+      "context": {
+        "type": "mozu.actions.context.http"
+      }
+    },
+    {
+      "action": "http.commerce.returns.createReturnItem.before",
+      "aliases": [],
+      "beta": true,
+      "domain": "commerce.return",
+      "contextLevel": "Tenant",
+      "supportsMultipleCustomFunctions": true,
+      "context": {
+        "type": "mozu.actions.context.http"
+      }
+    },
+    {
+      "action": "http.commerce.returns.createReturnItem.after",
+      "aliases": [],
+      "beta": true,
+      "domain": "commerce.return",
+      "contextLevel": "Tenant",
+      "supportsMultipleCustomFunctions": true,
+      "context": {
+        "type": "mozu.actions.context.http"
+      }
+    },
+    {
+      "action": "http.commerce.returns.deleteOrderItem.before",
+      "aliases": [],
+      "beta": true,
+      "domain": "commerce.return",
+      "contextLevel": "Tenant",
+      "supportsMultipleCustomFunctions": true,
+      "context": {
+        "type": "mozu.actions.context.http"
+      }
+    },
+    {
+      "action": "http.commerce.returns.deleteOrderItem.after",
+      "aliases": [],
+      "beta": true,
+      "domain": "commerce.return",
+      "contextLevel": "Tenant",
+      "supportsMultipleCustomFunctions": true,
+      "context": {
+        "type": "mozu.actions.context.http"
+      }
+    },
+    {
+      "action": "http.commerce.returns.createPackage.before",
+      "aliases": [],
+      "beta": true,
+      "domain": "commerce.return",
+      "contextLevel": "Tenant",
+      "supportsMultipleCustomFunctions": true,
+      "context": {
+        "type": "mozu.actions.context.http"
+      }
+    },
+    {
+      "action": "http.commerce.returns.createPackage.after",
+      "aliases": [],
+      "beta": true,
+      "domain": "commerce.return",
+      "contextLevel": "Tenant",
+      "supportsMultipleCustomFunctions": true,
+      "context": {
+        "type": "mozu.actions.context.http"
+      }
+    },
+    {
+      "action": "http.commerce.returns.updatePackage.before",
+      "aliases": [],
+      "beta": true,
+      "domain": "commerce.return",
+      "contextLevel": "Tenant",
+      "supportsMultipleCustomFunctions": true,
+      "context": {
+        "type": "mozu.actions.context.http"
+      }
+    },
+    {
+      "action": "http.commerce.returns.updatePackage.after",
+      "aliases": [],
+      "beta": true,
+      "domain": "commerce.return",
+      "contextLevel": "Tenant",
+      "supportsMultipleCustomFunctions": true,
+      "context": {
+        "type": "mozu.actions.context.http"
+      }
+    },
+    {
+      "action": "http.commerce.returns.deletePackage.before",
+      "aliases": [],
+      "beta": true,
+      "domain": "commerce.return",
+      "contextLevel": "Tenant",
+      "supportsMultipleCustomFunctions": true,
+      "context": {
+        "type": "mozu.actions.context.http"
+      }
+    },
+    {
+      "action": "http.commerce.returns.deletePackage.after",
+      "aliases": [],
+      "beta": true,
+      "domain": "commerce.return",
+      "contextLevel": "Tenant",
+      "supportsMultipleCustomFunctions": true,
+      "context": {
+        "type": "mozu.actions.context.http"
+      }
+    },
+    {
+      "action": "http.commerce.returns.createPackageShipments.before",
+      "aliases": [],
+      "beta": true,
+      "domain": "commerce.return",
+      "contextLevel": "Tenant",
+      "supportsMultipleCustomFunctions": true,
+      "context": {
+        "type": "mozu.actions.context.http"
+      }
+    },
+    {
+      "action": "http.commerce.returns.createPackageShipments.after",
+      "aliases": [],
+      "beta": true,
+      "domain": "commerce.return",
+      "contextLevel": "Tenant",
+      "supportsMultipleCustomFunctions": true,
+      "context": {
+        "type": "mozu.actions.context.http"
+      }
+    },
+    {
+      "action": "http.commerce.returns.deleteShipment.before",
+      "aliases": [],
+      "beta": true,
+      "domain": "commerce.return",
+      "contextLevel": "Tenant",
+      "supportsMultipleCustomFunctions": true,
+      "context": {
+        "type": "mozu.actions.context.http"
+      }
+    },
+    {
+      "action": "http.commerce.returns.deleteShipment.after",
+      "aliases": [],
+      "beta": true,
+      "domain": "commerce.return",
+      "contextLevel": "Tenant",
+      "supportsMultipleCustomFunctions": true,
+      "context": {
+        "type": "mozu.actions.context.http"
+      }
+    },
+    {
+      "action": "embedded.commerce.return.GetRmaLabels.before",
+      "aliases": [],
+      "beta": true,
+      "domain": "commerce.return",
+      "contextLevel": "Tenant",
+      "supportsMultipleCustomFunctions": true,
+      "context": {
+        "exec": {
+          "setDestinationAddress": {
+            "parameters": [
+              {
+                "name": "destinationAddressContact",
+                "type": "object"
+              }
+            ],
+            "return": {
+              "type": "mozu.commerceRuntime.contracts.fulfillment.shipment"
+            }
+          },
+          "setOriginAddress": {
+            "parameters": [
+              {
+                "name": "originAddressContact",
+                "type": "object"
+              }
+            ],
+            "return": {
+              "type": "mozu.commerceRuntime.contracts.fulfillment.shipment"
+            }
+          },
+          "setShippingMethodCode": {
+            "parameters": [
+              {
+                "name": "shippingMethodCode",
+                "type": "string"
+              }
+            ],
+            "return": {
+              "type": "mozu.commerceRuntime.contracts.fulfillment.shipment"
+            }
+          }
+        },
+        "get": {
+          "getShipmentInfo": {
+            "parameters": [],
+            "return": {
+              "type": "mozu.commerceRuntime.contracts.fulfillment.shipment"
+            }
+          },
+          "getPackage": {
+            "parameters": [
+              {
+                "name": "index",
+                "type": "number"
+              }
+            ],
+            "return": {
+              "type": "mozu.commerceRuntime.contracts.fulfillment.package"
+            }
+          },
+          "getPackagesCount": {
+            "parameters": [],
+            "return": {
+              "type": "number"
+            }
+          }
+        }
+      }
+    },
+    {
+      "action": "embedded.commerce.return.GetRmaLabels.after",
+      "aliases": [],
+      "beta": true,
+      "domain": "commerce.return",
+      "contextLevel": "Tenant",
+      "supportsMultipleCustomFunctions": true,
+      "context": {
+        "exec": {},
+        "get": {
+          "getShipmentInfo": {
+            "parameters": [],
+            "return": {
+              "type": "mozu.commerceRuntime.contracts.fulfillment.shipment"
+            }
+          },
+          "getPackage": {
+            "parameters": [
+              {
+                "name": "index",
+                "type": "number"
+              }
+            ],
+            "return": {
+              "type": "mozu.commerceRuntime.contracts.fulfillment.package"
+            }
+          },
+          "getPackagesCount": {
+            "parameters": [],
+            "return": {
+              "type": "number"
+            }
+          }
+        }
+      }
+    },
+    {
       "action": "http.storefront.pages.global.request.before",
       "aliases": [
         "storefront.pages.global.beforeRequest",
@@ -3940,6 +4270,89 @@
       "supportsMultipleCustomFunctions": true,
       "context": {
         "type": "mozu.actions.context.http"
+      }
+    },
+    {
+      "action": "embedded.commerce.return.actions.before",
+      "aliases": [],
+      "beta": true,
+      "domain": "commerce.return",
+      "contextLevel": "Tenant",
+      "supportsMultipleCustomFunctions": true,
+      "context": {
+        "exec": {
+          "addReturnItem": {
+            "parameters": [
+              {
+                "name": "returnItem",
+                "type": "object"
+              }
+            ],
+            "return": {
+              "type": "mozu.commerceRuntime.contracts.returns.return"
+            }
+          },
+          "setRMADeadline": {
+            "parameters": [
+              {
+                "name": "rmaDeadline",
+                "type": "date"
+              }
+            ]
+          }
+        },
+        "get": {
+          "returnObject": {
+            "parameters": [],
+            "return": {
+              "type": "mozu.commerceRuntime.contracts.returns.return"
+            }
+          },
+          "returnAction": {
+            "parameters": [],
+            "return": {
+              "type": "mozu.commerceRuntime.contracts.returns.returnAction"
+            }
+          }
+        }
+      }
+    },
+    {
+      "action": "embedded.commerce.return.actions.after",
+      "aliases": [],
+      "beta": true,
+      "domain": "commerce.return",
+      "contextLevel": "Tenant",
+      "supportsMultipleCustomFunctions": true,
+      "context": {
+        "exec": {
+          "authorizeReturn": {
+            "parameters": []
+          },
+          "rejectReturn": {
+            "parameters": []
+          },
+          "cancelReturn": {
+            "parameters": []
+          },
+          "closeReturn": {
+            "parameters": []
+          }
+        },
+        "get": {
+          "returnObject": {
+            "parameters": [],
+            "return": {
+              "type": "mozu.commerceRuntime.contracts.returns.return"
+            }
+          },
+          "returnAction": {
+            "parameters": [],
+            "return": {
+              "type": "mozu.commerceRuntime.contracts.returns.returnAction"
+            }
+          }
+        }
       }
     }
   ]
