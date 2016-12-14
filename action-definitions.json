@@ -3754,7 +3754,6 @@
     {
       "action": "http.commerce.returns.updateReturn.before",
       "aliases": [],
-      "beta": true,
       "domain": "commerce.return",
       "contextLevel": "Tenant",
       "supportsMultipleCustomFunctions": true,
@@ -3765,7 +3764,6 @@
     {
       "action": "http.commerce.returns.updateReturn.after",
       "aliases": [],
-      "beta": true,
       "domain": "commerce.return",
       "contextLevel": "Tenant",
       "supportsMultipleCustomFunctions": true,
@@ -3776,7 +3774,6 @@
     {
       "action": "http.commerce.returns.deleteReturn.before",
       "aliases": [],
-      "beta": true,
       "domain": "commerce.return",
       "contextLevel": "Tenant",
       "supportsMultipleCustomFunctions": true,
@@ -3787,7 +3784,6 @@
     {
       "action": "http.commerce.returns.deleteReturn.after",
       "aliases": [],
-      "beta": true,
       "domain": "commerce.return",
       "contextLevel": "Tenant",
       "supportsMultipleCustomFunctions": true,
@@ -3798,7 +3794,6 @@
     {
       "action": "http.commerce.returns.createReturnItem.before",
       "aliases": [],
-      "beta": true,
       "domain": "commerce.return",
       "contextLevel": "Tenant",
       "supportsMultipleCustomFunctions": true,
@@ -3809,7 +3804,6 @@
     {
       "action": "http.commerce.returns.createReturnItem.after",
       "aliases": [],
-      "beta": true,
       "domain": "commerce.return",
       "contextLevel": "Tenant",
       "supportsMultipleCustomFunctions": true,
@@ -3820,7 +3814,6 @@
     {
       "action": "http.commerce.returns.deleteOrderItem.before",
       "aliases": [],
-      "beta": true,
       "domain": "commerce.return",
       "contextLevel": "Tenant",
       "supportsMultipleCustomFunctions": true,
@@ -3831,7 +3824,6 @@
     {
       "action": "http.commerce.returns.deleteOrderItem.after",
       "aliases": [],
-      "beta": true,
       "domain": "commerce.return",
       "contextLevel": "Tenant",
       "supportsMultipleCustomFunctions": true,
@@ -3842,7 +3834,6 @@
     {
       "action": "http.commerce.returns.createPackage.before",
       "aliases": [],
-      "beta": true,
       "domain": "commerce.return",
       "contextLevel": "Tenant",
       "supportsMultipleCustomFunctions": true,
@@ -3853,7 +3844,6 @@
     {
       "action": "http.commerce.returns.createPackage.after",
       "aliases": [],
-      "beta": true,
       "domain": "commerce.return",
       "contextLevel": "Tenant",
       "supportsMultipleCustomFunctions": true,
@@ -3864,7 +3854,6 @@
     {
       "action": "http.commerce.returns.updatePackage.before",
       "aliases": [],
-      "beta": true,
       "domain": "commerce.return",
       "contextLevel": "Tenant",
       "supportsMultipleCustomFunctions": true,
@@ -3875,7 +3864,6 @@
     {
       "action": "http.commerce.returns.updatePackage.after",
       "aliases": [],
-      "beta": true,
       "domain": "commerce.return",
       "contextLevel": "Tenant",
       "supportsMultipleCustomFunctions": true,
@@ -3886,7 +3874,6 @@
     {
       "action": "http.commerce.returns.deletePackage.before",
       "aliases": [],
-      "beta": true,
       "domain": "commerce.return",
       "contextLevel": "Tenant",
       "supportsMultipleCustomFunctions": true,
@@ -3897,7 +3884,6 @@
     {
       "action": "http.commerce.returns.deletePackage.after",
       "aliases": [],
-      "beta": true,
       "domain": "commerce.return",
       "contextLevel": "Tenant",
       "supportsMultipleCustomFunctions": true,
@@ -3908,7 +3894,6 @@
     {
       "action": "http.commerce.returns.createPackageShipments.before",
       "aliases": [],
-      "beta": true,
       "domain": "commerce.return",
       "contextLevel": "Tenant",
       "supportsMultipleCustomFunctions": true,
@@ -3919,7 +3904,6 @@
     {
       "action": "http.commerce.returns.createPackageShipments.after",
       "aliases": [],
-      "beta": true,
       "domain": "commerce.return",
       "contextLevel": "Tenant",
       "supportsMultipleCustomFunctions": true,
@@ -3930,7 +3914,6 @@
     {
       "action": "http.commerce.returns.deleteShipment.before",
       "aliases": [],
-      "beta": true,
       "domain": "commerce.return",
       "contextLevel": "Tenant",
       "supportsMultipleCustomFunctions": true,
@@ -3941,7 +3924,6 @@
     {
       "action": "http.commerce.returns.deleteShipment.after",
       "aliases": [],
-      "beta": true,
       "domain": "commerce.return",
       "contextLevel": "Tenant",
       "supportsMultipleCustomFunctions": true,
@@ -3952,7 +3934,6 @@
     {
       "action": "embedded.commerce.return.GetRmaLabels.before",
       "aliases": [],
-      "beta": true,
       "domain": "commerce.return",
       "contextLevel": "Tenant",
       "supportsMultipleCustomFunctions": true,
@@ -4022,7 +4003,6 @@
     {
       "action": "embedded.commerce.return.GetRmaLabels.after",
       "aliases": [],
-      "beta": true,
       "domain": "commerce.return",
       "contextLevel": "Tenant",
       "supportsMultipleCustomFunctions": true,
@@ -4275,7 +4255,6 @@
     {
       "action": "embedded.commerce.return.actions.before",
       "aliases": [],
-      "beta": true,
       "domain": "commerce.return",
       "contextLevel": "Tenant",
       "supportsMultipleCustomFunctions": true,
@@ -4302,7 +4281,7 @@
           }
         },
         "get": {
-          "returnObject": {
+          "rma": {
             "parameters": [],
             "return": {
               "type": "mozu.commerceRuntime.contracts.returns.return"
@@ -4320,7 +4299,6 @@
     {
       "action": "embedded.commerce.return.actions.after",
       "aliases": [],
-      "beta": true,
       "domain": "commerce.return",
       "contextLevel": "Tenant",
       "supportsMultipleCustomFunctions": true,
@@ -4340,7 +4318,7 @@
           }
         },
         "get": {
-          "returnObject": {
+          "rma": {
             "parameters": [],
             "return": {
               "type": "mozu.commerceRuntime.contracts.returns.return"
