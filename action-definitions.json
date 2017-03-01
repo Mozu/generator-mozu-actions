@@ -3480,6 +3480,25 @@
       }
     },
     {
+      "action": "http.commerce.catalog.storefront.products.locationinventories.before",
+      "aliases": [],
+      "domain": "commerce.catalog.storefront.products",
+      "contextLevel": "Site",
+      "supportsMultipleCustomFunctions": true,
+      "context": {
+        "type": "mozu.actions.context.http"
+      }
+    },{
+      "action": "http.commerce.catalog.storefront.products.locationinventories.after",
+      "aliases": [],
+      "domain": "commerce.catalog.storefront.products",
+      "contextLevel": "Site",
+      "supportsMultipleCustomFunctions": true,
+      "context": {
+        "type": "mozu.actions.context.http"
+      }
+    },
+    {
       "action": "http.commerce.catalog.storefront.pricing.priceProduct.before",
       "aliases": [],
       "domain": "commerce.catalog.storefront.pricing",
