@@ -7,7 +7,8 @@ var acorn = require('acorn');
 var acornWalk = require('acorn/dist/walk');
 var chalk = require('chalk');
 var inquirer = require('inquirer');
-var actionDefs = require('../../action-definitions.json');
+var actionDefsPeriod = require('../../action-definitions.json');
+var actionDefsAsterisks = JSON.parse(JSON.stringify(actionDefsPeriod).replace(/\./g, '*'))
 var getActionDefs = require('mozu-metadata/utils/get-action-defs');
 var helpers = require('generator-mozu-app').helpers;
 helpers = helpers.merge(helpers, require('../../utils/helpers'));
@@ -97,6 +98,9 @@ module.exports = yeoman.generators.Base.extend({
       var self = this;
       var done = this.async();
       this.config.save();
+
+
+
       if (this.options.internal) {
         getActionDefs({
           url: this.options.definitions
@@ -104,23 +108,43 @@ module.exports = yeoman.generators.Base.extend({
           self._actionDefs = defs;
           self._availableActions = defs.actions;
         }).catch(function() {
-          self._actionDefs = actionDefs;
-          self._availableActions = actionDefs.actions;
+          self._actionDefs = actionDefsAsterisks;
+          self._availableActions = actionDefsAsterisks.actions;
         }).then(createActionsMap);
       } else {
-        self._actionDefs = actionDefs;
-        self._availableActions = actionDefs.actions.filter(function(action) {
+        self._actionDefs = actionDefsAsterisks;
+        self._availableActions = actionDefsAsterisks.actions.filter(function(action) {
           return !action.beta;
         });
-        self._actionDefs.domains = actionDefs.domains.filter(function(domain) {
+        self._actionDefs.domains = actionDefsAsterisks.domains.filter(function(domain) {
           return !!self._availableActions.find(function(action) {
             return action.domain === domain;
           });
         });
+
         createActionsMap();
+
+        self._actionDefsPeriod = actionDefsPeriod;
+        self._availableActionsPeriod = actionDefsPeriod.actions.filter(function(action) {
+          return !action.beta;
+        });
+        self._actionDefsPeriod.domains = actionDefsPeriod.domains.filter(function(domain) {
+          return !!self._availableActionsPeriod.find(function(action) {
+            return action.domain === domain;
+          });
+        });
+        createActionsMapPeriod();
+
       }
       function createActionsMap() {
         self._actionsMap = self._availableActions.reduce(function(memo, action) {
+          memo[action.action] = action;
+          return memo;
+        }, {});
+        done();
+      }
+      function createActionsMapPeriod() {
+        self._actionsMapPeriod = self._availableActionsPeriod.reduce(function(memo, action) {
           memo[action.action] = action;
           return memo;
         }, {});
@@ -177,7 +201,7 @@ module.exports = yeoman.generators.Base.extend({
     getActions: function() {
 
       function actionIsInDomain(name, domain) {
-        var withoutType = name.split('.').slice(1).join('.');
+        var withoutType = name.split('*').slice(1).join('*');
         return withoutType.indexOf(domain) === 0;
       }
 
@@ -385,6 +409,7 @@ module.exports = yeoman.generators.Base.extend({
             }
           }),
           function(answers) {
+            helpers.convertToPeriods(answers);
             self._multipleCustomFunctions = answers;
             done();
           }
@@ -397,6 +422,8 @@ module.exports = yeoman.generators.Base.extend({
 
   configuring: function() {
     let preconfigured = (this.options.preconfigured || []).slice();
+    helpers.convertToPeriods(this._actionNames);
+    helpers.convertToPeriods(this._domains);
     this._actions = this._actionNames.map(function(name) {
       let functionNames = this._multipleCustomFunctions[name] || [name];
       preconfigured.forEach(function(def) {
@@ -406,7 +433,7 @@ module.exports = yeoman.generators.Base.extend({
       });
       return {
         name: name,
-        domain: this._actionsMap[name].domain,
+        domain: this._actionsMapPeriod[name].domain,
         customFunctionNames: functionNames
       };
     }.bind(this));
@@ -445,7 +472,7 @@ module.exports = yeoman.generators.Base.extend({
               implPath, {
                 action: action,
                 actionType: getActionType(action.name),
-                context: JSON.stringify(self._actionsMap[action.name].context, null, 2)
+                context: JSON.stringify(self._actionsMapPeriod[action.name].context, null, 2)
               }
             );
           }
@@ -468,7 +495,7 @@ module.exports = yeoman.generators.Base.extend({
           var testPath = this.destinationPath(
             'assets/test/' + customFunctionName + '.t.js');
           var actionType = getActionType(action.name);
-          var actionConfig = this._actionsMap[action.name];
+          var actionConfig = this._actionsMapPeriod[action.name];
 
           if ((doNotWrite.indexOf(customFunctionName) === -1) &&
               (this.options.overwriteAll || !this.fs.exists(testPath))) {
