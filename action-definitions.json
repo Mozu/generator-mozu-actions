@@ -3499,6 +3499,34 @@
       }
     },
     {
+      "action": "embedded.commerce.catalog.storefront.products.getPriceListHierachy",
+      "aliases": [],
+      "domain": "commerce.catalog.storefront.products",
+      "context": {
+        "get": {
+          "propertyValue": {
+            "parameters": [
+              {
+                "name": "arg",
+                "type": "string"
+              }
+            ],
+            "return": {
+              "type": "object"
+            }
+          },
+          "priceListHierarchy": {
+            "parameters": [],
+            "return": {
+              "type": "array"
+            }
+          }
+        }
+      },
+      "contextLevel": "Site",
+      "supportsMultipleCustomFunctions": true
+    },
+    {
       "action": "http.commerce.catalog.storefront.pricing.priceProduct.before",
       "aliases": [],
       "domain": "commerce.catalog.storefront.pricing",
