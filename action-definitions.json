@@ -2,6 +2,7 @@
   "domains": [
     "commerce.carts",
     "commerce.orders",
+    "commerce.checkouts",
     "commerce.settings",
     "commerce.payments",
     "commerce.catalog.admin",
@@ -4401,6 +4402,720 @@
           }
         }
       }
+    },
+    {
+      "action": "embedded.commerce.checkouts.itemdestinationupdate.after",
+      "aliases": [
+        "api.commerce.checkouts.embedded.afterItemDestinationUpdate" 
+      ],
+      "domain": "commerce.checkouts",
+      "contextLevel": "tenant",
+      "supportsMultipleCustomFunctions": true,
+      "context": {
+        "exec": {
+          "setItemFulfillmentLocation": {
+            "parameters": [
+              {
+                "name": "locationCode",
+                "type": "string"
+              },
+              {
+                "name": "itemId",
+                "type": "string"
+              }
+            ],
+            "return": {
+              "type": "mozu.commerceRuntime.contracts.orders.orderItem"
+            }
+          }
+        },
+        "get": {
+          "checkout": {
+            "parameters": [ ],
+            "return": {
+              "type": "mozu.commerceRuntime.contracts.checkouts.checkout"
+            }
+          },
+          "checkoutItem": {
+            "parameters": [ ],
+            "return": {
+              "type": "mozu.commerceRuntime.contracts.orders.orderItem"
+            }
+          }
+        }
+      }    
+    },
+    {
+      "action": "embedded.commerce.checkouts.createfromcart.before",
+      "aliases": [ 
+        "api.commerce.checkouts.embedded.beforeCreateFromCart" 
+      ],
+      "domain": "commerce.checkouts",
+      "contextLevel": "site",
+      "supportsMultipleCustomFunctions": true,
+      "context": {
+        "exec": {
+          "setItemAllocation": {
+            "parameters": [
+              {
+                "name": "allocationId",
+                "type": "number"
+              },
+              {
+                "name": "expiration",
+                "type": "date"
+              },
+              {
+                "name": "productCode",
+                "type": "string"
+              },
+              {
+                "name": "itemId",
+                "type": "string"
+              }
+            ],
+            "return": {
+              "type": "mozu.commerceRuntime.contracts.order.orderItem"
+            }
+          },
+          "setAttribute": {
+            "parameters": [
+              {
+                "name": "fqn",
+                "type": "string"
+              },
+              {
+                "name": "values",
+                "type": "object"
+              }
+            ],
+            "return": {
+              "type": "mozu.commerceRuntime.contracts.checkout.checkout"
+            }
+          },
+          "removeAttribute": {
+            "parameters": [
+              {
+                "name": "fqn",
+                "type": "string"
+              }
+            ],
+            "return": {
+              "type": "mozu.commerceRuntime.contracts.checkout.checkout"
+            }
+          },
+          "setData": {
+            "parameters": [
+              {
+                "name": "key",
+                "type": "string"
+              },
+              {
+                "name": "value",
+                "type": "object"
+              }
+            ],
+            "return": {
+              "type": "mozu.commerceRuntime.contracts.checkout.checkout"
+            }
+          },
+          "removeData": {
+            "parameters": [
+              {
+                "name": "key",
+                "type": "string"
+              }
+            ],
+            "return": {
+              "type": "mozu.commerceRuntime.contracts.checkout.checkout"
+            }
+          },
+          "setItemData": {
+            "parameters": [
+              {
+                "name": "key",
+                "type": "string"
+              },
+              {
+                "name": "value",
+                "type": "object"
+              },
+              {
+                "name": "itemId",
+                "type": "string"
+              }
+            ],
+            "return": {
+              "type": "mozu.commerceRuntime.contracts.order.orderItem"
+            }
+          },
+          "removeItemData": {
+            "parameters": [
+              {
+                "name": "key",
+                "type": "string"
+              },
+              {
+                "name": "itemId",
+                "type": "string"
+              }
+            ],
+            "return": {
+              "type": "mozu.commerceRuntime.contracts.order.orderItem"
+            }
+          },
+          "setDutyAmount": {
+            "parameters": [
+              {
+                "name": "dutyAmount",
+                "type": "number"
+              },
+              {
+                "name": "groupId",
+                "type": "string"
+              }
+            ],
+            "return": {
+              "type": "mozu.commerceRuntime.contracts.checkout.checkout"
+            }
+          }
+        },
+        "get": {
+          "checkout": {
+            "parameters": [ ],
+            "return": {
+              "type": "mozu.commerceRuntime.contracts.checkout.checkout"
+            }
+          }
+        }
+      }     
+    },
+    {
+      "action": "embedded.commerce.checkouts.createFromCart.after",
+      "aliases": [
+        "api.commerce.checkouts.embedded.afterCreateFromCart"
+      ],
+      "domain": "commerce.checkouts",
+      "contextLevel": "site",
+      "supportsMultipleCustomFunctions": false,
+      "context": {
+        "exec": {
+          "setItemAllocation": {
+            "parameters": [
+              {
+                "name": "allocationId",
+                "type": "number"
+              },
+              {
+                "name": "expiration",
+                "type": "date"
+              },
+              {
+                "name": "productCode",
+                "type": "string"
+              },
+              {
+                "name": "itemId",
+                "type": "string"
+              }
+            ],
+            "return": {
+              "type": "mozu.commerceRuntime.contracts.order.orderItem"
+            }
+          },
+          "setAttribute": {
+            "parameters": [
+              {
+                "name": "fqn",
+                "type": "string"
+              },
+              {
+                "name": "values",
+                "type": "object"
+              }
+            ],
+            "return": {
+              "type": "mozu.commerceRuntime.contracts.checkout.checkout"
+            }
+          },
+          "removeAttribute": {
+            "parameters": [
+              {
+                "name": "fqn",
+                "type": "string"
+              }
+            ],
+            "return": {
+              "type": "mozu.commerceRuntime.contracts.checkout.checkout"
+            }
+          },
+          "setData": {
+            "parameters": [
+              {
+                "name": "key",
+                "type": "string"
+              },
+              {
+                "name": "value",
+                "type": "object"
+              }
+            ],
+            "return": {
+              "type": "mozu.commerceRuntime.contracts.checkout.checkout"
+            }
+          },
+          "removeData": {
+            "parameters": [
+              {
+                "name": "key",
+                "type": "string"
+              }
+            ],
+            "return": {
+              "type": "mozu.commerceRuntime.contracts.checkout.checkout"
+            }
+          },
+          "setItemData": {
+            "parameters": [
+              {
+                "name": "key",
+                "type": "string"
+              },
+              {
+                "name": "value",
+                "type": "object"
+              },
+              {
+                "name": "itemId",
+                "type": "string"
+              }
+            ],
+            "return": {
+              "type": "mozu.commerceRuntime.contracts.order.orderItem"
+            }
+          },
+          "removeItemData": {
+            "parameters": [
+              {
+                "name": "key",
+                "type": "string"
+              },
+              {
+                "name": "itemId",
+                "type": "string"
+              }
+            ],
+            "return": {
+              "type": "mozu.commerceRuntime.contracts.order.orderItem"
+            }
+          },
+          "setDutyAmount": {
+            "parameters": [
+              {
+                "name": "dutyAmount",
+                "type": "number"
+              },
+              {
+                "name": "groupId",
+                "type": "string"
+              }
+            ],
+            "return": {
+              "type": "mozu.commerceRuntime.contracts.checkout.checkout"
+            }
+          }
+        },
+        "get": {
+          "checkout": {
+            "parameters": [ ],
+            "return": {
+              "type": "mozu.commerceRuntime.contracts.checkout.checkout"
+            }
+          }
+        }
+      }      
+    },
+    {
+      "action": "embedded.commerce.checkouts.price.before",
+      "aliases": [
+        "api.commerce.checkouts.embedded.beforePrice"
+      ],
+      "domain": "commerce.checkouts",
+      "contextLevel": "site",
+      "supportsMultipleCustomFunctions": false,
+      "context": {
+        "exec": {
+          "setItemAllocation": {
+            "parameters": [
+              {
+                "name": "allocationId",
+                "type": "number"
+              },
+              {
+                "name": "expiration",
+                "type": "date"
+              },
+              {
+                "name": "productCode",
+                "type": "string"
+              },
+              {
+                "name": "itemId",
+                "type": "string"
+              }
+            ],
+            "return": {
+              "type": "mozu.commerceRuntime.contracts.order.orderItem"
+            }
+          },
+          "setAttribute": {
+            "parameters": [
+              {
+                "name": "fqn",
+                "type": "string"
+              },
+              {
+                "name": "values",
+                "type": "object"
+              }
+            ],
+            "return": {
+              "type": "mozu.commerceRuntime.contracts.checkout.checkout"
+            }
+          },
+          "removeAttribute": {
+            "parameters": [
+              {
+                "name": "fqn",
+                "type": "string"
+              }
+            ],
+            "return": {
+              "type": "mozu.commerceRuntime.contracts.checkout.checkout"
+            }
+          },
+          "setData": {
+            "parameters": [
+              {
+                "name": "key",
+                "type": "string"
+              },
+              {
+                "name": "value",
+                "type": "object"
+              }
+            ],
+            "return": {
+              "type": "mozu.commerceRuntime.contracts.checkout.checkout"
+            }
+          },
+          "removeData": {
+            "parameters": [
+              {
+                "name": "key",
+                "type": "string"
+              }
+            ],
+            "return": {
+              "type": "mozu.commerceRuntime.contracts.checkout.checkout"
+            }
+          },
+          "setItemData": {
+            "parameters": [
+              {
+                "name": "key",
+                "type": "string"
+              },
+              {
+                "name": "value",
+                "type": "object"
+              },
+              {
+                "name": "itemId",
+                "type": "string"
+              }
+            ],
+            "return": {
+              "type": "mozu.commerceRuntime.contracts.order.orderItem"
+            }
+          },
+          "removeItemData": {
+            "parameters": [
+              {
+                "name": "key",
+                "type": "string"
+              },
+              {
+                "name": "itemId",
+                "type": "string"
+              }
+            ],
+            "return": {
+              "type": "mozu.commerceRuntime.contracts.order.orderItem"
+            }
+          },
+          "setDutyAmount": {
+            "parameters": [
+              {
+                "name": "dutyAmount",
+                "type": "number"
+              }
+            ],
+            "return": {
+              "type": "mozu.commerceRuntime.contracts.checkout.checkout"
+            }
+          },
+          "setHandlingAmount": {
+            "parameters": [
+              {
+                "name": "handlingAmount",
+                "type": "number"
+              }
+            ],
+            "return": {
+              "type": "mozu.commerceRuntime.contracts.checkout.checkout"
+            }
+          },
+          "setItemHandlingAmount": {
+            "parameters": [
+              {
+                "name": "handlingAmount",
+                "type": "number"
+              },
+              {
+                "name": "itemId",
+                "type": "string"
+              }
+            ],
+            "return": {
+              "type": "mozu.commerceRuntime.contracts.checkout.checkout"
+            }
+          }
+        },
+        "get": {
+          "checkout": {
+            "parameters": [],
+            "return": {
+              "type": "mozu.commerceRuntime.contracts.checkouts.checkout"
+            }
+          }
+        }
+      }     
+    },
+    {
+      "action": "embedded.commerce.checkouts.price.after",
+      "aliases": [
+        "api.commerce.checkouts.embedded.afterPrice"
+      ],
+      "domain": "commerce.checkouts",
+      "contextLevel": "site",
+      "supportsMultipleCustomFunctions": false,
+      "context": {
+        "exec": {
+          "setItemAllocation": {
+            "parameters": [
+              {
+                "name": "allocationId",
+                "type": "number"
+              },
+              {
+                "name": "expiration",
+                "type": "date"
+              },
+              {
+                "name": "productCode",
+                "type": "string"
+              },
+              {
+                "name": "itemId",
+                "type": "string"
+              }
+            ],
+            "return": {
+              "type": "mozu.commerceRuntime.contracts.order.orderItem"
+            }
+          },
+          "setAttribute": {
+            "parameters": [
+              {
+                "name": "fqn",
+                "type": "string"
+              },
+              {
+                "name": "values",
+                "type": "object"
+              }
+            ],
+            "return": {
+              "type": "mozu.commerceRuntime.contracts.checkout.checkout"
+            }
+          },
+          "removeAttribute": {
+            "parameters": [
+              {
+                "name": "fqn",
+                "type": "string"
+              }
+            ],
+            "return": {
+              "type": "mozu.commerceRuntime.contracts.checkout.checkout"
+            }
+          },
+          "setData": {
+            "parameters": [
+              {
+                "name": "key",
+                "type": "string"
+              },
+              {
+                "name": "value",
+                "type": "object"
+              }
+            ],
+            "return": {
+              "type": "mozu.commerceRuntime.contracts.checkout.checkout"
+            }
+          },
+          "removeData": {
+            "parameters": [
+              {
+                "name": "key",
+                "type": "string"
+              }
+            ],
+            "return": {
+              "type": "mozu.commerceRuntime.contracts.checkout.checkout"
+            }
+          },
+          "setItemData": {
+            "parameters": [
+              {
+                "name": "key",
+                "type": "string"
+              },
+              {
+                "name": "value",
+                "type": "object"
+              },
+              {
+                "name": "itemId",
+                "type": "string"
+              }
+            ],
+            "return": {
+              "type": "mozu.commerceRuntime.contracts.order.orderItem"
+            }
+          },
+          "removeItemData": {
+            "parameters": [
+              {
+                "name": "key",
+                "type": "string"
+              },
+              {
+                "name": "itemId",
+                "type": "string"
+              }
+            ],
+            "return": {
+              "type": "mozu.commerceRuntime.contracts.order.orderItem"
+            }
+          },
+          "setDutyAmount": {
+            "parameters": [
+              {
+                "name": "dutyAmount",
+                "type": "number"
+              }
+            ],
+            "return": {
+              "type": "mozu.commerceRuntime.contracts.checkout.checkout"
+            }
+          }
+        },
+        "get": {
+          "checkout": {
+            "parameters": [ ],
+            "return": {
+              "type": "mozu.commerceRuntime.contracts.checkout.checkout"
+            }
+          }
+        }
+      }     
+    },
+    {
+      "action": "embedded.commerce.checkouts.groupings.after",
+      "aliases": [],
+      "domain": "commerce.checkouts",
+      "contextLevel": "site",
+      "supportsMultipleCustomFunctions": false,
+      "context": {
+        "exec": {
+          "setGroupings": {
+            "parameters": [
+              {
+                "name": "groupings",
+                "type": "array"
+              }
+            ]
+          }
+        },
+        "get": {
+          "checkoutGroupings": {
+            "parameters": [ ],
+            "return": {
+              "type": "array"
+            }
+          },
+          "orderItems": {
+            "parameters": [],
+            "return": {
+              "type": "array"
+            }
+          }
+
+        }
+      }     
+    },
+    {
+      "action": "http.commerce.checkouts.addDestination.before",
+      "aliases": [],
+      "domain": "commerce.checkouts",
+      "contextLevel": "tenant",
+      "supportsMultipleCustomFunctions": true,
+      "context": {
+        "type": "mozu.actions.context.http"
+      }     
+    },
+    {
+      "action": "http.commerce.checkouts.addDestination.after",
+      "aliases": [],
+      "domain": "commerce.checkouts",
+      "contextLevel": "tenant",
+      "supportsMultipleCustomFunctions": true,
+      "context": {
+        "type": "mozu.actions.context.http"
+      }     
+    },
+    {
+      "action": "http.commerce.checkouts.updateDestination.before",
+      "aliases": [],
+      "domain": "commerce.checkouts",
+      "contextLevel": "tenant",
+      "supportsMultipleCustomFunctions": true,
+      "context": {
+        "type": "mozu.actions.context.http"
+      }    
+    },
+    {
+      "action": "http.commerce.checkouts.updateDestination.after",
+      "aliases": [],
+      "domain": "commerce.checkouts",
+      "contextLevel": "tenant",
+      "supportsMultipleCustomFunctions": true,
+      "context": {
+        "type": "mozu.actions.context.http"
+      }    
     }
   ]
 }
