@@ -3052,6 +3052,26 @@
       }
     },
     {
+      "action": "http.commerce.customer.address.validation.before",
+      "aliases": [],
+      "domain": "commerce.customer",
+      "contextLevel": "Tenant",
+      "supportsMultipleCustomFunctions": true,
+      "context": {
+        "type": "mozu.actions.context.http"
+      }
+    },
+    {
+      "action": "http.commerce.customer.address.validation.after",
+      "aliases": [],
+      "domain": "commerce.customer",
+      "contextLevel": "Tenant",
+      "supportsMultipleCustomFunctions": true,
+      "context": {
+        "type": "mozu.actions.context.http"
+      }
+    },
+    {
       "action": "http.commerce.customer.accounts.updateAccount.before",
       "aliases": [
         "api.commerce.customer.accounts.filter.beforeUpdateAccount"
