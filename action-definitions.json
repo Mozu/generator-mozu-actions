@@ -12,6 +12,7 @@
     "commerce.catalog.storefront.products",
     "commerce.catalog.storefront.pricing",
     "commerce.catalog.storefront.tax",
+    "commerce.subscriptions",
     "platform.applications",
     "storefront"
   ],
@@ -5135,7 +5136,161 @@
       "supportsMultipleCustomFunctions": true,
       "context": {
         "type": "mozu.actions.context.http"
-      }    
+      }
+    },
+    {
+      "action": "embedded.commerce.carts.price.before",
+      "aliases": [],
+      "domain": "commerce.carts",
+      "contextLevel": "Site",
+      "supportsMultipleCustomFunctions": true,
+      "context": {
+        "exec": {},
+        "get": {}
+      }
+    },
+    {
+      "action": "http.commerce.orders.cancellationReasons.before",
+      "aliases": [],
+      "domain": "commerce.orders",
+      "contextLevel": "Site",
+      "supportsMultipleCustomFunctions": true,
+      "context": {
+        "exec": {},
+        "get": {}
+      }
+    },
+    {
+      "action": "http.commerce.orders.cancellationReasons.after",
+      "aliases": [],
+      "domain": "commerce.orders",
+      "contextLevel": "Site",
+      "supportsMultipleCustomFunctions": true,
+      "context": {
+        "exec": {},
+        "get": {}
+      }
+    },
+    {
+      "action": "http.commerce.orders.refundReasons.before",
+      "aliases": [],
+      "domain": "commerce.orders",
+      "contextLevel": "Site",
+      "supportsMultipleCustomFunctions": true,
+      "context": {
+        "exec": {},
+        "get": {}
+      }
+    },
+    {
+      "action": "http.commerce.orders.refundReasons.after",
+      "aliases": [],
+      "domain": "commerce.orders",
+      "contextLevel": "Site",
+      "supportsMultipleCustomFunctions": true,
+      "context": {
+        "exec": {},
+        "get": {}
+      }
+    },
+    {
+      "action": "embedded.commerce.subscription.validateProductBefore",
+      "aliases": [],
+      "domain": "commerce.subscriptions",
+      "contextLevel": "Site",
+      "supportsMultipleCustomFunctions": true,
+      "context": {
+        "exec": {},
+        "get": {}
+      }
+    },
+    {
+      "action": "embedded.commerce.subscription.validateProductAfter",
+      "aliases": [],
+      "domain": "commerce.subscriptions",
+      "contextLevel": "Site",
+      "supportsMultipleCustomFunctions": true,
+      "context": {
+        "exec": {},
+        "get": {}
+      }
+    },
+    {
+      "action": "embedded.commerce.subscription.FlattenBundleOnConvertBefore",
+      "aliases": [],
+      "domain": "commerce.subscriptions",
+      "contextLevel": "Site",
+      "supportsMultipleCustomFunctions": true,
+      "context": {
+        "exec": {},
+        "get": {}
+      }
+    },
+    {
+      "action": "embedded.commerce.subscription.FlattenBundleOnConvertAfter",
+      "aliases": [],
+      "domain": "commerce.subscriptions",
+      "contextLevel": "Site",
+      "supportsMultipleCustomFunctions": true,
+      "context": {
+        "exec": {},
+        "get": {}
+      }
+    },
+    {
+      "action": "http.commerce.subscriptions.reasons.before",
+      "aliases": [],
+      "domain": "commerce.subscriptions",
+      "contextLevel": "Site",
+      "supportsMultipleCustomFunctions": true,
+      "context": {
+        "exec": {},
+        "get": {}
+      }
+    },
+    {
+      "action": "http.commerce.subscriptions.reasons.after",
+      "aliases": [],
+      "domain": "commerce.subscriptions",
+      "contextLevel": "Site",
+      "supportsMultipleCustomFunctions": true,
+      "context": {
+        "exec": {},
+        "get": {}
+      }
+    },
+    {
+      "action": "api.commerce.checkouts.embedded.beforeItemDestinationUpdate",
+      "aliases": [],
+      "domain": "commerce.checkouts",
+      "contextLevel": "Site",
+      "supportsMultipleCustomFunctions": true,
+      "context": {
+        "exec": {},
+        "get": {}
+      }
+    },
+    {
+      "action": "api.commerce.checkouts.embedded.afterItemSubscriptionUpdate",
+      "aliases": [],
+      "domain": "commerce.checkouts",
+      "contextLevel": "Site",
+      "supportsMultipleCustomFunctions": true,
+      "context": {
+        "exec": {},
+        "get": {}
+      }
+    },
+    {
+      "action": "http.commerce.checkouts.updateSubscription.after",
+      "aliases": [],
+      "domain": "commerce.checkouts",
+      "contextLevel": "Site",
+      "supportsMultipleCustomFunctions": true,
+      "context": {
+        "exec": {},
+        "get": {}
+      }
     }
   ]
 }
