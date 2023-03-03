@@ -9,7 +9,10 @@
           "force": true
         },
         "src": "<%= jshint.normal %>"
-      }
+      },
+      "options": {
+        "esversion": 8
+      },
     },
     "browserify": {
       "all": {
