@@ -12,7 +12,7 @@
       },
       "options": {
         "esversion": 8
-      },
+      }
     },
     "browserify": {
       "all": {
