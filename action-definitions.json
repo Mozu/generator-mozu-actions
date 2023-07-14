@@ -3748,7 +3748,6 @@
     {
      "action": "http.commerce.catalog.storefront.tax.estimateTaxes.before",
      "aliases": [],
-     "beta": true,
      "domain": "commerce.catalog.storefront.tax",
      "contextLevel": 2,
      "supportsMultipleCustomFunctions": true,
@@ -3759,7 +3758,6 @@
     {
      "action": "http.commerce.catalog.storefront.tax.estimateTaxes.after",
      "aliases": [],
-     "beta": true,
      "domain": "commerce.catalog.storefront.tax",
      "contextLevel": 2,
      "supportsMultipleCustomFunctions": true,
