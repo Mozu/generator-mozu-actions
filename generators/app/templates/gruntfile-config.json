@@ -1,6 +1,7 @@
 {
   "configs": {
     "jshint": {
+      "options": "./.jshintrc",
       "normal": [
         "./assets/src/**/*.js"
       ],
