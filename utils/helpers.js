@@ -1,9 +1,8 @@
-'use strict';
 
-var uniq = require('lodash.uniq');
-var savedActionDefinitions = require('../action-definitions.json')
+import uniq from 'lodash.uniq';
+import savedActionDefinitions from '../action-definitions.json' assert { type: 'json' };
 
-var helpers = module.exports = {
+var helpers =  {
   getDomainFromActionName: function(actionDefs, name) {
     name = name.split('*').slice(1).join('*');
     return actionDefs.domains.reduce(function(match, domain) {
@@ -99,3 +98,5 @@ var helpers = module.exports = {
     return values;
   }
 };
+
+export default helpers;
