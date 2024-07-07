@@ -1,10 +1,10 @@
-# Mozu Actions generator
+# Kibo API Extension generator
 
 Maintainer: [James Zetlen](https://github.com/zetlen)
 
-A Mozu Actions generator for Yeoman that provides boilerplate and structure for writing Mozu Custom Functions against the family of Mozu Code Actions. It provides documented function stubs, a build process using Grunt and Browserify, remote sync with the Developer Center, and unit tests using Mocha plus the Mozu Action Simulator.
+A Kibo API Extension generator for Yeoman that provides boilerplate and structure for writing Kibo Api Extension Functions against the family of Kibo API Extensions. It provides documented function stubs, a build process using Grunt and Browserify, remote sync with the Developer Center, and unit tests using Mocha plus the Kibo Action Simulator.
 
-![A screenshot of the generator in action in an OSX terminal.](http://i.imgur.com/r3sSEvX.png)
+![A screenshot of the generator in action in an OSX terminal.](https://raw.githubusercontent.com/Mozu/generator-mozu-actions/master/screenshot.png)
 
 ## Usage
 
