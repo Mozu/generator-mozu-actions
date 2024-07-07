@@ -30,7 +30,7 @@ export default class extends mozuAppGenerator {
 
     super._acquireGitStatus();
     super._displayMozuBanner(
-      "Follow the prompts to scaffold a Mozu Application that contains Actions. You'll get a directory structure, action file skeletons, and a test framework!"
+      "Follow the prompts to scaffold a Kibo Application that contains Api Extensions. You'll get a directory structure, action file skeletons, and a test framework!"
     );
   }
 

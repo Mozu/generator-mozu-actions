@@ -602,7 +602,7 @@ export default class extends Generator {
                   } else {
                     helpers.lament(
                       self,
-                      "Please contact Mozu Support to report this issue writing tests for action " +
+                      "Please contact Kibo Support to report this issue writing tests for action " +
                         action.name +
                         ":"
                     );
