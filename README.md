@@ -11,7 +11,7 @@ A Kibo API Extension generator for Yeoman that provides boilerplate and structur
 First, install [Yeoman](http://yeoman.io)'s command line tool if you haven't already!
 
 ```bash
-npm install yo@2.0.0 -g
+npm install yo  -g
 ```
 
 Yeoman looks for globally installed NPM packages that identify themselves as Yeoman generators. So install the generator globally. Also, install the `grunt-cli` command line Grunt package, because you'll need it.
