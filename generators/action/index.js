@@ -64,7 +64,7 @@ export default class extends Generator {
 
    
     this.option("internal", {
-      type: "Boolean",
+      type: Boolean,
       defaults: false,
       hide: true,
     });
@@ -121,8 +121,8 @@ export default class extends Generator {
 
     return new Promise((resolve, reject) => {
       this.config.save();
-
-      if (this.options.internal) {
+      
+      if (1==2) {
         getActionDefinitions({
           url: this.options.definitions,
         })
@@ -140,7 +140,7 @@ export default class extends Generator {
         self._availableActions = actionDefsAsterisks.actions.filter(function (
           action
         ) {
-          return !action.beta;
+          return this.options.internal || !action.beta;
         });
         self._actionDefs.domains = actionDefsAsterisks.domains.filter(function (
           domain
