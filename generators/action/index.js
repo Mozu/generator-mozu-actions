@@ -121,7 +121,7 @@ export default class extends Generator {
 
     return new Promise((resolve, reject) => {
       this.config.save();
-      
+      const usingInternal =this.options.internal; 
       if (1==2) {
         getActionDefinitions({
           url: this.options.definitions,
@@ -140,7 +140,7 @@ export default class extends Generator {
         self._availableActions = actionDefsAsterisks.actions.filter(function (
           action
         ) {
-          return this.options.internal || !action.beta;
+          return usingInternal || !action.beta;
         });
         self._actionDefs.domains = actionDefsAsterisks.domains.filter(function (
           domain
