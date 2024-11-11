@@ -1,6 +1,6 @@
 {
   "name": "generator-mozu-actions",
-  "version": "2.0.7",
+  "version": "2.0.9",
   "description": "Yeoman generator for Kibo API Extensions",
   "license": "MIT",
   "type": "module",
@@ -37,7 +37,7 @@
     "generator-mozu-app": "^3.0.0",
     "glob": "^10.4.2",
     "lodash.uniq": "^4.5.0",
-    "mozu-metadata": "^2.3.10",
+    "mozu-metadata": "^2.3.14",
     "update-notifier": "^7.0.0",
     "yeoman-environment": "^4.4.1",
     "yeoman-generator": "^7.3.2"

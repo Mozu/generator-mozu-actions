@@ -65,7 +65,8 @@ export default class extends Generator {
    
     this.option("internal", {
       type: Boolean,
-      defaults: false,
+      defaults: true,
+      default: true,
       hide: true,
     });
 
