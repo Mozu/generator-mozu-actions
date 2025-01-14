@@ -2729,6 +2729,66 @@
      }
     },
     {
+     "action": "http.commerce.orders.addItem.before",
+     "aliases": [],
+     "domain": "commerce.orders",
+     "contextLevel": 1,
+     "supportsMultipleCustomFunctions": true,
+     "context": {
+      "type": "mozu.actions.context.http"
+     }
+    },
+    {
+     "action": "http.commerce.orders.addItem.after",
+     "aliases": [],
+     "domain": "commerce.orders",
+     "contextLevel": 1,
+     "supportsMultipleCustomFunctions": true,
+     "context": {
+      "type": "mozu.actions.context.http"
+     }
+    },
+    {
+     "action": "http.commerce.orders.updateItem.before",
+     "aliases": [],
+     "domain": "commerce.orders",
+     "contextLevel": 1,
+     "supportsMultipleCustomFunctions": true,
+     "context": {
+      "type": "mozu.actions.context.http"
+     }
+    },
+    {
+     "action": "http.commerce.orders.updateItem.after",
+     "aliases": [],
+     "domain": "commerce.orders",
+     "contextLevel": 1,
+     "supportsMultipleCustomFunctions": true,
+     "context": {
+      "type": "mozu.actions.context.http"
+     }
+    },
+    {
+     "action": "http.commerce.orders.updateItemQuantity.before",
+     "aliases": [],
+     "domain": "commerce.orders",
+     "contextLevel": 1,
+     "supportsMultipleCustomFunctions": true,
+     "context": {
+      "type": "mozu.actions.context.http"
+     }
+    },
+    {
+     "action": "http.commerce.orders.updateItemQuantity.after",
+     "aliases": [],
+     "domain": "commerce.orders",
+     "contextLevel": 1,
+     "supportsMultipleCustomFunctions": true,
+     "context": {
+      "type": "mozu.actions.context.http"
+     }
+    },
+    {
      "action": "http.commerce.settings.checkout.paymentsettings.updatePaymentSettings.before",
      "aliases": [],
      "domain": "commerce.settings",
