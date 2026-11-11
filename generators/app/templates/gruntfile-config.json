@@ -1,17 +1,16 @@
 {
   "configs": {
-    "jshint": {
-      "normal": [
-        "./assets/src/**/*.js"
-      ],
+    "eslint": {
+      "normal": {
+        "src": [
+          "./assets/src/**/*.js"
+        ]
+      },
       "continuous": {
         "options": {
-          "force": true
+          "failOnError": false
         },
-        "src": "<%= jshint.normal %>"
-      },
-      "options": {
-        "esversion": 8
+        "src": "<%= eslint.normal.src %>"
       }
     },
     "browserify": {
@@ -93,9 +92,9 @@
         "spawn": false
       },
       "src": {
-        "files": "<%= jshint.normal %>",
+        "files": "<%= eslint.normal.src %>",
         "tasks": [
-          "jshint:continuous",
+          "eslint:continuous",
           "browserify:all",
           "manifest"
         ]
@@ -113,7 +112,7 @@
   },
   "tasks": {
     "build": [
-      "jshint:normal",
+      "eslint:normal",
       "browserify:all",
       "manifest"
     ],

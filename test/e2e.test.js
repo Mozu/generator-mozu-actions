@@ -110,3 +110,29 @@ test("regenerating an app that has its own manifest task warns that kibo.json is
   assert.equal(fs.readFileSync(path.join(app, "tasks/manifest.js"), "utf8"), legacy);
   assert.ok(fs.existsSync(path.join(app, "kibo.json")));
 });
+
+test("the generated Gruntfile's eslint task passes on generated code and fails on an undefined variable", async () => {
+  const app = await generate({ domains: ["storefront"], storefront: [GLOBAL_AFTER] });
+  fs.mkdirSync(path.join(app, "node_modules"), { recursive: true });
+  ["grunt", "grunt-eslint", "eslint"].forEach((m) =>
+    fs.symlinkSync(path.join(repo, "node_modules", m), path.join(app, "node_modules", m), "junction"));
+  fs.copyFileSync(path.join(repo, "generators/app/templates/eslint.config.js"), path.join(app, "eslint.config.js"));
+  // The eslint block of the generated Gruntfile, exactly as the generator writes it (its "<%= %>" refs resolve in grunt).
+  const cfg = JSON.parse(fs.readFileSync(path.join(repo, "generators/app/templates/gruntfile-config.json"), "utf8")).configs.eslint;
+  fs.writeFileSync(path.join(app, "Gruntfile.js"), `module.exports = function (grunt) {
+  grunt.loadNpmTasks('grunt-eslint');
+  grunt.initConfig({ eslint: ${JSON.stringify(cfg)} });
+};
+`);
+  const run = (target) => spawnSync(process.execPath, [gruntBin, target, "--no-color", "--gruntfile", path.join(app, "Gruntfile.js"), "--base", app], { encoding: "utf8" });
+
+  let r = run("eslint:normal");
+  assert.equal(r.status, 0, r.stdout + r.stderr);
+
+  const file = path.join(app, "assets/src/domains/storefront/http.storefront.pages.global.request.after.js");
+  fs.appendFileSync(file, "\nmissingVariable.run();\n");
+  r = run("eslint:normal");
+  assert.notEqual(r.status, 0);
+  assert.match(r.stdout, /'missingVariable' is not defined/);
+  assert.equal(run("eslint:continuous").status, 0); // watch mode reports but does not stop
+});
