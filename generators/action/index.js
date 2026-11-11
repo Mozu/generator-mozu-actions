@@ -4,7 +4,10 @@ import * as glob from "glob";
 import * as acorn from "acorn";
 import * as acornWalk from "acorn-walk";
 import chalk from "chalk";
-import actionDefsPeriod from "../../action-definitions.json" assert { type: "json" };
+import path from "path";
+import { createRequire } from "module";
+// createRequire instead of an import attribute: Node 16-21 need `assert`, Node 22+ only accept `with`.
+const actionDefsPeriod = createRequire(import.meta.url)("../../action-definitions.json");
 const actionDefsAsterisks = JSON.parse(
   JSON.stringify(actionDefsPeriod).replace(/\./g, "*")
 );
@@ -499,6 +502,114 @@ export default class extends Generator {
     this.config.set("actionNames", this._actionNames);
   }
 
+  // kibo.json is required by the manifest grunt task (grunt-mozu-appdev-sync): a top-level contextReuse plus an
+  // entry per bundle. New entries default to "none"; "warm" is the author's call after an audit.
+  // Never changes an existing value, never writes a file that needs nothing, never overwrites a file it cannot read.
+  _ensureKiboJson(manifestsWrittenNow) {
+    const file = this.destinationPath("kibo.json");
+    const isObj = (v) => !!v && typeof v === "object" && !Array.isArray(v);
+    const valid = (v) => typeof v === "string" && ["warm", "none"].includes(v.trim().toLowerCase());
+    const own = (o, k) => Object.prototype.hasOwnProperty.call(o, k);
+    const leftAlone = "The generator did not change it.";
+
+    let config;
+    try {
+      config = this.fs.readJSON(file, {});
+    } catch (e) {
+      return helpers.lament(this, "kibo.json is not valid JSON (" + e.message + "); fix it by hand. " + leftAlone, e);
+    }
+    if (!isObj(config)) {
+      return helpers.lament(this, "kibo.json is not a JSON object; fix it by hand. " + leftAlone);
+    }
+    if (config.functions !== undefined && !isObj(config.functions)) {
+      return helpers.lament(this, 'kibo.json: "functions" is not an object; fix it by hand. ' + leftAlone);
+    }
+
+    const problems = [];
+    let changed = false;
+    if (config.contextReuse === undefined) {
+      // contextReuse first, so a new file reads top-down; an existing file keeps its key order.
+      // fromEntries (not Object.assign) so an own "__proto__" key survives.
+      config = Object.fromEntries([["contextReuse", "none"], ...Object.entries(config)]);
+      changed = true;
+    } else if (!valid(config.contextReuse)) {
+      problems.push('top-level "contextReuse" ' + JSON.stringify(config.contextReuse));
+    }
+    if (config.functions === undefined) {
+      config.functions = {};
+    }
+
+    const added = [];
+    const onDisk = glob
+      .sync("assets/src/**/*.manifest.js", { cwd: this.destinationPath(), nocase: false }) // grunt's glob is case-sensitive
+      .map((p) => p.split(path.sep).join("/"));
+    uniq(onDisk.concat(manifestsWrittenNow)).forEach((src) => {
+      if (!own(config.functions, src)) {
+        config.functions[src] = { contextReuse: "none" };
+        added.push(src);
+      } else if (!isObj(config.functions[src]) || !valid(config.functions[src].contextReuse)) {
+        problems.push('"' + src + '" ' + JSON.stringify(config.functions[src]));
+      }
+    });
+
+    if (changed || added.length) {
+      this.fs.writeJSON(file, config);
+    }
+    if (changed || added.length) {
+      helpers.remark(
+        this,
+        "kibo.json: added " + (changed ? 'top-level contextReuse "none"' + (added.length ? " and entries for " : "") : "") + added.join(", ") +
+          (added.length ? ' with contextReuse "none"' : "") + '. Set "warm" only after the bundle passes the ArcJs shared-context audit.'
+      );
+    }
+    if (problems.length) {
+      helpers.lament(
+        this,
+        "kibo.json has values the build rejects (left as they are): " + problems.join("; ") +
+          '. Each needs { "contextReuse": "warm" | "none" }.'
+      );
+    }
+  }
+
+  // A task named "manifest" in the app's own tasks (every app generated before grunt-mozu-appdev-sync 2.5.0 has
+  // tasks/manifest.js) is registered first and wins, so the plugin's task never runs and kibo.json is ignored.
+  // Looks in tasks/, in every folder the Gruntfile loads with grunt.loadTasks('<dir>'), and in the Gruntfile.
+  // A task whose name is built at run time cannot be found this way; the plugin's grunt-time warning is the backstop.
+  _warnLocalManifestTask() {
+    const registers = /register(Multi)?Task\s*\(\s*(['"`])manifest\2/g;
+    const read = (f) => this.fs.read(this.destinationPath(f), { defaults: "" }) || "";
+    // A match counts unless its own line starts with a comment marker. No comment stripping: that mis-handled
+    // "//" inside strings and "/*" inside globs, and could hide a real registration.
+    const live = (src) => {
+      for (const m of src.matchAll(registers)) {
+        const lineStart = src.lastIndexOf("\n", m.index) + 1;
+        if (!/^\s*(\/\/|\/?\*)/.test(src.slice(lineStart, m.index))) { return true; }
+      }
+      return false;
+    };
+    // Same files grunt loads: Gruntfile.{js,cjs}, and *.{js,cjs} of tasks/ and of each loadTasks('<dir>') folder.
+    const gruntfiles = ["Gruntfile.js", "Gruntfile.cjs"];
+    const dirs = ["tasks"];
+    for (const g of gruntfiles) {
+      for (const m of read(g).matchAll(/loadTasks\s*\(\s*(['"`])([^'"`]+)\1/g)) {
+        const dir = path.posix.normalize(m[2].replace(/\\/g, "/")).replace(/^\.\//, "").replace(/\/$/, "");
+        if (dir && !dirs.includes(dir)) { dirs.push(dir); }
+      }
+    }
+    const files = dirs
+      .flatMap((d) => glob.sync((d === "." ? "" : d + "/") + "*.{js,cjs}", { cwd: this.destinationPath(), nocase: false }))
+      .concat(gruntfiles);
+    const hits = uniq(files).filter((f) => live(read(f)));
+    if (hits.length) {
+      helpers.lament(
+        this,
+        hits.join(", ") + ' registers its own "manifest" task. It overrides grunt-mozu-appdev-sync, so kibo.json is IGNORED ' +
+          'and functions.json gets no arcjs block. Remove that task (carry over local changes first), set grunt-mozu-appdev-sync to ^2.5.0, ' +
+          'then run "grunt build --kibo-init". See the README.'
+      );
+    }
+  }
+
   writing() {
     var self = this;
     var requirements;
@@ -547,6 +658,11 @@ export default class extends Generator {
         });
       });
     });
+
+    self._ensureKiboJson(
+      self._domains.map((domain) => "assets/src/" + domain + ".manifest.js")
+    );
+    self._warnLocalManifestTask();
 
     if (self.options.testFramework&& self.options.testFramework !== "manual") {
       requirements = supportedTestFrameworks[self.options.testFramework];
