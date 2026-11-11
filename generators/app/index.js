@@ -193,10 +193,6 @@ export default class extends mozuAppGenerator {
       self.gruntfile.registerTask(name, taskConfig.tasks[name]);
     });
 
-    this.fs.copy(
-      this.templatePath("manifest.js"),
-      this.destinationPath("tasks/manifest.js")
-    );
   }
 
   _enableOnInstallFn() {
@@ -244,12 +240,17 @@ export default class extends mozuAppGenerator {
         "grunt-browserify",
         "grunt-contrib-jshint",
         "grunt-contrib-watch",
-        "grunt-mozu-appdev-sync",
+        // 2.5.0+ provides the `manifest` task (kibo.json -> functions.json); apps no longer carry tasks/manifest.js.
+        "grunt-mozu-appdev-sync@^2.5.0",
         "load-grunt-tasks",
         "mozu-action-helpers",
         "mozu-action-simulator",
         "time-grunt",
       ]);
     }
+    helpers.remark(
+      this,
+      'skip-install: grunt-mozu-appdev-sync@^2.5.0 (the "manifest" task) was not added; install it before running "grunt build".'
+    );
   }
 }

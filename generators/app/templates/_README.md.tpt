@@ -2,3 +2,22 @@
 ### version <%= version %>
 
 <%= description %>
+
+## Shared context (ArcJs): `kibo.json`
+
+The build requires `kibo.json` at the project root. It declares, per compiled bundle, whether the ArcJs engine may reuse a warm context across requests:
+
+```json
+{
+  "contextReuse": "none",
+  "functions": {
+    "assets/src/storefront.manifest.js": { "contextReuse": "warm" }
+  }
+}
+```
+
+- **Required fields.** You need a top-level `contextReuse` plus an entry for **every** `assets/src/**/*.manifest.js`. Values are `"warm"` or `"none"`. If a field is missing or invalid, `grunt build` fails.
+- **When to use `warm`.** Set `"warm"` only for bundles that passed the ArcJs shared-context audit. New bundles are added as `"none"`.
+- **Filling it in.** Run `grunt build --kibo-init` to be asked for any missing values.
+- **Where the task comes from.** The `manifest` task is part of `grunt-mozu-appdev-sync` (2.5.0 or later). If the app has its own `tasks/manifest.js`, that file wins and `kibo.json` is ignored: delete it.
+- **Generated output.** The build writes the matching `arcjs` block into `assets/functions.json`. Don't edit that file by hand.

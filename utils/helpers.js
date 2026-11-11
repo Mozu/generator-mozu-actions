@@ -1,6 +1,8 @@
 
 import uniq from 'lodash.uniq';
-import savedActionDefinitions from '../action-definitions.json' assert { type: 'json' };
+import { createRequire } from 'module';
+// createRequire instead of an import attribute: Node 16-21 need `assert`, Node 22+ only accept `with`.
+const savedActionDefinitions = createRequire(import.meta.url)('../action-definitions.json');
 
 var helpers =  {
   getDomainFromActionName: function(actionDefs, name) {

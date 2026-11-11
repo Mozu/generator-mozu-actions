@@ -10,13 +10,13 @@
   },
   "author": "Kibo Software, LLC",
   "engines": {
-    "node": ">=16.0"
+    "node": "^18.17.0 || >=20.5.0"
   },
   "main": "./generators/app/index.js",
   "scripts": {
     "preversion_rem": "update-arc-defs",
     "version_rem": "git add action-definitions.json",
-    "test": "echo YAAAAAAAAAAAAY",
+    "test": "node --test test/generators.test.js test/e2e.test.js",
     "ci-build": "npm test",
     "ci-build-stable": "npm run ci-build",
     "postci-build-stable": "mozu-validate-npm-package",
@@ -43,6 +43,8 @@
     "yeoman-generator": "^7.3.2"
   },
   "devDependencies": {
+    "grunt": "1.6.3",
+    "grunt-mozu-appdev-sync": "^2.5.0",
     "mozu-validate-npm-package": "^1.2.1",
     "yeoman-assert": "^3.1.1",
     "yeoman-test": "^8.3.0"
