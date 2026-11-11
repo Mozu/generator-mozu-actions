@@ -10,7 +10,7 @@
   },
   "author": "Kibo Software, LLC",
   "engines": {
-    "node": "^18.17.0 || >=20.5.0"
+    "node": "^18.18.0 || ^20.9.0 || >=21.1.0"
   },
   "main": "./generators/app/index.js",
   "scripts": {
@@ -43,7 +43,9 @@
     "yeoman-generator": "^7.3.2"
   },
   "devDependencies": {
+    "eslint": "^9.39.5",
     "grunt": "1.6.3",
+    "grunt-eslint": "^25.0.0",
     "grunt-mozu-appdev-sync": "^2.5.0",
     "mozu-validate-npm-package": "^1.2.1",
     "yeoman-assert": "^3.1.1",
